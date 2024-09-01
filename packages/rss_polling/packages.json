@@ -1,0 +1,23 @@
+{
+    "name": "@rewatchables/rss",
+    "description": "poll the podcast RSS feed looking for new episodes",
+    "author": "greg tracy",
+    "version": "0.1.0",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "webpack --config webpack.config.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gtracy/rewatchable-streams.git"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/gtracy/rewatchable-streams/issues"
+    },
+    "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
+    "dependencies": {
+    },
+    "devDependencies": {
+    }
+}

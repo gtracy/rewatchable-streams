@@ -1,0 +1,37 @@
+{
+    "name": "rewatchable-streams",
+    "description": "a bot that regularly re-generates a webpage that maps The Rewatchables podcast episodes to streaming services where the movies can be watched.",
+    "author": "greg tracy",
+    "version": "0.1.0",
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "init": "node bin/initDynamo.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gtracy/rewatchable-streams.git"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/gtracy/rewatchable-streams/issues"
+    },
+    "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.637.0",
+        "@aws-sdk/lib-dynamodb": "^3.637.0",
+        "axios": "^1.7.5",
+        "debug": "^4.3.6",
+        "dotenv-json": "^1.0.0",
+        "pino": "^9.3.2",
+        "rss-parser": "^3.13.0",
+        "underscore": "^1.13.7"
+    },
+    "devDependencies": {
+        "copy-webpack-plugin": "^12.0.2",
+        "webpack": "^5.94.0",
+        "webpack-cli": "^5.1.4"
+    }
+}
