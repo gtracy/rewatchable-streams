@@ -5,11 +5,9 @@ const _ = require('underscore');
 const axios = require('axios');
 let Parser = require('rss-parser');
 
-//const dotenv = require('dotenv-json')({ path:'../../.env.json' });
 const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '.env.json')});
 const config = require('../shared/config');
 const logger = require('pino')(config.getLogConfig());
-logger.info('runtime environment: '+config.getEnv());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
@@ -48,6 +46,11 @@ function extractMovieTitle(str) {
 }
 
 exports.handler = async (event) => {
+  if( !process.env.TMDB_API_KEY ) {
+    logger.error('Failed to initialize job.');
+    logger.error(path.resolve(__dirname, '.env.json'));
+    return;
+  }
   logger.debug(config.getAWSConfig());
   const client = new DynamoDBClient(config.getAWSConfig());
   const docClient = DynamoDBDocumentClient.from(client);
@@ -66,7 +69,8 @@ exports.handler = async (event) => {
         continue;
       }
 
-      // Query TBDB by movie title
+      // Query TMDB by movie title
+      logger.debug('Query TMDB for: '+movieTitle);
       const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}`;
       const response = await axios.get(searchUrl);
       const results = response.data.results;
@@ -99,7 +103,7 @@ exports.handler = async (event) => {
             pod_title : episode.title,
             pod_date : episode.pubDate,
             pod_desc : episode.content,
-            pod_guid : episode.guid
+            pod_guid : episode.guid, // Key
           },
           ConditionExpression: 'attribute_not_exists(pod_guid)'
         };
