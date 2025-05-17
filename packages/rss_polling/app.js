@@ -6,7 +6,7 @@ const axios = require('axios');
 let Parser = require('rss-parser');
 
 const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '.env.json')});
-const config = require('../shared/config');
+const config = require('./config');
 const logger = require('pino')(config.getLogConfig());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
