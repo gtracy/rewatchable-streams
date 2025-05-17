@@ -5,8 +5,8 @@ const _ = require('underscore');
 const axios = require('axios');
 let Parser = require('rss-parser');
 
-const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '.env.json')});
-const config = require('./config');
+const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../../.env.json')});
+const config = require('../../config');
 const logger = require('pino')(config.getLogConfig());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
