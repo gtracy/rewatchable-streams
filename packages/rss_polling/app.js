@@ -10,7 +10,7 @@ const config = require('../../config');
 const logger = require('pino')(config.getLogConfig());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBDocumentClient, PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 
 const TMDB_API_BASE_URL = 'https://api.themoviedb.org/3/search/movie';
 
@@ -66,6 +66,17 @@ exports.handler = async (event) => {
     for (const episode of episodes) {
       const movieTitle = extractMovieTitle(episode.title);
       if( !movieTitle ) {
+        continue;
+      }
+
+      // Check if episode already exists in DynamoDB
+      const getParams = {
+        TableName: process.env.DYNAMO_PODCAST_MOVIES_TABLE,
+        Key: { pod_guid: episode.guid }
+      };
+      const existing = await docClient.send(new GetCommand(getParams));
+      if (existing && existing.Item) {
+        logger.debug('Episode already exists, skipping: ' + episode.guid);
         continue;
       }
 
