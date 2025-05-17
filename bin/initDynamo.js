@@ -1,11 +1,11 @@
 'use strict';
 const path = require('path');
-const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '.env.json')});
+const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../.env.json')});
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { CreateTableCommand } = require("@aws-sdk/client-dynamodb");
 
-const config = require('../packages/shared/config');
+const config = require('../config');
 console.dir(config.getAWSConfig());
 
 async function createPodcastMoviesTable(table_name) {
@@ -70,6 +70,6 @@ async function createMovieStreamsTable(table_name) {
 
 (async () => {
     await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
-    await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
+//    await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
 })();
 
