@@ -1,0 +1,16 @@
+{
+    "name": "@rewatchables/streams-fetch",
+    "description": "fetch stream details for a movie",
+    "author": "greg tracy",
+    "version": "0.1.0",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.637.0",
+        "@aws-sdk/lib-dynamodb": "^3.637.0",
+        "dotenv-json": "^1.0.0",
+        "axios": "^1.7.5",
+        "pino": "^9.3.2",
+        "streaming-availability": "^4.4.0"
+    },
+    "devDependencies": {
+    }
+}
