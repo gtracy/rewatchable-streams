@@ -1,0 +1,13 @@
+{
+    "name": "@rewatchables/bin",
+    "description": "convenience scripts for the rewatchables project",
+    "private": true,
+    "author": "greg tracy",
+    "version": "0.1.0",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.637.0",
+        "@aws-sdk/lib-dynamodb": "^3.637.0",
+        "dotenv-json": "^1.0.0",
+        "pino": "^9.3.2"
+    }
+}

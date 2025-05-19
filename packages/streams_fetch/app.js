@@ -12,9 +12,7 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
 
 
-exports.handler = async (event,context) => {
-  console.log('DynamoDB Streams event received:', JSON.stringify(event, null, 2));
-  
+exports.handler = async (event,context) => {  
     const client = new DynamoDBClient(config.getAWSConfig());
     const docClient = DynamoDBDocumentClient.from(client);
   
@@ -23,7 +21,7 @@ exports.handler = async (event,context) => {
         logger.info('Skipping non-insert event:', record.eventName);
         continue;
       }
-      const tmdb_id_number = record.dynamodb.NewImage.tmdb_id.N;
+      const tmdb_id_number = parseInt(record.dynamodb.NewImage.tmdb_id.N,10);
       const movie_id = 'movie/'+tmdb_id_number;
       const imdb_id = record.dynamodb.NewImage.imdb_id.S;
       logger.debug('lookup movie '+imdb_id);
@@ -61,9 +59,9 @@ exports.handler = async (event,context) => {
           };
           logger.debug({dynamo_doc});
           await docClient.send(new PutCommand(dynamo_doc));
-          console.log('Streaming options saved for movie:', movie_id);
+          console.log('Streaming options saved for movie: ', movie_id);
       } catch (error) {
-        console.error('Error fetching streaming details:', error);
+        console.error('Error fetching streaming details: ', error);
       }
     }
 };
