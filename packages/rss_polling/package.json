@@ -17,6 +17,14 @@
     },
     "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.637.0",
+        "@aws-sdk/lib-dynamodb": "^3.637.0",
+        "axios": "^1.7.5",
+        "debug": "^4.3.6",
+        "dotenv-json": "^1.0.0",
+        "pino": "^9.3.2",
+        "rss-parser": "^3.13.0",
+        "underscore": "^1.13.7"
     },
     "devDependencies": {
     }

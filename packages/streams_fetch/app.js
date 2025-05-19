@@ -12,11 +12,17 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
 
 
-exports.handler = async (event) => {
+exports.handler = async (event,context) => {
+  console.log('DynamoDB Streams event received:', JSON.stringify(event, null, 2));
+  
     const client = new DynamoDBClient(config.getAWSConfig());
     const docClient = DynamoDBDocumentClient.from(client);
   
     for (const record of event.Records) {
+      if( record.eventName !== 'INSERT' ) {
+        logger.info('Skipping non-insert event:', record.eventName);
+        continue;
+      }
       const tmdb_id_number = record.dynamodb.NewImage.tmdb_id.N;
       const movie_id = 'movie/'+tmdb_id_number;
       const imdb_id = record.dynamodb.NewImage.imdb_id.S;
