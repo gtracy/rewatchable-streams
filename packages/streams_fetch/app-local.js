@@ -2,6 +2,7 @@
 
 const app = require('./app');
 
+// 640
 const sample = {
     "Records": [
       {
@@ -12,7 +13,7 @@ const sample = {
             "pod_guid": {"S":"gid://art19-episode-locator/V0/A0AFGtJ0MPhEUUwPaGZGIPuHCgy_784fiXfSOjDQCP8"}
           },
           "NewImage": {
-              "tmdb_id": {"N": 640},
+              "tmdb_id": {"N": 11},
               "overview": {"S":"Jeffrey 'The Dude' Lebowski, a Los Angeles slacker who only wants to bowl and drink White Russians, is mistaken for another Jeffrey Lebowski, a wheelchair-bound millionaire, and finds himself dragged into a strange series of events involving nihilists, adult film producers, ferrets, errant toes, and large sums of money."},
               "img": {"S":"/9mprbw31MGdd66LR0AQKoDMoFRv.jpg"},
               "pod_guid": {"S":"gid://art19-episode-locator/V0/A0AFGtJ0MPhEUUwPaGZGIPuHCgy_784fiXfSOjDQCP8"},

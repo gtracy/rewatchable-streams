@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const axios = require('axios');
 const streamingAvailability = require('streaming-availability');
 
 const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../../.env.json')});
@@ -45,8 +44,10 @@ exports.handler = async (event,context) => {
               "releaseYear": streamingDetails.releaseYear,
               "directors": streamingDetails.directors,
               "cast": streamingDetails.cast,
-              "imageSet": streamingDetails.imageSet.verticalPoster.w240
-          }
+              "imageSet": streamingDetails.imageSet.verticalPoster.w240,
+
+              "last_updated": new Date().toISOString(),
+            }
 
           // grab the streaming options for the US
           if( streamingDetails.streamingOptions.us ) {

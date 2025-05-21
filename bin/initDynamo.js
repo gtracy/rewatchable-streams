@@ -69,7 +69,7 @@ async function createMovieStreamsTable(table_name) {
 
 
 (async () => {
-    await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
-//    await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
+//    await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
+    await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
 })();
 
