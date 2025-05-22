@@ -48,11 +48,27 @@ async function createMovieStreamsTable(table_name) {
         ],
         AttributeDefinitions: [
           { AttributeName: 'tmdb_id', AttributeType: 'N' },
+          { AttributeName: 'last_updated', AttributeType: 'S' }, // GSI attribute
         ],
         ProvisionedThroughput: {
           ReadCapacityUnits: 5,
           WriteCapacityUnits: 5
-        }
+        },
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'last_updated-index',
+            KeySchema: [
+              { AttributeName: 'last_updated', KeyType: 'HASH' }
+            ],
+            Projection: {
+              ProjectionType: 'ALL'
+            },
+            ProvisionedThroughput: {
+              ReadCapacityUnits: 5,
+              WriteCapacityUnits: 5
+            }
+          }
+        ]
     };
 
     try {
@@ -69,7 +85,7 @@ async function createMovieStreamsTable(table_name) {
 
 
 (async () => {
-//    await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
+    await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
     await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
 })();
 
