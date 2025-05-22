@@ -29,6 +29,8 @@ function extractMovieTitle(str) {
       return 'Heat';
     } else if( match[1] === 'The Re-Departed' ) {
       return 'The Departed';
+    } else if( match[1] === 'Wayne' ) {
+      return 'Wayne\'s World';
     } else {
       return match[1];
     }
@@ -82,18 +84,19 @@ exports.handler = async (event) => {
 
       // Query TMDB by movie title
       logger.debug('Query TMDB for: '+movieTitle);
-      const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}`;
+      const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}&include_adult=false&language=en-US`;
       const response = await axios.get(searchUrl);
       const results = response.data.results;
 
       if (results.length > 0) {
 
-        // match algorithm is weak - we find the first english language movie in the list
-        //   todo: incorporate rating vote counts
-        const first_english_match = _.findWhere(results, { original_language: 'en' });
+        const first_english_match = findBestMatch(results, movieTitle);
+        logger.info('TMDB search match - '+first_english_match.original_title);
+
         const movieId = first_english_match.id; // Get ID from first search result
 
         // Fetch movie details using TMDB ID
+        logger.debug('Fetch TMDB for '+movieTitle+' datails - '+movieId);
         const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.TMDB_API_KEY}`;
         const detailsResponse = await axios.get(detailsUrl);
         const movieDetails = detailsResponse.data;
@@ -115,6 +118,8 @@ exports.handler = async (event) => {
             pod_date : new Date(episode.pubDate).toISOString(),
             pod_desc : episode.content,
             pod_guid : episode.guid, // Key
+
+            last_updated : new Date().toISOString(),
           },
           ConditionExpression: 'attribute_not_exists(pod_guid)'
         };
@@ -142,7 +147,35 @@ exports.handler = async (event) => {
     }
     return 'Lambda function execution successful!';
   } catch (error) {
-    console.error(error);
+    logger.error({error},'Error processing RSS feed');
     return 'Lambda function failed!';
   }
 };
+
+function findBestMatch(results, movieTitle) {
+  if( results.length == 0 ) {
+    logger.debug('single result found - '+first_english_match.original_title);
+    return results[0];
+  } else {
+    const sortedResults = _.sortBy(results, item => {
+        let popularity = item.popularity;
+
+        // Convert to a number. If it's not a valid number (e.g., undefined, null, non-numeric string),
+        // it will become NaN.
+        popularity = Number(popularity);
+
+        // If popularity is NaN, treat it as a very small number for sorting.
+        // This ensures items with missing/invalid popularity always sink to the bottom
+        // when sorting ascending, and thus stay at the bottom after reversing.
+        if (isNaN(popularity)) {
+            return -Infinity;
+        }
+
+        // Return the (cleaned) numeric popularity for sorting
+        return popularity;
+    }).reverse();
+    
+    logger.debug('multiple results found - '+sortedResults[0].original_title);
+    return sortedResults[0];
+  }
+}

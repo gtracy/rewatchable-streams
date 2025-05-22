@@ -75,6 +75,10 @@ async function processPodcastMovies() {
             apiKey: process.env.MOVIE_OF_THE_NIGHT_API_KEY
           }));
           const streamingDetails = await client.showsApi.getShow({id: movie_id});
+          if( streamingDetails === undefined ) {
+            logger.error('streamingDetails is undefined for tmdbId: '+tmdbId);
+            continue;
+          }
           logger.debug('title: '+streamingDetails.title);
           logger.debug('tmdbId: '+streamingDetails.tmdbId);
 
@@ -109,7 +113,7 @@ async function processPodcastMovies() {
 
           logger.info('Saving streaming options to DynamoDB...')
           await docClient.send(new PutCommand(dynamo_doc));
-          logger.info('Streaming options saved for movie: ', movie_id);
+          logger.info('Streaming options saved for movie: ', tmdbId);
 
           // Pause a random amount of time between 0 and 10 seconds
           const pauseMs = Math.floor(Math.random() * 10001);
@@ -125,7 +129,7 @@ async function processPodcastMovies() {
     logger.info('Finished processing podcast movies.');
 
   } catch (error) {
-    logger.error({error},'Error scanning podcast movies table:');
+    logger.error({error},'Error scanning podcast movies table: '+tmdbId);
   }
 }
 
