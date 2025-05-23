@@ -89,8 +89,13 @@ exports.handler = async (event) => {
       const results = response.data.results;
 
       if (results.length > 0) {
-
-        const first_english_match = findBestMatch(results, movieTitle);
+        // Filter out non-English titles
+        const englishResults = results.filter(result => result.original_language === 'en');
+        if (englishResults.length === 0) {
+          logger.error('No English results found for: ' + movieTitle);
+          continue;
+        }
+        const first_english_match = findBestMatch(englishResults, movieTitle);
         logger.info('TMDB search match - '+first_english_match.original_title);
 
         const movieId = first_english_match.id; // Get ID from first search result
@@ -120,6 +125,7 @@ exports.handler = async (event) => {
             pod_guid : episode.guid, // Key
 
             last_updated : new Date().toISOString(),
+            gsi_pk : 'ALL_PODS'
           },
           ConditionExpression: 'attribute_not_exists(pod_guid)'
         };

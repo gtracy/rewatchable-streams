@@ -95,6 +95,7 @@ async function processPodcastMovies() {
               "imageSet": streamingDetails.imageSet.verticalPoster.w240,
 
               "last_updated": new Date().toISOString(),
+              "gsi_pk": 'ALL_MOVIES'
           }
 
           // grab the streaming options for the US
@@ -113,7 +114,7 @@ async function processPodcastMovies() {
 
           logger.info('Saving streaming options to DynamoDB...')
           await docClient.send(new PutCommand(dynamo_doc));
-          logger.info('Streaming options saved for movie: ', tmdbId);
+          logger.info('Streaming options saved for movie: '+ tmdbId);
 
           // Pause a random amount of time between 0 and 10 seconds
           const pauseMs = Math.floor(Math.random() * 10001);

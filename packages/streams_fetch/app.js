@@ -47,6 +47,7 @@ exports.handler = async (event,context) => {
               "imageSet": streamingDetails.imageSet.verticalPoster.w240,
 
               "last_updated": new Date().toISOString(),
+              "gsi_pk": 'ALL_MOVIES'
             }
 
           // grab the streaming options for the US

@@ -48,7 +48,8 @@ async function createMovieStreamsTable(table_name) {
         ],
         AttributeDefinitions: [
           { AttributeName: 'tmdb_id', AttributeType: 'N' },
-          { AttributeName: 'last_updated', AttributeType: 'S' }, // GSI attribute
+          { AttributeName: 'last_updated', AttributeType: 'S' },
+          { AttributeName: 'gsi_pk', AttributeType: 'S' },
         ],
         ProvisionedThroughput: {
           ReadCapacityUnits: 5,
@@ -58,7 +59,8 @@ async function createMovieStreamsTable(table_name) {
           {
             IndexName: 'last_updated-index',
             KeySchema: [
-              { AttributeName: 'last_updated', KeyType: 'HASH' }
+              { AttributeName: 'gsi_pk', KeyType: 'HASH' },
+              { AttributeName: 'last_updated', KeyType: 'RANGE' }
             ],
             Projection: {
               ProjectionType: 'ALL'
