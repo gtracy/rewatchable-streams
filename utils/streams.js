@@ -10,8 +10,6 @@ const logger = require('pino')(config.getLogConfig());
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
 
-
-
 module.exports.fetchStream = async function(tmdb_id) {
     const client = new DynamoDBClient(config.getAWSConfig());
     const docClient = DynamoDBDocumentClient.from(client);
@@ -24,8 +22,7 @@ module.exports.fetchStream = async function(tmdb_id) {
             apiKey: process.env.MOVIE_OF_THE_NIGHT_API_KEY
         }));
         const streamingDetails = await client.showsApi.getShow({id: movie_id});
-        logger.debug('title: '+streamingDetails.title);
-        logger.debug('tmdbId: '+streamingDetails.tmdbId);
+        logger.info(`grabbed show details for ${streamingDetails.title} (${streamingDetails.tmdbId})`);
 
         // build a new object with the minimal data we need
         let movieStream = {
@@ -45,21 +42,20 @@ module.exports.fetchStream = async function(tmdb_id) {
 
         // grab the streaming options for the US
         if( streamingDetails.streamingOptions.us ) {
-            logger.debug('fetching streaming options for US');
+            logger.info('fetching streaming options for US');
             movieStream.streamingOptions = filterServices(streamingDetails.streamingOptions.us);
         } else {
-            logger.debug('no streaming options for US');
+            logger.error('no streaming options for US');
         }
 
         const dynamo_doc = {
             TableName: process.env.DYNAMO_MOVIE_STREAMS_TABLE,
             Item: movieStream
         };
-        logger.debug({dynamo_doc});
         await docClient.send(new PutCommand(dynamo_doc));
-        console.log('Streaming options saved for movie: ', movie_id);
+        logger.info('Streaming options saved');
     } catch (error) {
-    console.error('Error fetching streaming details: ', error);
+        logger.error({error},'Error fetching streaming details: ');
     }    
 }
 

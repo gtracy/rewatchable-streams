@@ -12,21 +12,18 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, QueryCommand } = require("@aws-sdk/lib-dynamodb");
 
 
-exports.handler = async (event,context) => {  
+exports.handler = async (event,context) => {
+  let refresh_count = 0;
 
   try {
-    const oldest25Movies = await getOldestMovieStreams(5);
-    oldest25Movies.forEach(movie => {
-      logger.info(`- Title: ${movie.title}, TMDB ID: ${movie.tmdb_id}, Last Updated: ${movie.last_updated}`);
-    });
-
-    // Refresh the streaming detils
-    for (const movie of oldest25Movies) {
+    const oldestMovies = await getOldestMovieStreams(process.env.STREAM_REFRESH_LIMIT || 5);
+    for (const movie of oldestMovies) {
         await fetchStream(movie.tmdb_id);
+        refresh_count++;
     }
-
+    logger.info({refresh_count},`refreshed ${refresh_count} movies`);
   } catch (error) {
-    console.error("An error occurred in main execution:", error);
+    logger.error({error},"An error occurred in main execution:");
   }
 
 };
@@ -38,10 +35,10 @@ exports.handler = async (event,context) => {
  * @param {number} limit - The maximum number of records to fetch (e.g., 25).
  * @returns {Promise<Array<object>>} - A list of the oldest movie stream records.
  */
-async function getOldestMovieStreams(limit = 25) {
+async function getOldestMovieStreams(limit) {
     const client = new DynamoDBClient(config.getAWSConfig());
     const docClient = DynamoDBDocumentClient.from(client);
-    console.log(`Attempting to fetch ${limit} oldest records from table '${process.env.DYNAMO_MOVIE_STREAMS_TABLE}'`);
+    logger.info(`Attempting to fetch ${limit} oldest records from table '${process.env.DYNAMO_MOVIE_STREAMS_TABLE}'`);
 
     const queryCommand = new QueryCommand({
         TableName: process.env.DYNAMO_MOVIE_STREAMS_TABLE,
@@ -60,10 +57,10 @@ async function getOldestMovieStreams(limit = 25) {
 
     try {
         const result = await docClient.send(queryCommand);
-        console.log(`Successfully fetched ${result.Items ? result.Items.length : 0} records.`);
+        logger.info(`Successfully fetched ${result.Items ? result.Items.length : 0} records.`);
         return result.Items || [];
     } catch (error) {
-        console.error("Error fetching oldest movie streams:", error);
+        logger.error({error},"Error fetching oldest movie streams:");
         throw error;
     }
 }
