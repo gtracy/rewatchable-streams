@@ -12,5 +12,8 @@
     "bugs": {
         "url": "https://github.com/gtracy/rewatchable-streams/issues"
     },
-    "homepage": "https://github.com/gtracy/rewatchable-streams#readme"
+    "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
+    "dependencies": {
+        "react-router-dom": "^7.6.0"
+    }
 }
