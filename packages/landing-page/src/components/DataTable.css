@@ -1,0 +1,82 @@
+/* Custom styles for the DataTable component - matching MRT docs style */
+.mrt-table {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mrt-table-head {
+  background-color: #fafafa;
+}
+
+.mrt-table-body {
+  background-color: white;
+}
+
+.mrt-table-row:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.mrt-table-cell {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+.mrt-table-head-cell {
+  font-weight: 500;
+  color: #333;
+  background-color: #fafafa;
+  font-size: 0.875rem;
+}
+
+.mrt-global-filter {
+  margin-bottom: 8px;
+}
+
+.mrt-toolbar {
+  margin-bottom: 8px;
+  padding: 8px 16px;
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  border-bottom: none;
+}
+
+.mrt-pagination {
+  margin-top: 0;
+  padding: 8px 16px;
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Match the exact styling from MRT docs */
+.MuiTableContainer-root {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.MuiTableHead-root {
+  background-color: #fafafa;
+}
+
+.MuiTableHead-root .MuiTableCell-root {
+  background-color: #fafafa;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+.MuiTableBody-root .MuiTableRow-root:hover {
+  background-color: #f5f5f5;
+}
+
+.MuiTableBody-root .MuiTableCell-root {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
