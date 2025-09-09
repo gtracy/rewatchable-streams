@@ -2,19 +2,19 @@
 
 const app = require('./app');
 
-// Mock event for local testing
-const mockEvent = {};
-
-// Set up local environment
+// Set environment variables for local testing
 process.env.PODCAST_MOVIES_TABLE = 'podcast_movies';
 process.env.MOVIE_STREAMS_TABLE = 'movie_streams';
 process.env.S3_BUCKET = 'rewatchable-streams-webapp-1757203168';
 process.env.S3_KEY = 'data.json';
-
-// Set AWS region for local testing
+process.env.CLOUDFRONT_DISTRIBUTION_ID = 'E7U2S8GNRUT2S';
 process.env.AWS_REGION = 'us-east-2';
 
-// Run the function
+// Set AWS profile for rewatchables-runner
+process.env.AWS_PROFILE = 'rewatchables-runner';
+
+const mockEvent = {};
+
 app.handler(mockEvent)
     .then(result => {
         console.log('Local test completed:', result);
