@@ -1,0 +1,696 @@
+{
+    "tmdb_id": {
+      "N": "11"
+    },
+    "cast": {
+      "L": [
+        {
+          "S": "Mark Hamill"
+        },
+        {
+          "S": "Harrison Ford"
+        },
+        {
+          "S": "Carrie Fisher"
+        },
+        {
+          "S": "Peter Cushing"
+        },
+        {
+          "S": "Alec Guinness"
+        },
+        {
+          "S": "Anthony Daniels"
+        },
+        {
+          "S": "Kenny Baker"
+        }
+      ]
+    },
+    "directors": {
+      "L": [
+        {
+          "S": "George Lucas"
+        }
+      ]
+    },
+    "gsi_pk": {
+      "S": "ALL_MOVIES"
+    },
+    "id": {
+      "S": "110"
+    },
+    "imageSet": {
+      "S": "https://cdn.movieofthenight.com/show/110/poster/vertical/en/240.jpg?Expires=1784706316&Signature=g~A4TGUXkqInMSxLXqukqydIagwSEaROs76CtzDP6U2a5OBtfNGzjmUFfZOrdaUGwfm4OUE5-P~d1kD~HbUuyfiAtLHESZqvPJ3wtrm9z44itmnpomGL5ZRZPG-xFZ6t0XX8mqjIc7no2keGlpPkx1Wl22bdXhLA4PL6UnHMs1kk33iItulwpMB8uazfcXqJQPmW8KH~6YWqC2UhUpm-CuVWGTAfbIKqWVZmCWI6FSiKSKYc5VX7v1~4zA0n2f30YxXSWKJOZPBqvLnQgwAKjkfFTCu0~28w9zgFd249nF1NVUjDLZAInynWtbTfV-v2WRp8lMFmn5dDHxAFy8IcCg__&Key-Pair-Id=KK4HN3OO4AT5R"
+    },
+    "imdb_id": {
+      "S": "tt0076759"
+    },
+    "last_updated": {
+      "S": "2025-09-08T01:46:24.013Z"
+    },
+    "overview": {
+      "S": "Young farm boy Luke Skywalker is thrust into a galaxy of adventure when he intercepts a distress call from the captive Princess Leia. The event launches him on a daring mission to rescue her from the clutches of Darth Vader and the Evil Empire."
+    },
+    "releaseYear": {
+      "N": "1977"
+    },
+    "streamingOptions": {
+      "L": [
+        {
+          "M": {
+            "audios": {
+              "L": [
+                {
+                  "M": {
+                    "language": {
+                      "S": "eng"
+                    }
+                  }
+                }
+              ]
+            },
+            "availableSince": {
+              "N": "1754133992"
+            },
+            "expiresSoon": {
+              "BOOL": false
+            },
+            "link": {
+              "S": "https://www.amazon.com/gp/video/detail/B00VF06OBS/ref=atv_dp"
+            },
+            "price": {
+              "M": {
+                "amount": {
+                  "S": "3.79"
+                },
+                "currency": {
+                  "S": "USD"
+                },
+                "formatted": {
+                  "S": "3.79 USD"
+                }
+              }
+            },
+            "service": {
+              "M": {
+                "homePage": {
+                  "S": "https://www.amazon.com/gp/video/storefront/"
+                },
+                "id": {
+                  "S": "prime"
+                },
+                "imageSet": {
+                  "M": {
+                    "darkThemeImage": {
+                      "S": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+                    },
+                    "lightThemeImage": {
+                      "S": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg"
+                    },
+                    "whiteImage": {
+                      "S": "https://media.movieofthenight.com/services/prime/logo-white.svg"
+                    }
+                  }
+                },
+                "name": {
+                  "S": "Prime Video"
+                },
+                "themeColorCode": {
+                  "S": "#00A8E1"
+                }
+              }
+            },
+            "subtitles": {
+              "L": [
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": true
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "eng"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "type": {
+              "S": "rent"
+            }
+          }
+        },
+        {
+          "M": {
+            "audios": {
+              "L": [
+                {
+                  "M": {
+                    "language": {
+                      "S": "ces"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "cmn"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "deu"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "eng"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "fra"
+                    },
+                    "region": {
+                      "S": "FRA"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "hun"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "ita"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "jpn"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "kor"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "pol"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "por"
+                    },
+                    "region": {
+                      "S": "BRA"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "slk"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "spa"
+                    },
+                    "region": {
+                      "S": "419"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "spa"
+                    },
+                    "region": {
+                      "S": "ESP"
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "language": {
+                      "S": "tur"
+                    }
+                  }
+                }
+              ]
+            },
+            "availableSince": {
+              "N": "1727223773"
+            },
+            "expiresSoon": {
+              "BOOL": false
+            },
+            "link": {
+              "S": "https://www.disneyplus.com/browse/entity-9a280e53-fcc0-4e17-a02c-b1f40913eb0b"
+            },
+            "quality": {
+              "S": "uhd"
+            },
+            "service": {
+              "M": {
+                "homePage": {
+                  "S": "https://www.disneyplus.com/"
+                },
+                "id": {
+                  "S": "disney"
+                },
+                "imageSet": {
+                  "M": {
+                    "darkThemeImage": {
+                      "S": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+                    },
+                    "lightThemeImage": {
+                      "S": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg"
+                    },
+                    "whiteImage": {
+                      "S": "https://media.movieofthenight.com/services/disney/logo-white.svg"
+                    }
+                  }
+                },
+                "name": {
+                  "S": "Disney+"
+                },
+                "themeColorCode": {
+                  "S": "#01137c"
+                }
+              }
+            },
+            "subtitles": {
+              "L": [
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "ces"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "cmn"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "dan"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "deu"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "ell"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": true
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "eng"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "fin"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "fra"
+                        },
+                        "region": {
+                          "S": "FRA"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "hun"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "isl"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "ita"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "jpn"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "kor"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "nld"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "nor"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "pol"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "por"
+                        },
+                        "region": {
+                          "S": "BRA"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "por"
+                        },
+                        "region": {
+                          "S": "PRT"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "ron"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "slk"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "spa"
+                        },
+                        "region": {
+                          "S": "419"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "spa"
+                        },
+                        "region": {
+                          "S": "ESP"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "swe"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "tur"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "M": {
+                    "closedCaptions": {
+                      "BOOL": false
+                    },
+                    "locale": {
+                      "M": {
+                        "language": {
+                          "S": "zho"
+                        },
+                        "region": {
+                          "S": "HKG"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "type": {
+              "S": "subscription"
+            },
+            "videoLink": {
+              "S": "https://www.disneyplus.com/play/9a280e53-fcc0-4e17-a02c-b1f40913eb0b"
+            }
+          }
+        }
+      ]
+    },
+    "title": {
+      "S": "Star Wars"
+    }
+  }

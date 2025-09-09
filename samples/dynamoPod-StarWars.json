@@ -1,0 +1,78 @@
+{
+    "pod_guid": {
+      "S": "c9aceec6-29e0-11f0-8ef6-8b694453a9b2"
+    },
+    "genres": {
+      "L": [
+        {
+          "M": {
+            "id": {
+              "N": "12"
+            },
+            "name": {
+              "S": "Adventure"
+            }
+          }
+        },
+        {
+          "M": {
+            "id": {
+              "N": "28"
+            },
+            "name": {
+              "S": "Action"
+            }
+          }
+        },
+        {
+          "M": {
+            "id": {
+              "N": "878"
+            },
+            "name": {
+              "S": "Science Fiction"
+            }
+          }
+        }
+      ]
+    },
+    "gsi_pk": {
+      "S": "ALL_PODS"
+    },
+    "imdb_id": {
+      "S": "tt0076759"
+    },
+    "img": {
+      "S": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"
+    },
+    "last_updated": {
+      "S": "2025-09-08T01:28:29.199Z"
+    },
+    "movie_title": {
+      "S": "Star Wars"
+    },
+    "overview": {
+      "S": "Princess Leia is captured and held hostage by the evil Imperial forces in their effort to take over the galactic Empire. Venturesome Luke Skywalker and dashing captain Han Solo team together with the loveable robot duo R2-D2 and C-3PO to rescue the beautiful princess and restore peace and justice in the Empire."
+    },
+    "pod_date": {
+      "S": "2025-05-06T04:05:00.000Z"
+    },
+    "pod_desc": {
+      "S": "The Rewatchables is what gives a movie lover his power. It's an energy field created by all living things. It surrounds us and penetrates us. In Part 2, Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan run through the categories for George Lucas’s ‘Star Wars: A New Hope’.\n\n\n\nManager: Craig Horlbeck\n\n\n\nVideo Producers: Ronak Nair, Jack Sanders\n\nAudio Producer: Craig Horlbeck\n\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices"
+    },
+    "pod_title": {
+      "S": "‘Star Wars: A New Hope’  (Part Two) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan"
+    },
+    "release_date": {
+      "S": "1977-05-25"
+    },
+    "runtime": {
+      "N": "121"
+    },
+    "tagline": {
+      "S": "A long time ago in a galaxy far, far away..."
+    },
+    "tmdb_id": {
+      "N": "11"
+    }
+  }

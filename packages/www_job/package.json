@@ -1,0 +1,27 @@
+{
+  "name": "@rewatchables/www-job",
+  "description": "Lambda function that builds JSON data for the rewatchable streams website",
+  "author": "greg tracy",
+  "version": "0.1.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "node app-local.js",
+    "deploy": "zip -r function.zip . && aws lambda update-function-code --function-name rewatchable-streams-www-job --zip-file fileb://function.zip"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gtracy/rewatchable-streams.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gtracy/rewatchable-streams/issues"
+  },
+  "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/lib-dynamodb": "^3.637.0",
+    "@aws-sdk/client-s3": "^3.637.0"
+  },
+  "devDependencies": {}
+}
