@@ -1,0 +1,18 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1rem;
+  background: white;
+  min-height: calc(100vh - 80px);
+}
+
+.main-content .MuiBox-root {
+  background: transparent;
+  padding: 0;
+}

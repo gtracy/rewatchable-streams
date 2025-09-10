@@ -1,0 +1,965 @@
+{
+  "podcasts": [
+    {
+      "pod_title": "‘The Godfather’ With Bill Simmons, Sean Fennessey, and Chris Ryan",
+      "pod_desc": "The Ringer’s Bill Simmons is joined by Sean Fennessey and Chris Ryan to make you an offer you can’t refuse as they honor one of the greatest films in American cinema history, ‘The Godfather,’ starring Marlon Brando, Al Pacino, James Caan, and Robert Duvall.\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2019-01-08T04:55:00.000Z",
+      "movie": {
+        "tmdb_id": 238,
+        "imdb_id": "tt0068646",
+        "movie_title": "The Godfather",
+        "title": "The Godfather",
+        "overview": "Winner of three Academy Awards including Best Picture, Francis Ford Coppola's epic masterpiece paints a chilling portrait of the Corleone family, balancing the story between their family life and the ugly crime business in which they are engaged.",
+        "release_date": "1972",
+        "releaseYear": 1972,
+        "img": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/82/poster/vertical/en/240.jpg?Expires=1784692888&Signature=XAE9K-GR9qNCtsNoRaH4c4eOkfXmlZvC5NLTsPamlWGhaS9s3~6f3h4B7LQ9MHY~aMo0vL8TFAkw-q3yby2hzMGWCw6YllnBBBp9hkR4CD2qeNLcsNXccCJG8jJHJ1TeMV4qJIAxmBcHMecjLj1VcA2xDBJ3jPZdRyw7C~CFOgm~9QkK0lW2P1TSfQxSbUg9J8Ha~EIdr3rktCRxnzQ-AwUbRz3apjrHiHYCTENMP8pRvb~47F4Fi6IjmK84-zvU-F3CrxE58FOBUFXoIxNrP--Y4GEkiF4L4FRjJpkYyp~ngAkzsxNH8DItP1KBKjuPlO27nhwEGg4BXsfBU7RdoA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "82",
+        "genres": [],
+        "cast": [
+          "Marlon Brando",
+          "Al Pacino",
+          "James Caan",
+          "Robert Duvall",
+          "Richard S. Castellano",
+          "Diane Keaton",
+          "Talia Shire"
+        ],
+        "directors": [
+          "Francis Ford Coppola"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": true,
+            "subtitles": [
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1755370690,
+            "addon": {
+              "name": "Paramount+ with Showtime",
+              "themeColorCode": "#ff1f2c",
+              "id": "showtime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/network/showtime-f160e912-83eb-4bea-b6f6-a7fddc103757"
+            },
+            "service": {
+              "name": "Hulu",
+              "themeColorCode": "#1ce783",
+              "id": "hulu",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/"
+            },
+            "link": "https://www.hulu.com/movie/the-godfather-3807a622-d2cb-40f0-9743-7ad66ba19780",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.hulu.com/watch/3807a622-d2cb-40f0-9743-7ad66ba19780",
+            "expiresOn": 1756699199,
+            "type": "addon",
+            "quality": "hd"
+          },
+          {
+            "expiresSoon": true,
+            "subtitles": [],
+            "availableSince": 1749135248,
+            "service": {
+              "name": "Paramount+",
+              "themeColorCode": "#0064FF",
+              "id": "paramount",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.paramountplus.com/"
+            },
+            "link": "https://www.paramountplus.com/movies/video/d1xdkOt5uh339gZVfKlF_o6Y65b_yAeD/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription"
+          },
+          {
+            "expiresSoon": false,
+            "subtitles": [],
+            "availableSince": 1756719873,
+            "service": {
+              "name": "Pluto TV",
+              "themeColorCode": "#fff200",
+              "id": "plutotv",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/plutotv/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-dark-theme.svg"
+              },
+              "homePage": "https://pluto.tv/"
+            },
+            "link": "https://pluto.tv/gsa/on-demand/movies/6137ee7dc79f030013e056d0/details",
+            "audios": [],
+            "videoLink": "https://pluto.tv/gsa/on-demand/movies/6137ee7dc79f030013e056d0",
+            "type": "free"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Dirty Work’ With Bill Simmons and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons and Sean Fennessey celebrate the late Norm Macdonald by rewatching a comedy favorite, ‘Dirty Work,’ starring Norm Macdonald, Artie Lange, and Jack Warden.\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2021-09-21T04:00:00.000Z",
+      "movie": {
+        "tmdb_id": 14577,
+        "imdb_id": "tt0120654",
+        "movie_title": "Dirty Work",
+        "title": "Dirty Work",
+        "overview": "Mitch and Sam need to raise $50,000 for Sam’s dad’s heart transplant. Out of work and out of options, the two open a revenge-for-hire business.",
+        "release_date": "1998",
+        "releaseYear": 1998,
+        "img": "/r6OcS6TQCHal2wHooJhHWSlFzfd.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/11605/poster/vertical/en/240.jpg?Expires=1784786150&Signature=lSwNin4Y1oo8JASgKpMjMwmrWEe6IBZFoluulFH-hIzAaxIgU0d67Tjd7QjRVZbPzyAQYFmSn7b5i~u2evxeqRbs3izUmA9QTj9gIozGYiBlSyAoeJN1brcf9BFkGTQd0lR2CWOQ35Y9TNuQN~1B6J~3AGYOjOqJrQUFDWbYhs~QL-GjG6rQL5XiG76rPEIAydeMReQ73pMKJra1jWgwOaY-kAemvqDcY0tK7D2ZEHN-~ds2XTkJsywzcRLuymNIOC2rP9~C6aOGYfgGwYLDNRiO69ERD7i3UgHuH5d~WJWT33x2GBB0VNejYFCBEutb-CU6FcwB8ZKBgZbyrDW5bA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "11605",
+        "genres": [],
+        "cast": [
+          "Norm Macdonald",
+          "Artie Lange",
+          "Jack Warden",
+          "Traylor Howard",
+          "Christopher McDonald",
+          "Chevy Chase",
+          "Don Rickles"
+        ],
+        "directors": [
+          "Bob Saget"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1716140395,
+            "service": {
+              "name": "Prime Video",
+              "themeColorCode": "#00A8E1",
+              "id": "prime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.amazon.com/gp/video/storefront/"
+            },
+            "price": {
+              "amount": "2.99",
+              "currency": "USD",
+              "formatted": "2.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00153P8VC/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "sd"
+          },
+          {
+            "expiresSoon": false,
+            "subtitles": [],
+            "availableSince": 1655478163,
+            "service": {
+              "name": "Apple TV",
+              "themeColorCode": "#000000",
+              "id": "apple",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/apple/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/apple/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/apple/logo-dark-theme.svg"
+              },
+              "homePage": "https://tv.apple.com/"
+            },
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://tv.apple.com/us/movie/dirty-work/umc.cmc.3tu4atzq8grc3rzu1dpc6zq3c?playableId=tvs.sbd.9001%3A278960582",
+            "audios": [],
+            "type": "rent",
+            "quality": "hd"
+          },
+          {
+            "expiresSoon": true,
+            "subtitles": [
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1716094630,
+            "service": {
+              "name": "Tubi",
+              "themeColorCode": "#ffff13",
+              "id": "tubi",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/tubi/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/tubi/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/tubi/logo-dark-theme.svg"
+              },
+              "homePage": "https://tubitv.com/"
+            },
+            "link": "https://tubitv.com/movies/663321/dirty-work",
+            "audios": [],
+            "expiresOn": 1759291199,
+            "type": "free",
+            "quality": "hd"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘There Will Be Blood’ With Bill Simmons, Chris Ryan, and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons, Sean Fennessey, and Chris Ryan get all liquored up and head over to the peach tree dance after revisiting Paul Thomas Anderson’s 2007 masterpiece ‘There Will Be Blood,’ starring Daniel Day-Lewis and Paul Dano.\n\nProducer: Craig Horlbeck\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2022-07-26T04:00:00.000Z",
+      "movie": {
+        "tmdb_id": 7345,
+        "imdb_id": "tt0469494",
+        "movie_title": "There Will Be Blood",
+        "title": "There Will Be Blood",
+        "overview": "An oil man and his son at the turn of the 20th century are challenged by a young preacher and take a journey into an abyss of madness. Love, hope, belief, and the bond between father and son is imperiled by corruption, deception, and the flow of oil.",
+        "release_date": "2007",
+        "releaseYear": 2007,
+        "img": "/fa0RDkAlCec0STeMNAhPaF89q6U.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/488/poster/vertical/en/240.jpg?Expires=1784691919&Signature=fgMUjYB~c8aDM68y3OS822gcLdEDlufJGXNq1HUZVxEHiTh66Ydzl3HpAUnXWkTQiARdZ~1gQcouJDytag-~H-khquVYogkH8R73L6FPgwnTY3ZrhO7xjaCi5warYQu9mHqugdmgcYHvwKnwcrdW9icrUh41XnbTSLOM8YCg75Frra0RjqmcbX2Tt4-GC4ZGaJM22Qz-4GSfbT3dN5rKqmdmUNcsNVxBRIc3N-8AtvjFB2GLqw0ulFUm9ZScgnmFBq3MWYsHYQ1tTiH7WILW9zCB6KqukzhRr9DBLCSMX30r1daHTQMLvE8Wt7BnWT5dHaE7Y-gd8dGf-WE1D9Q2~g__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "488",
+        "genres": [],
+        "cast": [
+          "Daniel Day-Lewis",
+          "Paul Dano",
+          "Kevin J. O'Connor",
+          "Ciarán Hinds",
+          "Dillon Freasier",
+          "Hope Elizabeth Reeves",
+          "Colleen Foy"
+        ],
+        "directors": [
+          "Paul Thomas Anderson"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1690034351,
+            "service": {
+              "name": "Prime Video",
+              "themeColorCode": "#00A8E1",
+              "id": "prime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.amazon.com/gp/video/storefront/"
+            },
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B0017I91LI/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "hd"
+          },
+          {
+            "expiresSoon": true,
+            "subtitles": [],
+            "availableSince": 1746305968,
+            "service": {
+              "name": "Paramount+",
+              "themeColorCode": "#0064FF",
+              "id": "paramount",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.paramountplus.com/"
+            },
+            "link": "https://www.paramountplus.com/movies/video/GmreDvX9oZ8lfCfwXiFsZhjR0tTEdn4Y/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription"
+          },
+          {
+            "expiresSoon": true,
+            "subtitles": [
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1755404637,
+            "addon": {
+              "name": "Paramount+ with Showtime",
+              "themeColorCode": "#ff1f2c",
+              "id": "showtime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/network/showtime-f160e912-83eb-4bea-b6f6-a7fddc103757"
+            },
+            "service": {
+              "name": "Hulu",
+              "themeColorCode": "#1ce783",
+              "id": "hulu",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/"
+            },
+            "link": "https://www.hulu.com/movie/there-will-be-blood-48711e41-8e51-4b9f-a8a2-cf8805e7a1ff",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.hulu.com/watch/48711e41-8e51-4b9f-a8a2-cf8805e7a1ff",
+            "expiresOn": 1756699199,
+            "type": "addon",
+            "quality": "hd"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Star Wars: A New Hope’  (Part Two) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan",
+      "pod_desc": "The Rewatchables is what gives a movie lover his power. It's an energy field created by all living things. It surrounds us and penetrates us. In Part 2, Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan run through the categories for George Lucas’s ‘Star Wars: A New Hope’.\n\n\n\nManager: Craig Horlbeck\n\n\n\nVideo Producers: Ronak Nair, Jack Sanders\n\nAudio Producer: Craig Horlbeck\n\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2025-05-06T04:05:00.000Z",
+      "movie": {
+        "tmdb_id": 11,
+        "imdb_id": "tt0076759",
+        "movie_title": "Star Wars",
+        "title": "Star Wars",
+        "overview": "Young farm boy Luke Skywalker is thrust into a galaxy of adventure when he intercepts a distress call from the captive Princess Leia. The event launches him on a daring mission to rescue her from the clutches of Darth Vader and the Evil Empire.",
+        "release_date": "1977",
+        "releaseYear": 1977,
+        "img": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/110/poster/vertical/en/240.jpg?Expires=1784706316&Signature=g~A4TGUXkqInMSxLXqukqydIagwSEaROs76CtzDP6U2a5OBtfNGzjmUFfZOrdaUGwfm4OUE5-P~d1kD~HbUuyfiAtLHESZqvPJ3wtrm9z44itmnpomGL5ZRZPG-xFZ6t0XX8mqjIc7no2keGlpPkx1Wl22bdXhLA4PL6UnHMs1kk33iItulwpMB8uazfcXqJQPmW8KH~6YWqC2UhUpm-CuVWGTAfbIKqWVZmCWI6FSiKSKYc5VX7v1~4zA0n2f30YxXSWKJOZPBqvLnQgwAKjkfFTCu0~28w9zgFd249nF1NVUjDLZAInynWtbTfV-v2WRp8lMFmn5dDHxAFy8IcCg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "110",
+        "genres": [],
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Peter Cushing",
+          "Alec Guinness",
+          "Anthony Daniels",
+          "Kenny Baker"
+        ],
+        "directors": [
+          "George Lucas"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1754133992,
+            "service": {
+              "name": "Prime Video",
+              "themeColorCode": "#00A8E1",
+              "id": "prime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.amazon.com/gp/video/storefront/"
+            },
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00VF06OBS/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent"
+          },
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ces"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "cmn"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "dan"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "deu"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ell"
+                }
+              },
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "fin"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "FRA",
+                  "language": "fra"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "hun"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "isl"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ita"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "jpn"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "kor"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "nld"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "nor"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "pol"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "BRA",
+                  "language": "por"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "PRT",
+                  "language": "por"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ron"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "slk"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "419",
+                  "language": "spa"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "ESP",
+                  "language": "spa"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "swe"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "tur"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "HKG",
+                  "language": "zho"
+                }
+              }
+            ],
+            "availableSince": 1727223773,
+            "service": {
+              "name": "Disney+",
+              "themeColorCode": "#01137c",
+              "id": "disney",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.disneyplus.com/"
+            },
+            "link": "https://www.disneyplus.com/browse/entity-9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "audios": [
+              {
+                "language": "ces"
+              },
+              {
+                "language": "cmn"
+              },
+              {
+                "language": "deu"
+              },
+              {
+                "language": "eng"
+              },
+              {
+                "region": "FRA",
+                "language": "fra"
+              },
+              {
+                "language": "hun"
+              },
+              {
+                "language": "ita"
+              },
+              {
+                "language": "jpn"
+              },
+              {
+                "language": "kor"
+              },
+              {
+                "language": "pol"
+              },
+              {
+                "region": "BRA",
+                "language": "por"
+              },
+              {
+                "language": "slk"
+              },
+              {
+                "region": "419",
+                "language": "spa"
+              },
+              {
+                "region": "ESP",
+                "language": "spa"
+              },
+              {
+                "language": "tur"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "type": "subscription",
+            "quality": "uhd"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Star Wars: A New Hope’ (Part One) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan",
+      "pod_desc": "A long time ago in a galaxy far far away, a trio of Ringer movie lovers Chris Ryan, Sean Fennessey, and Van Lathan use the force to get their galactic leader Bill Simmons to revisit one of the most iconic films of all time, George Lucas’s ‘Star Wars: A New Hope’ starring Mark Hamill, Harrison Ford, and Carrie Fisher. In Part 1, the guys break down why they love the movie, how it got made, and the enormous impact it had on Hollywood at the time and to this day.\n\n\n\nManager: Craig Horlbeck\n\nVideo Producers: Ronak Nair, Jack Sanders\n\nAudio Producer: Craig Horlbeck\n\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2025-05-06T04:00:00.000Z",
+      "movie": {
+        "tmdb_id": 11,
+        "imdb_id": "tt0076759",
+        "movie_title": "Star Wars",
+        "title": "Star Wars",
+        "overview": "Young farm boy Luke Skywalker is thrust into a galaxy of adventure when he intercepts a distress call from the captive Princess Leia. The event launches him on a daring mission to rescue her from the clutches of Darth Vader and the Evil Empire.",
+        "release_date": "1977",
+        "releaseYear": 1977,
+        "img": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/110/poster/vertical/en/240.jpg?Expires=1784706316&Signature=g~A4TGUXkqInMSxLXqukqydIagwSEaROs76CtzDP6U2a5OBtfNGzjmUFfZOrdaUGwfm4OUE5-P~d1kD~HbUuyfiAtLHESZqvPJ3wtrm9z44itmnpomGL5ZRZPG-xFZ6t0XX8mqjIc7no2keGlpPkx1Wl22bdXhLA4PL6UnHMs1kk33iItulwpMB8uazfcXqJQPmW8KH~6YWqC2UhUpm-CuVWGTAfbIKqWVZmCWI6FSiKSKYc5VX7v1~4zA0n2f30YxXSWKJOZPBqvLnQgwAKjkfFTCu0~28w9zgFd249nF1NVUjDLZAInynWtbTfV-v2WRp8lMFmn5dDHxAFy8IcCg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "110",
+        "genres": [],
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Peter Cushing",
+          "Alec Guinness",
+          "Anthony Daniels",
+          "Kenny Baker"
+        ],
+        "directors": [
+          "George Lucas"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              }
+            ],
+            "availableSince": 1754133992,
+            "service": {
+              "name": "Prime Video",
+              "themeColorCode": "#00A8E1",
+              "id": "prime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.amazon.com/gp/video/storefront/"
+            },
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00VF06OBS/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent"
+          },
+          {
+            "expiresSoon": false,
+            "subtitles": [
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ces"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "cmn"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "dan"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "deu"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ell"
+                }
+              },
+              {
+                "closedCaptions": true,
+                "locale": {
+                  "language": "eng"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "fin"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "FRA",
+                  "language": "fra"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "hun"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "isl"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ita"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "jpn"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "kor"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "nld"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "nor"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "pol"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "BRA",
+                  "language": "por"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "PRT",
+                  "language": "por"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "ron"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "slk"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "419",
+                  "language": "spa"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "ESP",
+                  "language": "spa"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "swe"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "language": "tur"
+                }
+              },
+              {
+                "closedCaptions": false,
+                "locale": {
+                  "region": "HKG",
+                  "language": "zho"
+                }
+              }
+            ],
+            "availableSince": 1727223773,
+            "service": {
+              "name": "Disney+",
+              "themeColorCode": "#01137c",
+              "id": "disney",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+              },
+              "homePage": "https://www.disneyplus.com/"
+            },
+            "link": "https://www.disneyplus.com/browse/entity-9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "audios": [
+              {
+                "language": "ces"
+              },
+              {
+                "language": "cmn"
+              },
+              {
+                "language": "deu"
+              },
+              {
+                "language": "eng"
+              },
+              {
+                "region": "FRA",
+                "language": "fra"
+              },
+              {
+                "language": "hun"
+              },
+              {
+                "language": "ita"
+              },
+              {
+                "language": "jpn"
+              },
+              {
+                "language": "kor"
+              },
+              {
+                "language": "pol"
+              },
+              {
+                "region": "BRA",
+                "language": "por"
+              },
+              {
+                "language": "slk"
+              },
+              {
+                "region": "419",
+                "language": "spa"
+              },
+              {
+                "region": "ESP",
+                "language": "spa"
+              },
+              {
+                "language": "tur"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "type": "subscription",
+            "quality": "uhd"
+          }
+        ]
+      }
+    }
+  ],
+  "generated_at": "2025-09-09T01:49:58.092Z",
+  "total_podcasts": 5
+}

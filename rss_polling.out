@@ -1,0 +1,149 @@
+[21:42:33.012] DEBUG (64735):
+    endpoint: "http://localhost:8000"
+[21:42:45.018] DEBUG (64735): ‘Close Encounters of the Third Kind’ With Bill Simmons, Chris Ryan, and Sean Fennessey
+[21:42:45.059] DEBUG (64735): Query TMDB for: Close Encounters of the Third Kind
+[21:42:45.279] INFO (64735): new movie pod found - Close Encounters of the Third Kind
+[21:42:45.279] INFO (64735): inserted podcast details into Dynamo - 8bd299f4-df79-11ef-83d0-074dcb9a6fac
+[21:42:45.280] DEBUG (64735): ‘Death Wish’ With Bill Simmons and Chris Ryan
+[21:42:45.290] DEBUG (64735): Query TMDB for: Death Wish
+[21:42:45.421] INFO (64735): new movie pod found - Death Wish
+[21:42:45.421] INFO (64735): inserted podcast details into Dynamo - 8bba817a-df79-11ef-83d0-ef0494fa6201
+[21:42:45.421] DEBUG (64735): ‘Star Wars: A New Hope’  (Part Two) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan
+[21:42:45.427] DEBUG (64735): Query TMDB for: Star Wars: A New Hope
+[21:42:45.510] INFO (64735): new movie pod found - Star Wars
+[21:42:45.510] INFO (64735): inserted podcast details into Dynamo - c9aceec6-29e0-11f0-8ef6-8b694453a9b2
+[21:42:45.510] DEBUG (64735): ‘Star Wars: A New Hope’ (Part One) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan
+[21:42:45.517] DEBUG (64735): Query TMDB for: Star Wars: A New Hope
+[21:42:45.572] INFO (64735): new movie pod found - Star Wars
+[21:42:45.572] INFO (64735): inserted podcast details into Dynamo - 8ba30e6e-df79-11ef-83d0-c312d3f3f55c
+[21:42:45.572] DEBUG (64735): ‘Someone to Watch Over Me’ With Bill Simmons and Chris Ryan
+[21:42:45.581] DEBUG (64735): Query TMDB for: Someone to Watch Over Me
+[21:42:45.703] INFO (64735): new movie pod found - Someone to Watch Over Me
+[21:42:45.703] INFO (64735): inserted podcast details into Dynamo - 8b8bf47c-df79-11ef-83d0-b7f3c6f061de
+[21:42:45.703] DEBUG (64735): ‘Minority Report’ With Bill Simmons, Chris Ryan, and Van Lathan
+[21:42:45.709] DEBUG (64735): Query TMDB for: Minority Report
+[21:42:45.844] INFO (64735): new movie pod found - Minority Report
+[21:42:45.844] INFO (64735): inserted podcast details into Dynamo - 8b7548b2-df79-11ef-83d0-a32319d41d9b
+[21:42:45.844] DEBUG (64735): ‘Can’t Hardly Wait’ With Bill Simmons and Joanna Robinson
+[21:42:45.849] DEBUG (64735): Query TMDB for: Can
+[21:42:45.995] INFO (64735): new movie pod found - Oh, Canada
+[21:42:45.995] INFO (64735): inserted podcast details into Dynamo - 8b5cd8ea-df79-11ef-83d0-a70089019d84
+[21:42:45.995] DEBUG (64735): ‘The Saint’ With Bill Simmons and Kyle Brandt
+[21:42:46.002] DEBUG (64735): Query TMDB for: The Saint
+[21:42:46.113] INFO (64735): new movie pod found - The Saint
+[21:42:46.113] INFO (64735): inserted podcast details into Dynamo - 8b46260e-df79-11ef-83d0-bfa2a6a6416e
+[21:42:46.113] DEBUG (64735): ‘Good Will Hunting’ Live From Boston With Bill Simmons, Ryen Russillo, Chris Ryan, and Sean Fennessey
+[21:42:46.119] DEBUG (64735): Query TMDB for: Good Will Hunting
+[21:42:46.223] INFO (64735): new movie pod found - Good Will Hunting
+[21:42:46.223] INFO (64735): inserted podcast details into Dynamo - 8b2e9f66-df79-11ef-83d0-3b1fac58f3c1
+[21:42:46.223] DEBUG (64735): ‘Blue Chips’ With Bill Simmons, Chris Ryan, and Van Lathan
+[21:42:46.230] DEBUG (64735): Query TMDB for: Blue Chips
+[21:42:46.330] INFO (64735): new movie pod found - Blue Chips
+[21:42:46.331] INFO (64735): inserted podcast details into Dynamo - 8b181eda-df79-11ef-83d0-931e4e484b8e
+[21:42:46.331] DEBUG (64735): ‘Days of Thunder’ With Bill Simmons, Chris Ryan, and Kyle Brandt
+[21:42:46.347] DEBUG (64735): Query TMDB for: Days of Thunder
+[21:42:46.472] INFO (64735): new movie pod found - Days of Thunder
+[21:42:46.472] INFO (64735): inserted podcast details into Dynamo - 8b00fa52-df79-11ef-83d0-af40e0720f87
+[21:42:46.472] DEBUG (64735): ‘Best in Show’ With Bill Simmons, Mallory Rubin, and Joanna Robinson
+[21:42:46.481] DEBUG (64735): Query TMDB for: Best in Show
+[21:42:46.636] INFO (64735): new movie pod found - Best in Show
+[21:42:46.636] INFO (64735): inserted podcast details into Dynamo - 0bdf6546-fbae-11ef-bd66-5bec3e10183c
+[21:42:46.636] DEBUG (64735): ‘Rocky’ With Bill Simmons, Chris Ryan, and Van Lathan
+[21:42:46.642] DEBUG (64735): Query TMDB for: Rocky
+[21:42:46.779] INFO (64735): new movie pod found - Rocky
+[21:42:46.779] INFO (64735): inserted podcast details into Dynamo - 8a9fa838-df79-11ef-83d0-579de67c18fd
+[21:42:46.779] DEBUG (64735): ‘Crash’ With Bill Simmons, Van Lathan, and Joanna Robinson
+[21:42:46.784] DEBUG (64735): Query TMDB for: Crash
+[21:42:46.919] INFO (64735): new movie pod found - Crash
+[21:42:46.919] INFO (64735): inserted podcast details into Dynamo - 9b774954-9631-11ef-842f-63fa061ad2dd
+[21:42:46.919] DEBUG (64735): ‘Wayne’s World’ With Bill Simmons and Kyle Brandt
+[21:42:46.924] DEBUG (64735): Query TMDB for: Wayne's World
+[21:42:46.993] INFO (64735): new movie pod found - Wayne's World
+[21:42:46.993] INFO (64735): inserted podcast details into Dynamo - 9b659b3c-9631-11ef-842f-cb9c856243ec
+[21:42:46.993] DEBUG (64735): ‘The Blues Brothers’ With Bill Simmons, Chris Ryan, and Sean Fennessey
+[21:42:46.998] DEBUG (64735): Query TMDB for: The Blues Brothers
+[21:42:47.123] INFO (64735): new movie pod found - The Blues Brothers
+[21:42:47.123] INFO (64735): inserted podcast details into Dynamo - 9b53e0d6-9631-11ef-842f-775f5c93dcf9
+[21:42:47.123] DEBUG (64735): ‘Before Sunset’ With Bill Simmons, Chris Ryan, Sean Fennessey, and Mallory Rubin
+[21:42:47.130] DEBUG (64735): Query TMDB for: Before Sunset
+[21:42:47.248] INFO (64735): new movie pod found - Before Sunset
+[21:42:47.248] INFO (64735): inserted podcast details into Dynamo - 9b426d6a-9631-11ef-842f-d7d135ac9954
+[21:42:47.248] DEBUG (64735): ‘Before Sunrise’ With Bill Simmons, Chris Ryan, and Sean Fennessey
+[21:42:47.253] DEBUG (64735): Query TMDB for: Before Sunrise
+[21:42:47.344] INFO (64735): new movie pod found - Before Sunrise
+[21:42:47.344] INFO (64735): inserted podcast details into Dynamo - 9b30a094-9631-11ef-842f-575562af1e73
+[21:42:47.344] ERROR (64735): missing movie title - A 2025 Rewatchables Mailbag
+[21:42:47.344] DEBUG (64735): The Re-‘Den of Thieves’ LIVE With Bill Simmons, Chris Ryan, and Van Lathan
+[21:42:47.350] DEBUG (64735): Query TMDB for: Den of Thieves
+[21:42:47.463] INFO (64735): new movie pod found - Den of Thieves
+[21:42:47.463] INFO (64735): inserted podcast details into Dynamo - 9af9904a-9631-11ef-842f-b7c4d9aa4a82
+[21:42:47.463] DEBUG (64735): ‘Friday Night Lights’ With Bill Simmons and Mallory Rubin
+[21:42:47.470] DEBUG (64735): Query TMDB for: Friday Night Lights
+[21:42:47.597] INFO (64735): new movie pod found - Friday Night Lights
+[21:42:47.597] INFO (64735): inserted podcast details into Dynamo - d50c1e96-c733-11ef-ad83-7708ffa537e4
+[21:42:47.597] DEBUG (64735): ‘Home Alone 2: Lost in New York’ With Bill Simmons and Kyle Brandt
+[21:42:47.605] DEBUG (64735): Query TMDB for: Home Alone 2: Lost in New York
+[21:42:47.824] INFO (64735): new movie pod found - Home Alone 2: Lost in New York
+[21:42:47.824] INFO (64735): inserted podcast details into Dynamo - c0d0dbb8-c172-11ef-a271-e31dcb17cdda
+[21:42:47.824] DEBUG (64735): ‘The Gambler’ (2014) With Bill Simmons and Chris Ryan
+[21:42:47.831] DEBUG (64735): Query TMDB for: The Gambler
+[21:42:47.939] INFO (64735): new movie pod found - The Gambler
+[21:42:47.939] INFO (64735): inserted podcast details into Dynamo - 9ac2d7c6-9631-11ef-842f-73ae0883ae75
+[21:42:47.939] DEBUG (64735): ‘Disclosure’ With Bill Simmons, Van Lathan, and Wosny Lambre
+[21:42:47.945] DEBUG (64735): Query TMDB for: Disclosure
+[21:42:48.045] INFO (64735): new movie pod found - Disclosure
+[21:42:48.045] INFO (64735): inserted podcast details into Dynamo - 9aaf81e4-9631-11ef-842f-2fa41f712534
+[21:42:48.045] DEBUG (64735): ‘Running Scared’ (1986) With Bill Simmons and Chris Ryan
+[21:42:48.052] DEBUG (64735): Query TMDB for: Running Scared
+[21:42:48.143] INFO (64735): new movie pod found - Running Scared
+[21:42:48.143] INFO (64735): inserted podcast details into Dynamo - 59391642-2f63-11ef-af4b-7fc48d4403d8
+[21:42:48.143] DEBUG (64735): ‘The Replacements’ With Bill Simmons and Van Lathan
+[21:42:48.150] DEBUG (64735): Query TMDB for: The Replacements
+[21:42:48.265] INFO (64735): new movie pod found - The Replacements
+[21:42:48.265] INFO (64735): inserted podcast details into Dynamo - 5915285e-2f63-11ef-af4b-0be1dc11f149
+[21:42:48.265] DEBUG (64735): ‘Meet the Parents’ With Bill Simmons and Kyle Brandt
+[21:42:48.271] DEBUG (64735): Query TMDB for: Meet the Parents
+[21:42:48.394] INFO (64735): new movie pod found - Meet the Fockers
+[21:42:48.394] INFO (64735): inserted podcast details into Dynamo - 58f188e0-2f63-11ef-af4b-875390525e98
+[21:42:48.394] DEBUG (64735): ‘Body Double’ With Bill Simmons, Chris Ryan, and Sean Fennessey
+[21:42:48.399] DEBUG (64735): Query TMDB for: Body Double
+[21:42:48.501] INFO (64735): new movie pod found - Body Double
+[21:42:48.501] INFO (64735): inserted podcast details into Dynamo - 58cf3466-2f63-11ef-af4b-9b57a9a6db88
+[21:42:48.501] DEBUG (64735): ‘Halloween 4’ With Bill Simmons, Chris Ryan, and Van Lathan
+[21:42:48.505] DEBUG (64735): Query TMDB for: Halloween 4
+[21:42:48.606] INFO (64735): new movie pod found - Halloween
+[21:42:48.606] INFO (64735): inserted podcast details into Dynamo - 58ad1778-2f63-11ef-af4b-97264d7da917
+[21:42:48.606] DEBUG (64735): ‘Hereditary’ With Bill Simmons, Chris Ryan, and Sean Fennessey
+[21:42:48.615] DEBUG (64735): Query TMDB for: Hereditary
+[21:42:48.757] INFO (64735): new movie pod found - Hereditary
+[21:42:48.757] INFO (64735): inserted podcast details into Dynamo - 588a7d3a-2f63-11ef-af4b-9f6f7b9f4d71
+[21:42:48.757] DEBUG (64735): ‘The Silence of the Lambs’ LIVE From Broadway With Bill Simmons, Chris Ryan, Sean Fennessey, and Mallory Rubin
+[21:42:48.762] DEBUG (64735): Query TMDB for: The Silence of the Lambs
+[21:42:48.892] INFO (64735): new movie pod found - The Silence of the Lambs
+[21:42:48.892] INFO (64735): inserted podcast details into Dynamo - 58665a04-2f63-11ef-af4b-f7e8bb948310
+[21:42:48.892] DEBUG (64735): ‘Poltergeist’ With Bill Simmons and Van Lathan
+[21:42:48.897] DEBUG (64735): Query TMDB for: Poltergeist
+[21:42:48.989] INFO (64735): new movie pod found - Poltergeist
+[21:42:48.989] INFO (64735): inserted podcast details into Dynamo - 5845714a-2f63-11ef-af4b-47293466621a
+[21:42:48.989] DEBUG (64735): ‘The Blair Witch Project’ With Bill Simmons and Chris Ryan
+[21:42:48.995] DEBUG (64735): Query TMDB for: The Blair Witch Project
+[21:42:49.146] INFO (64735): new movie pod found - The Blair Witch Project
+[21:42:49.147] INFO (64735): inserted podcast details into Dynamo - 58213e9c-2f63-11ef-af4b-2f56dcc044ee
+[21:42:49.147] DEBUG (64735): ‘Over The Top’ With Bill Simmons and Kyle Brandt
+[21:42:49.158] DEBUG (64735): Query TMDB for: Over The Top
+[21:42:49.261] INFO (64735): new movie pod found - Over the Top
+[21:42:49.261] INFO (64735): inserted podcast details into Dynamo - 57fdff5e-2f63-11ef-af4b-87e31219088a
+[21:42:49.261] DEBUG (64735): ‘John Wick’ With Bill Simmons, Chris Ryan, and Shea Serrano
+[21:42:49.269] DEBUG (64735): Query TMDB for: John Wick
+[21:42:49.571] INFO (64735): new movie pod found - John Wick: Chapter 4
+[21:42:49.572] INFO (64735): inserted podcast details into Dynamo - 57dcb132-2f63-11ef-af4b-57d2a769e224
+[21:42:49.572] DEBUG (64735): ‘The Sixth Sense’ With Sean Fennessey, Chris Ryan, and Jason Concepcion
+[21:42:49.578] DEBUG (64735): Query TMDB for: The Sixth Sense
+[21:42:49.683] INFO (64735): new movie pod found - The Sixth Sense
+[21:42:49.683] INFO (64735): inserted podcast details into Dynamo - 57b7bfa8-2f63-11ef-af4b-233a0864ade6
+[21:42:49.683] DEBUG (64735): ‘Night Shift’ With Bill Simmons and Chris Ryan
+[21:42:49.689] DEBUG (64735): Query TMDB for: Night Shift
+[21:42:49.813] INFO (64735): new movie pod found - Night Shift
+[21:42:49.813] INFO (64735): inserted podcast details into Dynamo - 57734c2e-2f63-11ef-af4b-9f7ff5fd71f6
+[21:42:49.813] DEBUG (64735): ‘Purple Rain’ With Bill Simmons and Wesley Morris
+[21:42:49.830] DEBUG (64735): Query TMDB for: Purple Rain
