@@ -6,8 +6,8 @@ const { CloudFrontClient, CreateInvalidationCommand } = require("@aws-sdk/client
 // Environment variables
 const PODCAST_MOVIES_TABLE = process.env.PODCAST_MOVIES_TABLE || 'podcast_movies';
 const MOVIE_STREAMS_TABLE = process.env.MOVIE_STREAMS_TABLE || 'movie_streams';
-const S3_BUCKET = process.env.S3_BUCKET || 'rewatchable-streams-webapp-1757203168';
-const S3_KEY = process.env.S3_KEY || 'data.json';
+const S3_BUCKET = process.env.S3_BUCKET || 'rewatchables';
+const S3_KEY = process.env.S3_KEY || 'data_files/podcast_movie_data.json';
 const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || 'E7U2S8GNRUT2S';
 
 /**
