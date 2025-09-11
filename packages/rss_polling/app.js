@@ -59,6 +59,10 @@ exports.handler = async (event) => {
 
   // Fetch Podcast RSS Feed
   try {
+    let pod_count = 0;
+    let skip_count = 0;
+    let save_count = 0;
+
     let parser = new Parser();
     const feed = await parser.parseURL('https://feeds.megaphone.fm/the-rewatchables');
     const episodes = feed.items;
@@ -66,6 +70,8 @@ exports.handler = async (event) => {
     // Loop through each episode and lookup the movie
     // details from the TMDB API
     for (const episode of episodes) {
+      pod_count++;
+
       const movieTitle = extractMovieTitle(episode.title);
       if( !movieTitle ) {
         continue;
@@ -93,6 +99,7 @@ exports.handler = async (event) => {
         const englishResults = results.filter(result => result.original_language === 'en');
         if (englishResults.length === 0) {
           logger.error('No English results found for: ' + movieTitle);
+          skip_count++;
           continue;
         }
         const first_english_match = findBestMatch(englishResults, movieTitle);
@@ -134,9 +141,11 @@ exports.handler = async (event) => {
             const data = await docClient.send(new PutCommand(item));
             logger.info('new movie pod found - '+ movieDetails.original_title);
             logger.info('inserted podcast details into Dynamo - '+item.Item.pod_guid);
+            save_count++;
         } catch (error) {
           if (error.name === 'ConditionalCheckFailedException') {
             logger.debug('Movie with guid: '+item.Item.pod_guid+' already exists - '+movieDetails.original_title);
+            skip_count++;
           } else {
             logger.error({ 
               error: {
@@ -149,8 +158,10 @@ exports.handler = async (event) => {
         }
       } else {
         logger.error(`Movie not found on TMDB: ${movieTitle}`);
+        skip_count++;
       }
     }
+    console.log(`\nPodcast processing complete. Processed: ${pod_count}, Saved: ${save_count}, Skipped: ${skip_count}`);
     return 'Lambda function execution successful!';
   } catch (error) {
     logger.error({error},'Error processing RSS feed');

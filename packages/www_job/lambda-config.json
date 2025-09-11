@@ -1,0 +1,22 @@
+{
+  "FunctionName": "rewatchable-streams-www-job",
+  "Runtime": "nodejs18.x",
+  "Role": "arn:aws:iam::315817266687:role/lambda-execution-role",
+  "Handler": "index.handler",
+  "Description": "Generates JSON data for rewatchable streams website by merging podcast and movie data from DynamoDB",
+  "Timeout": 300,
+  "MemorySize": 512,
+  "Environment": {
+    "Variables": {
+      "PODCAST_MOVIES_TABLE": "podcast_movies",
+      "MOVIE_STREAMS_TABLE": "movie_streams",
+      "S3_BUCKET": "rewatchable-streams-webapp-1757203168",
+      "S3_KEY": "data.json"
+    }
+  },
+  "Tags": {
+    "Project": "rewatchable-streams",
+    "Environment": "production",
+    "Purpose": "data-generation"
+  }
+}

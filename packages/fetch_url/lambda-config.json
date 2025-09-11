@@ -1,0 +1,16 @@
+{
+  "FunctionName": "rewatchables-fetch_url",
+  "Runtime": "nodejs22.x",
+  "Role": "arn:aws:iam::315817266687:role/rewatchables-runner",
+  "Handler": "app-lambda.handler",
+  "Description": "Generates signed URLs for podcast data JSON file",
+  "Timeout": 30,
+  "MemorySize": 128,
+  "Environment": {
+    "Variables": {
+      "S3_BUCKET": "rewatchables",
+      "S3_KEY": "data_files/podcast_movie_data.json",
+      "URL_EXPIRY_SECONDS": "3600"
+    }
+  }
+}
