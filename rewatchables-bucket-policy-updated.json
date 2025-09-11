@@ -1,0 +1,31 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipal",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::rewatchables/webapp/*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::315817266687:distribution/E7U2S8GNRUT2S"
+                }
+            }
+        },
+        {
+            "Sid": "AllowSignedUrlAccess",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::rewatchables/data_files/*",
+            "Condition": {
+                "StringEquals": {
+                    "s3:ExistingObjectTag/access": "signed-url"
+                }
+            }
+        }
+    ]
+}
