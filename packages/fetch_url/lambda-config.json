@@ -1,7 +1,7 @@
 {
-  "FunctionName": "rewatchable-streams-fetch-url",
-  "Runtime": "nodejs18.x",
-  "Role": "arn:aws:iam::315817266687:role/lambda-execution-role",
+  "FunctionName": "rewatchables-fetch_url",
+  "Runtime": "nodejs22.x",
+  "Role": "arn:aws:iam::315817266687:role/rewatchables-runner",
   "Handler": "app-lambda.handler",
   "Description": "Generates signed URLs for podcast data JSON file",
   "Timeout": 30,
@@ -10,8 +10,7 @@
     "Variables": {
       "S3_BUCKET": "rewatchables",
       "S3_KEY": "data_files/podcast_movie_data.json",
-      "URL_EXPIRY_SECONDS": "3600",
-      "AWS_REGION": "us-east-2"
+      "URL_EXPIRY_SECONDS": "3600"
     }
   }
 }

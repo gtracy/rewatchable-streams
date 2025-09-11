@@ -3,8 +3,8 @@
 # Deploy fetch_url Lambda function
 # Uses rewatchables-runner profile for deployment
 
-FUNCTION_NAME="rewatchable-streams-fetch-url"
-PROFILE="rewatchables-runner"
+FUNCTION_NAME="rewatchables-fetch_url"
+PROFILE="default"
 REGION="us-east-2"
 
 echo "Installing dependencies..."
