@@ -3,6 +3,9 @@ const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb")
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { CloudFrontClient, CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
 
+const config = require('../../config');
+const logger = require('pino')(config.getLogConfig());
+
 // Environment variables
 const PODCAST_MOVIES_TABLE = process.env.PODCAST_MOVIES_TABLE || 'podcast_movies';
 const MOVIE_STREAMS_TABLE = process.env.MOVIE_STREAMS_TABLE || 'movie_streams';
@@ -14,22 +17,23 @@ const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || 'E7
  * Main application function that generates JSON data for the website
  */
 async function generateRewatchableStreamsData() {
-    console.log('Starting rewatchable streams data generation...');
+    logger.info('Starting rewatchable streams data generation...');
     
     try {
         // Initialize AWS clients
-        const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-2' });
+        console.dir(process.env);
+        const dynamoClient = new DynamoDBClient({ region: 'us-east-2' });
         const docClient = DynamoDBDocumentClient.from(dynamoClient);
         const s3Client = new S3Client({ region: process.env.AWS_REGION || 'us-east-2' });
-        const cloudFrontClient = new CloudFrontClient({ region: process.env.AWS_REGION || 'us-east-2' });
+        const cloudFrontClient = new CloudFrontClient({ region: 'us-east-2' });
         
         // Fetch all podcasts from DynamoDB
         const podcasts = await fetchAllPodcasts(docClient);
-        console.log(`Found ${podcasts.length} podcasts`);
+        logger.info(`Found ${podcasts.length} podcasts`);
         
         // Fetch movie data for each podcast and merge
         const enrichedPodcasts = await enrichPodcastsWithMovieData(docClient, podcasts);
-        console.log(`Enriched ${enrichedPodcasts.length} podcasts with movie data`);
+        logger.info(`Enriched ${enrichedPodcasts.length} podcasts with movie data`);
         
         // Create the final JSON structure
         const result = {
@@ -40,14 +44,14 @@ async function generateRewatchableStreamsData() {
         
         // Upload to S3
         await uploadToS3(s3Client, result);
-        console.log('Successfully uploaded data to S3');
+        logger.info('Successfully uploaded data to S3');
         
         // Invalidate CloudFront cache (optional - don't fail if permissions are missing)
         try {
             await invalidateCloudFrontCache(cloudFrontClient);
-            console.log('Successfully invalidated CloudFront cache');
+            logger.info('Successfully invalidated CloudFront cache');
         } catch (cloudFrontError) {
-            console.warn('CloudFront cache invalidation failed (this is optional):', cloudFrontError.message);
+            logger.error('CloudFront cache invalidation failed (this is optional):', cloudFrontError.message);
         }
         
         return {
@@ -57,7 +61,7 @@ async function generateRewatchableStreamsData() {
         };
         
     } catch (error) {
-        console.error('Error generating data:', error);
+        logger.error(error,'Error generating data:');
         throw error;
     }
 }
@@ -96,6 +100,7 @@ async function enrichPodcastsWithMovieData(docClient, podcasts) {
                     pod_title: podcast.pod_title,
                     pod_desc: podcast.pod_desc,
                     pod_date: podcast.pod_date,
+                    pod_link: podcast.pod_link,
                     movie: {
                         tmdb_id: movieData.tmdb_id,
                         imdb_id: movieData.imdb_id,
@@ -118,10 +123,10 @@ async function enrichPodcastsWithMovieData(docClient, podcasts) {
                 
                 enrichedPodcasts.push(enrichedPodcast);
             } else {
-                console.warn(`No movie data found for tmdb_id: ${podcast.tmdb_id}`);
+                logger.warn(`No movie data found for tmdb_id: ${podcast.tmdb_id}`);
             }
         } catch (error) {
-            console.error(`Error enriching podcast ${podcast.pod_title}:`, error);
+            logger.error(`Error enriching podcast ${podcast.pod_title}:`, error);
         }
     }
     
@@ -236,7 +241,7 @@ async function invalidateCloudFrontCache(cloudFrontClient) {
     const command = new CreateInvalidationCommand(params);
     const result = await cloudFrontClient.send(command);
     
-    console.log(`CloudFront invalidation created: ${result.Invalidation.Id}`);
+    logger.info(`CloudFront invalidation created: ${result.Invalidation.Id}`);
     return result;
 }
 
