@@ -2,13 +2,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #121212;
 }
 
 .main-content {
   flex: 1;
   padding: 1rem;
-  background: white;
+  background: #121212;
   min-height: calc(100vh - 80px);
 }
 

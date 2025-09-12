@@ -6,16 +6,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="nav-brand">
-          <h2>Your App</h2>
-        </div>
-        <nav className="nav-menu">
-          <a href="#" className="nav-link">Home</a>
-          <a href="#" className="nav-link">Dashboard</a>
-          <a href="#" className="nav-link">Settings</a>
-        </nav>
-        <div className="nav-actions">
-          <button className="btn btn-outline">Sign In</button>
-          <button className="btn btn-primary">Sign Up</button>
+          <h2>Rewatchable Streams</h2>
         </div>
       </div>
     </header>

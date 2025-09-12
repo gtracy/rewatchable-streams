@@ -6,14 +6,23 @@ import { fetchData } from './services/api';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-// Create a Material-UI theme
+// Create a Material-UI theme with dark mode
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#667eea',
+      main: '#90caf9',
     },
     secondary: {
-      main: '#764ba2',
+      main: '#f48fb1',
+    },
+    background: {
+      default: '#121212',
+      paper: '#1e1e1e',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#b0b0b0',
     },
   },
 });
