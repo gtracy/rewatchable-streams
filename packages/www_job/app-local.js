@@ -11,7 +11,7 @@ process.env.CLOUDFRONT_DISTRIBUTION_ID = 'E7U2S8GNRUT2S';
 process.env.AWS_REGION = 'us-east-2';
 
 // Set AWS profile for rewatchables-runner
-process.env.AWS_PROFILE = 'rewatchables-runner';
+//process.env.AWS_PROFILE = 'rewatchables-runner';
 
 const mockEvent = {};
 
