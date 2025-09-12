@@ -127,6 +127,7 @@ exports.handler = async (event) => {
             genres : movieDetails.genres,
           
             pod_title : episode.title,
+            pod_link : episode.enclosure ? episode.enclosure.url : 'https://www.theringer.com/podcasts/the-rewatchables',
             pod_date : new Date(episode.pubDate).toISOString(),
             pod_desc : episode.content,
             pod_guid : episode.guid, // Key
