@@ -1,0 +1,1380 @@
+{
+  "podcasts": [
+    {
+      "pod_title": "‘The Godfather’ With Bill Simmons, Sean Fennessey, and Chris Ryan",
+      "pod_desc": "The Ringer’s Bill Simmons is joined by Sean Fennessey and Chris Ryan to make you an offer you can’t refuse as they honor one of the greatest films in American cinema history, ‘The Godfather,’ starring Marlon Brando, Al Pacino, James Caan, and Robert Duvall.\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2019-01-08T04:55:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT8815078289.mp3?updated=1605044934",
+      "movie": {
+        "tmdb_id": 238,
+        "imdb_id": "tt0068646",
+        "movie_title": "The Godfather",
+        "title": "The Godfather",
+        "overview": "Winner of three Academy Awards including Best Picture, Francis Ford Coppola's epic masterpiece paints a chilling portrait of the Corleone family, balancing the story between their family life and the ugly crime business in which they are engaged.",
+        "release_date": "1972",
+        "releaseYear": 1972,
+        "img": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/82/poster/vertical/en/240.jpg?Expires=1784692888&Signature=XAE9K-GR9qNCtsNoRaH4c4eOkfXmlZvC5NLTsPamlWGhaS9s3~6f3h4B7LQ9MHY~aMo0vL8TFAkw-q3yby2hzMGWCw6YllnBBBp9hkR4CD2qeNLcsNXccCJG8jJHJ1TeMV4qJIAxmBcHMecjLj1VcA2xDBJ3jPZdRyw7C~CFOgm~9QkK0lW2P1TSfQxSbUg9J8Ha~EIdr3rktCRxnzQ-AwUbRz3apjrHiHYCTENMP8pRvb~47F4Fi6IjmK84-zvU-F3CrxE58FOBUFXoIxNrP--Y4GEkiF4L4FRjJpkYyp~ngAkzsxNH8DItP1KBKjuPlO27nhwEGg4BXsfBU7RdoA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "82",
+        "genres": [],
+        "cast": [
+          "Marlon Brando",
+          "Al Pacino",
+          "James Caan",
+          "Robert Duvall",
+          "Richard S. Castellano",
+          "Diane Keaton",
+          "Talia Shire"
+        ],
+        "directors": [
+          "Francis Ford Coppola"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": true,
+            "availableSince": 1755370690,
+            "addon": {
+              "name": "Paramount+ with Showtime",
+              "themeColorCode": "#ff1f2c",
+              "id": "showtime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/network/showtime-f160e912-83eb-4bea-b6f6-a7fddc103757"
+            },
+            "link": "https://www.hulu.com/movie/the-godfather-3807a622-d2cb-40f0-9743-7ad66ba19780",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.hulu.com/watch/3807a622-d2cb-40f0-9743-7ad66ba19780",
+            "expiresOn": 1756699199,
+            "type": "addon",
+            "quality": "hd",
+            "serviceName": "Hulu",
+            "serviceThemeColorCode": "#1ce783",
+            "serviceId": "hulu",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/hulu/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/hulu/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/hulu/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.hulu.com/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1749135248,
+            "link": "https://www.paramountplus.com/movies/video/d1xdkOt5uh339gZVfKlF_o6Y65b_yAeD/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1756719873,
+            "link": "https://pluto.tv/gsa/on-demand/movies/6137ee7dc79f030013e056d0/details",
+            "audios": [],
+            "videoLink": "https://pluto.tv/gsa/on-demand/movies/6137ee7dc79f030013e056d0",
+            "type": "free",
+            "serviceName": "Pluto TV",
+            "serviceThemeColorCode": "#fff200",
+            "serviceId": "plutotv",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/plutotv/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://pluto.tv/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Dirty Work’ With Bill Simmons and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons and Sean Fennessey celebrate the late Norm Macdonald by rewatching a comedy favorite, ‘Dirty Work,’ starring Norm Macdonald, Artie Lange, and Jack Warden.\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2021-09-21T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT3465206247.mp3?updated=1632158502",
+      "movie": {
+        "tmdb_id": 14577,
+        "imdb_id": "tt0120654",
+        "movie_title": "Dirty Work",
+        "title": "Dirty Work",
+        "overview": "Mitch and Sam need to raise $50,000 for Sam’s dad’s heart transplant. Out of work and out of options, the two open a revenge-for-hire business.",
+        "release_date": "1998",
+        "releaseYear": 1998,
+        "img": "/r6OcS6TQCHal2wHooJhHWSlFzfd.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/11605/poster/vertical/en/240.jpg?Expires=1784786150&Signature=lSwNin4Y1oo8JASgKpMjMwmrWEe6IBZFoluulFH-hIzAaxIgU0d67Tjd7QjRVZbPzyAQYFmSn7b5i~u2evxeqRbs3izUmA9QTj9gIozGYiBlSyAoeJN1brcf9BFkGTQd0lR2CWOQ35Y9TNuQN~1B6J~3AGYOjOqJrQUFDWbYhs~QL-GjG6rQL5XiG76rPEIAydeMReQ73pMKJra1jWgwOaY-kAemvqDcY0tK7D2ZEHN-~ds2XTkJsywzcRLuymNIOC2rP9~C6aOGYfgGwYLDNRiO69ERD7i3UgHuH5d~WJWT33x2GBB0VNejYFCBEutb-CU6FcwB8ZKBgZbyrDW5bA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "11605",
+        "genres": [],
+        "cast": [
+          "Norm Macdonald",
+          "Artie Lange",
+          "Jack Warden",
+          "Traylor Howard",
+          "Christopher McDonald",
+          "Chevy Chase",
+          "Don Rickles"
+        ],
+        "directors": [
+          "Bob Saget"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1716140395,
+            "price": {
+              "amount": "2.99",
+              "currency": "USD",
+              "formatted": "2.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00153P8VC/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "sd",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1655478163,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://tv.apple.com/us/movie/dirty-work/umc.cmc.3tu4atzq8grc3rzu1dpc6zq3c?playableId=tvs.sbd.9001%3A278960582",
+            "audios": [],
+            "type": "rent",
+            "quality": "hd",
+            "serviceName": "Apple TV",
+            "serviceThemeColorCode": "#000000",
+            "serviceId": "apple",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/apple/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/apple/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/apple/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tv.apple.com/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1716094630,
+            "link": "https://tubitv.com/movies/663321/dirty-work",
+            "audios": [],
+            "expiresOn": 1759291199,
+            "type": "free",
+            "quality": "hd",
+            "serviceName": "Tubi",
+            "serviceThemeColorCode": "#ffff13",
+            "serviceId": "tubi",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/tubi/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/tubi/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/tubi/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tubitv.com/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘There Will Be Blood’ With Bill Simmons, Chris Ryan, and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons, Sean Fennessey, and Chris Ryan get all liquored up and head over to the peach tree dance after revisiting Paul Thomas Anderson’s 2007 masterpiece ‘There Will Be Blood,’ starring Daniel Day-Lewis and Paul Dano.\n\nProducer: Craig Horlbeck\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2022-07-26T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT3360179903.mp3?updated=1658781812",
+      "movie": {
+        "tmdb_id": 7345,
+        "imdb_id": "tt0469494",
+        "movie_title": "There Will Be Blood",
+        "title": "There Will Be Blood",
+        "overview": "An oil man and his son at the turn of the 20th century are challenged by a young preacher and take a journey into an abyss of madness. Love, hope, belief, and the bond between father and son is imperiled by corruption, deception, and the flow of oil.",
+        "release_date": "2007",
+        "releaseYear": 2007,
+        "img": "/fa0RDkAlCec0STeMNAhPaF89q6U.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/488/poster/vertical/en/240.jpg?Expires=1784691919&Signature=fgMUjYB~c8aDM68y3OS822gcLdEDlufJGXNq1HUZVxEHiTh66Ydzl3HpAUnXWkTQiARdZ~1gQcouJDytag-~H-khquVYogkH8R73L6FPgwnTY3ZrhO7xjaCi5warYQu9mHqugdmgcYHvwKnwcrdW9icrUh41XnbTSLOM8YCg75Frra0RjqmcbX2Tt4-GC4ZGaJM22Qz-4GSfbT3dN5rKqmdmUNcsNVxBRIc3N-8AtvjFB2GLqw0ulFUm9ZScgnmFBq3MWYsHYQ1tTiH7WILW9zCB6KqukzhRr9DBLCSMX30r1daHTQMLvE8Wt7BnWT5dHaE7Y-gd8dGf-WE1D9Q2~g__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "488",
+        "genres": [],
+        "cast": [
+          "Daniel Day-Lewis",
+          "Paul Dano",
+          "Kevin J. O'Connor",
+          "Ciarán Hinds",
+          "Dillon Freasier",
+          "Hope Elizabeth Reeves",
+          "Colleen Foy"
+        ],
+        "directors": [
+          "Paul Thomas Anderson"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1690034351,
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B0017I91LI/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "hd",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1746305968,
+            "link": "https://www.paramountplus.com/movies/video/GmreDvX9oZ8lfCfwXiFsZhjR0tTEdn4Y/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1755404637,
+            "addon": {
+              "name": "Paramount+ with Showtime",
+              "themeColorCode": "#ff1f2c",
+              "id": "showtime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/network/showtime-f160e912-83eb-4bea-b6f6-a7fddc103757"
+            },
+            "link": "https://www.hulu.com/movie/there-will-be-blood-48711e41-8e51-4b9f-a8a2-cf8805e7a1ff",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.hulu.com/watch/48711e41-8e51-4b9f-a8a2-cf8805e7a1ff",
+            "expiresOn": 1756699199,
+            "type": "addon",
+            "quality": "hd",
+            "serviceName": "Hulu",
+            "serviceThemeColorCode": "#1ce783",
+            "serviceId": "hulu",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/hulu/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/hulu/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/hulu/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.hulu.com/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Indiana Jones and the Last Crusade’ With Bill Simmons, Chris Ryan, and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons, Chris Ryan, and Sean Fennessey set off in search of eternal life as they rewatch the third installment in the Indiana Jones franchise, ‘Indiana Jones and the Last Crusade,’ starring Harrison Ford, Sean Connery, and Alison Doody. Directed by Steven Spielberg.\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2023-06-20T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT3445635860.mp3?updated=1687218324",
+      "movie": {
+        "tmdb_id": 89,
+        "imdb_id": "tt0097576",
+        "movie_title": "Indiana Jones and the Last Crusade",
+        "title": "Indiana Jones and the Last Crusade",
+        "overview": "When Dr. Henry Jones Sr. (Sean Connery) suddenly goes missing while pursuing the Holy Grail, eminent archaeologist Indiana Jones (Harrison Ford) must follow in his father's footsteps and stop the Nazis from recovering the power of eternal life.",
+        "release_date": "1989",
+        "releaseYear": 1989,
+        "img": "/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/313/poster/vertical/en/240.jpg?Expires=1784693400&Signature=Hq86vr~jA52NYEX2ho~YPIZ~wIlJF~osbsq3z2GTEF0BVdf1DNkEDaVYAW7~Ay9PRl8kpOb3GewIdjKSoKNzJ65jqk4SphCOYJzMMpjbtTm6VNgpP8OLjm2FxBscS9NqzFsiSuc4I~RJvXeJR4TwCbK8ZnoeC1hqSJWj523n7M0eg2MJKmkKapyaog-PAQq3hFvjOCxXdmHIGbBK8ola3rYmzOVAe5PQIrjPIaxvFas553OwlsDfCWWqTQTxSactcJ9fHdcnG1TeiSDD7-nfTuJRJuuYkcCiU5brGqMPkilYC9rlyrZ1wpu~ozfLB~SIYUJAh8f0xZnWg7XJkdjEKg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "313",
+        "genres": [],
+        "cast": [
+          "Harrison Ford",
+          "Sean Connery",
+          "Denholm Elliott",
+          "Alison Doody",
+          "John Rhys-Davies",
+          "Julian Glover",
+          "River Phoenix"
+        ],
+        "directors": [
+          "Steven Spielberg"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1689989071,
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00GIVOXVW/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "uhd",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1749136004,
+            "link": "https://www.paramountplus.com/movies/video/1wTEl1omTrGvkvUVAMleps3da2vpcBsx/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1703838868,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://tv.apple.com/us/movie/indiana-jones-and-the-last-crusade/umc.cmc.38jpsigo8blaihrqu8h445cld?playableId=tvs.sbd.9001%3A548597603",
+            "audios": [],
+            "type": "rent",
+            "quality": "hd",
+            "serviceName": "Apple TV",
+            "serviceThemeColorCode": "#000000",
+            "serviceId": "apple",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/apple/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/apple/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/apple/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tv.apple.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1727425336,
+            "link": "https://www.disneyplus.com/browse/entity-86547501-55d6-4ef7-a1e6-a38c429e2879",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/86547501-55d6-4ef7-a1e6-a38c429e2879",
+            "type": "subscription",
+            "quality": "uhd",
+            "serviceName": "Disney+",
+            "serviceThemeColorCode": "#01137c",
+            "serviceId": "disney",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.disneyplus.com/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1755401360,
+            "addon": {
+              "name": "Paramount+ with Showtime",
+              "themeColorCode": "#ff1f2c",
+              "id": "showtime",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/hulu/us/addons/showtime/dark-theme.svg"
+              },
+              "homePage": "https://www.hulu.com/network/showtime-f160e912-83eb-4bea-b6f6-a7fddc103757"
+            },
+            "link": "https://www.hulu.com/movie/indiana-jones-and-the-last-crusade-65d63eb0-780f-484d-b102-e48b0ec1aacb",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.hulu.com/watch/65d63eb0-780f-484d-b102-e48b0ec1aacb",
+            "expiresOn": 1756699199,
+            "type": "addon",
+            "quality": "hd",
+            "serviceName": "Hulu",
+            "serviceThemeColorCode": "#1ce783",
+            "serviceId": "hulu",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/hulu/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/hulu/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/hulu/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.hulu.com/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘John Wick’ With Bill Simmons, Chris Ryan, and Shea Serrano",
+      "pod_desc": "The Ringer’s Bill Simmons, Chris Ryan, and Shea Serrano are thinking they’re back after rewatching the 2014 action-thriller hit ‘John Wick,’ starring Keanu Reeves, Michael Nyqvist, and Alfie Allen.\n\nWatch this episode on our Ringer Movies YouTube channel!\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2024-09-17T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT6986423164.mp3?updated=1726532795",
+      "movie": {
+        "tmdb_id": 541671,
+        "imdb_id": "tt7181546",
+        "movie_title": "Ballerina",
+        "title": "Ballerina",
+        "overview": "An assassin trained in the traditions of the Ruska Roma organization sets out to seek revenge after her father's death.",
+        "release_date": "2025",
+        "releaseYear": 2025,
+        "img": "/2VUmvqsHb6cEtdfscEA6fqqVzLg.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/14625834/poster/vertical/en/240.jpg?Expires=1783439357&Signature=RAs77zAuyJWIgnuianEKMgUP6MarJXv8iUHrFP7~wM7c7NBTgC06O01l0w3UeSXbG6j7J2l4CKnqloyU~HrJUzhNwDD~EdZ13vs~Jfy4xv6kN~ECBlkSNG1I146nGs5AMMPQyClZp-HauOtQtXmCK0jbR4RLGGikHvKE-4Od-Okf5PbaCxuBwzUU9xQGLVIJZuM3uwZHhTt7l82vIUgwR-459OLx~0hrWff1zBQ3ZzOk11BnRkyz2OgXl7Rfsnb4k2ha8FsSZq3ot5UYNGM9zz9dZAFdxzt1k6cWsjowRhqka5IiJV3hhg9zTLx~4UUEPaTIsWQP4VPm0zIRZbF9dQ__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "14625834",
+        "genres": [],
+        "cast": [
+          "Ana de Armas",
+          "Keanu Reeves",
+          "Ian McShane",
+          "Anjelica Huston",
+          "Gabriel Byrne",
+          "Catalina Sandino Moreno",
+          "Ava McCarthy"
+        ],
+        "directors": [
+          "Len Wiseman"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1755673399,
+            "price": {
+              "amount": "9.99",
+              "currency": "USD",
+              "formatted": "9.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B0CW31SQWW/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              },
+              {
+                "language": "fra"
+              },
+              {
+                "language": "hin"
+              },
+              {
+                "language": "mar"
+              },
+              {
+                "language": "por"
+              },
+              {
+                "language": "spa"
+              },
+              {
+                "language": "tam"
+              },
+              {
+                "language": "tel"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘JFK’ With Bill Simmons, Chris Ryan, Sean Fennessey, and Brian Koppelman",
+      "pod_desc": "The Ringer’s Bill Simmons, Chris Ryan, and Sean Fennessey are joined by Brian Koppelman to discuss a movie that is a mystery wrapped in a riddle inside an enigma. We celebrate the 30th anniversary of Oliver Stone’s ‘JFK,’ starring Kevin Costner, Gary Oldman, Tommy Lee Jones, and Joe Pesci. \n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2021-12-02T05:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT4218610569.mp3?updated=1638409087",
+      "movie": {
+        "tmdb_id": 820,
+        "imdb_id": "tt0102138",
+        "movie_title": "JFK",
+        "title": "JFK",
+        "overview": "A district attorney risks his family and his career to find the truth of the JFK assassination.",
+        "release_date": "1991",
+        "releaseYear": 1991,
+        "img": "/r0VWVTYlqdRCK5ZoOdNnHdqM2gt.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/2906/poster/vertical/en/240.jpg?Expires=1784729478&Signature=T2bSscxYY1H5xPXP1z~ro1EGhsyCCdnRvXoBsNVOwmloimt99-O7eLhwcdg~aGWpVWiTElUBKn2MwBX7tRpOdJhLXd62nHyBHvsvLCk8PutIn77okUh4fsgebkV2ashj6NJohRuV05-StjQ20ELhT6KpJJhs6qXKVDgzkCOZXGWWLftlqVfmTYbCjMF7LIdzLQkOIbkNmCemyFMKwYoqtxkn~a0pXqQHc4vqztP-D8LlePnvjPZjoDflw9qyF9GgCyz-qlwcbsgAqDstIYmOoHtB~slHCPmYnmNpSCTWp8SaofLyFFztid~x-vamXMxMR9GBwDYrJUOLKsbSnaJwOg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "2906",
+        "genres": [],
+        "cast": [
+          "Kevin Costner",
+          "Tommy Lee Jones",
+          "Gary Oldman",
+          "Kevin Bacon",
+          "Michael Rooker",
+          "Jack Lemmon",
+          "Laurie Metcalf"
+        ],
+        "directors": [
+          "Oliver Stone"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1756044668,
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B002MFULQO/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Wayne’s World’ With Bill Simmons and Kyle Brandt",
+      "pod_desc": "The Ringer’s Bill Simmons and Kyle Brandt party on and rewatch the 1992 comedy classic \n‘Wayne’s World,’ starring Mike Myers and Dana Carvey … NOT!\n\nCheck out our Ringer Movies YouTube channel!\n\nProducer: Craig Horlbeck\nVideo Producers: Jack Sanders and Chia Hao Tat\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2025-02-18T05:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT2640932140.mp3?updated=1739509991",
+      "movie": {
+        "tmdb_id": 8872,
+        "imdb_id": "tt0105793",
+        "movie_title": "Wayne's World",
+        "title": "Wayne's World",
+        "overview": "When a sleazy TV exec offers to air Wayne and Garth’s cable-access show on his network, they find the road to fame has gnarly twists and turns.",
+        "release_date": "1992",
+        "releaseYear": 1992,
+        "img": "/j2PXBHjYxg1PLBl0YQ8Tiblnqdn.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/2886/poster/vertical/en/240.jpg?Expires=1784692947&Signature=UahEbUBgw4Ku~o6UqZtb0crTSAaPXSMQzaP7YiKSMNG3Vhg5LVZU5DJ94s1SIenVTBxeOcYZ1P2JNZPwYBlVN750KYsioRDTuIc8QvLGGQdEUks5zUKayxHvZJvqmW5YlZVsTftVXjcRNPo4pQeDskgOXVGtZ3tsd7t6-NXnhhJvz4GxQDlofQZRcQHmWe6qGNU6HlqwQma8dXdvoYWv1EMvQDa5P7pN-1MMSFt9NTrC06NmSssucADshpk3Tq1vyysKZgWW~hngENltN6boWBJ1E8odLaSPzo-qbQOU-22uadZcDqh3r4ak~fhUI20f-h15fFRcDiIZhIqCmh~DfA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "2886",
+        "genres": [],
+        "cast": [
+          "Mike Myers",
+          "Dana Carvey",
+          "Rob Lowe",
+          "Tia Carrere",
+          "Lara Flynn Boyle",
+          "Donna Dixon",
+          "Chris Farley"
+        ],
+        "directors": [
+          "Penelope Spheeris"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": true,
+            "availableSince": 1751697615,
+            "link": "https://tubitv.com/movies/524386/wayne-s-world",
+            "audios": [],
+            "expiresOn": 1756699199,
+            "type": "free",
+            "quality": "hd",
+            "serviceName": "Tubi",
+            "serviceThemeColorCode": "#ffff13",
+            "serviceId": "tubi",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/tubi/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/tubi/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/tubi/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tubitv.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1669665186,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://tv.apple.com/us/movie/waynes-world/umc.cmc.3zt9q8owlo9qm3ycl709za4tc",
+            "audios": [
+              {
+                "region": "USA",
+                "language": "eng"
+              },
+              {
+                "region": "FRA",
+                "language": "fra"
+              }
+            ],
+            "type": "rent",
+            "quality": "uhd",
+            "serviceName": "Apple TV",
+            "serviceThemeColorCode": "#000000",
+            "serviceId": "apple",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/apple/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/apple/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/apple/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tv.apple.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1731058047,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B002BTRKJC/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "uhd",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1754574720,
+            "link": "https://www.paramountplus.com/movies/video/erXNKWTaJcs7oADCk2PwXfP7HHXu6_dn/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1751764837,
+            "link": "https://www.netflix.com/title/60020674/",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.netflix.com/watch/60020674",
+            "type": "subscription",
+            "quality": "hd",
+            "serviceName": "Netflix",
+            "serviceThemeColorCode": "#E50914",
+            "serviceId": "netflix",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/netflix/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/netflix/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/netflix/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.netflix.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1754042408,
+            "link": "https://pluto.tv/gsa/on-demand/movies/66317a38d1a91700139f0ca7/details",
+            "audios": [],
+            "videoLink": "https://pluto.tv/gsa/on-demand/movies/66317a38d1a91700139f0ca7",
+            "type": "free",
+            "serviceName": "Pluto TV",
+            "serviceThemeColorCode": "#fff200",
+            "serviceId": "plutotv",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/plutotv/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/plutotv/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://pluto.tv/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘An Officer and a Gentleman’ With Bill Simmons, Chris Ryan, and Sean Fennessey",
+      "pod_desc": "The Ringer’s Bill Simmons, Chris Ryan, and Sean Fennessey rewatch the 1982 classic ‘An Officer and a Gentleman’ because they’ve got nowhere else to go! They continue “Wait, This Movie Made HOW Much Money??” month by rewatching the romantic hit starring Richard Gere, Debra Winger, and Louis Gossitt Jr. and directed by Taylor Hackford.\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2023-11-14T05:05:44.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT7210845741.mp3?updated=1699938652",
+      "movie": {
+        "tmdb_id": 2623,
+        "imdb_id": "tt0084434",
+        "movie_title": "An Officer and a Gentleman",
+        "title": "An Officer and a Gentleman",
+        "overview": "Loner Zack Mayo (Richard Gere) enters Officer Candidate School to become a Navy pilot and in thirteen torturous weeks he learns the importance of discipline, love and friendship.",
+        "release_date": "1982",
+        "releaseYear": 1982,
+        "img": "/69adZbLeRk5TNQ3e0008dMnde9p.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/7140/poster/vertical/en/240.jpg?Expires=1785493457&Signature=Kstpobdvg3KsfND~SwsAVVa1bVtFE7TNM2cVu5eXSDuFkP2q~mbPujVijV2wo1Sx~oZXHOd~vsGc5Nrq6XecGbYik~Gr7Rz0yXQjVHxsCOquY8yN~WG3W6idg3MTRXCX5bRlCss9YEDOJNBI0x-bRCngMWjDOXRUpnS0rk2w0vPzJcYES-Lv9NLc7rKTfkCh84cec74oj8peoioEQIsZfLUGo4kfty9a18q-S1imcyx1OkaIaYpC3gXl8hDmDtSu7CpXFd4eJ7UPXRp6Qjz43vkotRoWDUokjAXmuHOIzduVqIkKeuY7BeJefpHs89Dtxd7ot83nI2fZpsM~~t1XRw__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "7140",
+        "genres": [],
+        "cast": [
+          "Richard Gere",
+          "Debra Winger",
+          "Louis Gossett Jr.",
+          "David Keith",
+          "Robert Loggia",
+          "Lisa Blount",
+          "Lisa Eilbacher"
+        ],
+        "directors": [
+          "Taylor Hackford"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1655480078,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://tv.apple.com/us/movie/an-officer-and-a-gentleman/umc.cmc.4cbqolcemwzynps27z7dts5cr",
+            "audios": [
+              {
+                "region": "USA",
+                "language": "eng"
+              },
+              {
+                "region": "419",
+                "language": "spa"
+              }
+            ],
+            "type": "rent",
+            "quality": "hd",
+            "serviceName": "Apple TV",
+            "serviceThemeColorCode": "#000000",
+            "serviceId": "apple",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/apple/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/apple/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/apple/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tv.apple.com/"
+          },
+          {
+            "expiresSoon": true,
+            "availableSince": 1751558965,
+            "link": "https://www.paramountplus.com/movies/video/bN_I5sMvpWLRNayuttZFwjt9EKFc1CN_/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1708940918,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B09QFLFN3Z/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "quality": "hd",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "'Titanic' With Juliet Litman, Amanda Dobbins, and K. Austin Collins",
+      "pod_desc": "The Ringer’s Juliet Litman, Amanda Dobbins, and K. Austin Collins sing Celine Dion and let the disaster jokes fly as they go deep on 1997’s Oscar Award–winning blockbuster ‘Titanic’ starring Leonardo DiCaprio and Kate Winslet. They discuss DiCaprio’s \"cute factor,\" James Cameron’s obsession with the actual Titanic, and whether Rose would have chosen Jack if the ship hadn’t sunk.\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2017-09-28T10:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT6937114443.mp3?updated=1601411148",
+      "movie": {
+        "tmdb_id": 597,
+        "imdb_id": "tt0120338",
+        "movie_title": "Titanic",
+        "title": "Titanic",
+        "overview": "An epic love unfolds between an aristocratic girl and a penniless artist, as their fates intertwine aboard the Titanic on its ill-fated maiden voyage.",
+        "release_date": "1997",
+        "releaseYear": 1997,
+        "img": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/136/poster/vertical/en/240.jpg?Expires=1784706143&Signature=TFSYjzZM-VEJhoAEzJmZYsFUq2vIJSfd2wwEgTm2pU1YnWMhBjSe41ptt--dlwVD0xBaEGR1oAbdhvnp15WELw-FhWXdBW0D~yozUhek~UbUn1tv07-chY-CNCaOez96LOwdEIdVQEYBcZRpI8GBz~82nMdfSm75GQRxmhmloIVL3ND6F6x2GgzRIT7S0epwkYpdI5VtaZJpUAev4gx3Gj91y5nxOm-mm5-J-SzvUcijbDoLwqd23DhL-RVsidaVEeEc3lQpSaf9Tr4yjrxyMekF3CeyPyaeopcN~6kybbwD7CbK4gQaVYeT8z1JL4CaDKIPjNSdxxjb1f1dXNVssA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "136",
+        "genres": [],
+        "cast": [
+          "Leonardo DiCaprio",
+          "Kate Winslet",
+          "Billy Zane",
+          "Kathy Bates",
+          "Frances Fisher",
+          "Gloria Stuart",
+          "Bill Paxton"
+        ],
+        "directors": [
+          "James Cameron"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": true,
+            "availableSince": 1751559766,
+            "link": "https://www.paramountplus.com/movies/video/GjggIcNk2C1sYQ_JG6j5LoKa7hxsQOzw/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1751109521,
+            "link": "https://tubitv.com/movies/457982/titanic",
+            "audios": [],
+            "expiresOn": 1764565199,
+            "type": "free",
+            "serviceName": "Tubi",
+            "serviceThemeColorCode": "#ffff13",
+            "serviceId": "tubi",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/tubi/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/tubi/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/tubi/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tubitv.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1739354138,
+            "addon": {
+              "name": "Hulu",
+              "themeColorCode": "#1ce783",
+              "id": "hulu",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/dark-theme.svg"
+              },
+              "homePage": "https://www.disneyplus.com/browse/hulu"
+            },
+            "link": "https://www.disneyplus.com/browse/entity-b216ece8-01db-49c9-a049-b3c09e2051bd",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/b216ece8-01db-49c9-a049-b3c09e2051bd",
+            "type": "addon",
+            "quality": "hd",
+            "serviceName": "Disney+",
+            "serviceThemeColorCode": "#01137c",
+            "serviceId": "disney",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.disneyplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1756026953,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B0CM9T5D83/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Titanic’ 25th Anniversary With Bill Simmons and Van Lathan",
+      "pod_desc": "The Ringer’s Bill Simmons and Van Lathan are the kings of the world after revisiting James Cameron’s epic hit and Best Picture Academy Award winner ‘Titanic,’ starring Leonardo DiCaprio and Kate Winslet.\n\nProducer: Craig Horlbeck\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2022-03-15T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT5504828891.mp3?updated=1647307826",
+      "movie": {
+        "tmdb_id": 597,
+        "imdb_id": "tt0120338",
+        "movie_title": "Titanic",
+        "title": "Titanic",
+        "overview": "An epic love unfolds between an aristocratic girl and a penniless artist, as their fates intertwine aboard the Titanic on its ill-fated maiden voyage.",
+        "release_date": "1997",
+        "releaseYear": 1997,
+        "img": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/136/poster/vertical/en/240.jpg?Expires=1784706143&Signature=TFSYjzZM-VEJhoAEzJmZYsFUq2vIJSfd2wwEgTm2pU1YnWMhBjSe41ptt--dlwVD0xBaEGR1oAbdhvnp15WELw-FhWXdBW0D~yozUhek~UbUn1tv07-chY-CNCaOez96LOwdEIdVQEYBcZRpI8GBz~82nMdfSm75GQRxmhmloIVL3ND6F6x2GgzRIT7S0epwkYpdI5VtaZJpUAev4gx3Gj91y5nxOm-mm5-J-SzvUcijbDoLwqd23DhL-RVsidaVEeEc3lQpSaf9Tr4yjrxyMekF3CeyPyaeopcN~6kybbwD7CbK4gQaVYeT8z1JL4CaDKIPjNSdxxjb1f1dXNVssA__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "136",
+        "genres": [],
+        "cast": [
+          "Leonardo DiCaprio",
+          "Kate Winslet",
+          "Billy Zane",
+          "Kathy Bates",
+          "Frances Fisher",
+          "Gloria Stuart",
+          "Bill Paxton"
+        ],
+        "directors": [
+          "James Cameron"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": true,
+            "availableSince": 1751559766,
+            "link": "https://www.paramountplus.com/movies/video/GjggIcNk2C1sYQ_JG6j5LoKa7hxsQOzw/",
+            "audios": [],
+            "expiresOn": 1756702800,
+            "type": "subscription",
+            "serviceName": "Paramount+",
+            "serviceThemeColorCode": "#0064FF",
+            "serviceId": "paramount",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/paramount/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/paramount/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/paramount/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.paramountplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1751109521,
+            "link": "https://tubitv.com/movies/457982/titanic",
+            "audios": [],
+            "expiresOn": 1764565199,
+            "type": "free",
+            "serviceName": "Tubi",
+            "serviceThemeColorCode": "#ffff13",
+            "serviceId": "tubi",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/tubi/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/tubi/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/tubi/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://tubitv.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1739354138,
+            "addon": {
+              "name": "Hulu",
+              "themeColorCode": "#1ce783",
+              "id": "hulu",
+              "imageSet": {
+                "lightThemeImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/light-theme.svg",
+                "whiteImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/white.svg",
+                "darkThemeImage": "https://media.movieofthenight.com/services/disney/us/addons/hulu/dark-theme.svg"
+              },
+              "homePage": "https://www.disneyplus.com/browse/hulu"
+            },
+            "link": "https://www.disneyplus.com/browse/entity-b216ece8-01db-49c9-a049-b3c09e2051bd",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/b216ece8-01db-49c9-a049-b3c09e2051bd",
+            "type": "addon",
+            "quality": "hd",
+            "serviceName": "Disney+",
+            "serviceThemeColorCode": "#01137c",
+            "serviceId": "disney",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.disneyplus.com/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1756026953,
+            "price": {
+              "amount": "3.99",
+              "currency": "USD",
+              "formatted": "3.99 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B0CM9T5D83/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Star Wars: A New Hope’  (Part Two) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan",
+      "pod_desc": "The Rewatchables is what gives a movie lover his power. It's an energy field created by all living things. It surrounds us and penetrates us. In Part 2, Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan run through the categories for George Lucas’s ‘Star Wars: A New Hope’.\n\n\n\nManager: Craig Horlbeck\n\n\n\nVideo Producers: Ronak Nair, Jack Sanders\n\nAudio Producer: Craig Horlbeck\n\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2025-05-06T04:05:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT1520186608.mp3?updated=1746546953",
+      "movie": {
+        "tmdb_id": 11,
+        "imdb_id": "tt0076759",
+        "movie_title": "Star Wars",
+        "title": "Star Wars",
+        "overview": "Young farm boy Luke Skywalker is thrust into a galaxy of adventure when he intercepts a distress call from the captive Princess Leia. The event launches him on a daring mission to rescue her from the clutches of Darth Vader and the Evil Empire.",
+        "release_date": "1977",
+        "releaseYear": 1977,
+        "img": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/110/poster/vertical/en/240.jpg?Expires=1784706316&Signature=g~A4TGUXkqInMSxLXqukqydIagwSEaROs76CtzDP6U2a5OBtfNGzjmUFfZOrdaUGwfm4OUE5-P~d1kD~HbUuyfiAtLHESZqvPJ3wtrm9z44itmnpomGL5ZRZPG-xFZ6t0XX8mqjIc7no2keGlpPkx1Wl22bdXhLA4PL6UnHMs1kk33iItulwpMB8uazfcXqJQPmW8KH~6YWqC2UhUpm-CuVWGTAfbIKqWVZmCWI6FSiKSKYc5VX7v1~4zA0n2f30YxXSWKJOZPBqvLnQgwAKjkfFTCu0~28w9zgFd249nF1NVUjDLZAInynWtbTfV-v2WRp8lMFmn5dDHxAFy8IcCg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "110",
+        "genres": [],
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Peter Cushing",
+          "Alec Guinness",
+          "Anthony Daniels",
+          "Kenny Baker"
+        ],
+        "directors": [
+          "George Lucas"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1754133992,
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00VF06OBS/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1727223773,
+            "link": "https://www.disneyplus.com/browse/entity-9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "audios": [
+              {
+                "language": "ces"
+              },
+              {
+                "language": "cmn"
+              },
+              {
+                "language": "deu"
+              },
+              {
+                "language": "eng"
+              },
+              {
+                "region": "FRA",
+                "language": "fra"
+              },
+              {
+                "language": "hun"
+              },
+              {
+                "language": "ita"
+              },
+              {
+                "language": "jpn"
+              },
+              {
+                "language": "kor"
+              },
+              {
+                "language": "pol"
+              },
+              {
+                "region": "BRA",
+                "language": "por"
+              },
+              {
+                "language": "slk"
+              },
+              {
+                "region": "419",
+                "language": "spa"
+              },
+              {
+                "region": "ESP",
+                "language": "spa"
+              },
+              {
+                "language": "tur"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "type": "subscription",
+            "quality": "uhd",
+            "serviceName": "Disney+",
+            "serviceThemeColorCode": "#01137c",
+            "serviceId": "disney",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.disneyplus.com/"
+          }
+        ]
+      }
+    },
+    {
+      "pod_title": "‘Star Wars: A New Hope’ (Part One) With Bill Simmons, Chris Ryan, Sean Fennessey, and Van Lathan",
+      "pod_desc": "A long time ago in a galaxy far far away, a trio of Ringer movie lovers Chris Ryan, Sean Fennessey, and Van Lathan use the force to get their galactic leader Bill Simmons to revisit one of the most iconic films of all time, George Lucas’s ‘Star Wars: A New Hope’ starring Mark Hamill, Harrison Ford, and Carrie Fisher. In Part 1, the guys break down why they love the movie, how it got made, and the enormous impact it had on Hollywood at the time and to this day.\n\n\n\nManager: Craig Horlbeck\n\nVideo Producers: Ronak Nair, Jack Sanders\n\nAudio Producer: Craig Horlbeck\n\n\nLearn more about your ad choices. Visit podcastchoices.com/adchoices",
+      "pod_date": "2025-05-06T04:00:00.000Z",
+      "pod_link": "https://traffic.megaphone.fm/GLT5574025383.mp3?updated=1746487754",
+      "movie": {
+        "tmdb_id": 11,
+        "imdb_id": "tt0076759",
+        "movie_title": "Star Wars",
+        "title": "Star Wars",
+        "overview": "Young farm boy Luke Skywalker is thrust into a galaxy of adventure when he intercepts a distress call from the captive Princess Leia. The event launches him on a daring mission to rescue her from the clutches of Darth Vader and the Evil Empire.",
+        "release_date": "1977",
+        "releaseYear": 1977,
+        "img": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+        "imageSet": "https://cdn.movieofthenight.com/show/110/poster/vertical/en/240.jpg?Expires=1784706316&Signature=g~A4TGUXkqInMSxLXqukqydIagwSEaROs76CtzDP6U2a5OBtfNGzjmUFfZOrdaUGwfm4OUE5-P~d1kD~HbUuyfiAtLHESZqvPJ3wtrm9z44itmnpomGL5ZRZPG-xFZ6t0XX8mqjIc7no2keGlpPkx1Wl22bdXhLA4PL6UnHMs1kk33iItulwpMB8uazfcXqJQPmW8KH~6YWqC2UhUpm-CuVWGTAfbIKqWVZmCWI6FSiKSKYc5VX7v1~4zA0n2f30YxXSWKJOZPBqvLnQgwAKjkfFTCu0~28w9zgFd249nF1NVUjDLZAInynWtbTfV-v2WRp8lMFmn5dDHxAFy8IcCg__&Key-Pair-Id=KK4HN3OO4AT5R",
+        "id": "110",
+        "genres": [],
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Peter Cushing",
+          "Alec Guinness",
+          "Anthony Daniels",
+          "Kenny Baker"
+        ],
+        "directors": [
+          "George Lucas"
+        ],
+        "streamingOptions": [
+          {
+            "expiresSoon": false,
+            "availableSince": 1754133992,
+            "price": {
+              "amount": "3.79",
+              "currency": "USD",
+              "formatted": "3.79 USD"
+            },
+            "link": "https://www.amazon.com/gp/video/detail/B00VF06OBS/ref=atv_dp",
+            "audios": [
+              {
+                "language": "eng"
+              }
+            ],
+            "type": "rent",
+            "serviceName": "Prime Video",
+            "serviceThemeColorCode": "#00A8E1",
+            "serviceId": "prime",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/prime/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/prime/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/prime/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.amazon.com/gp/video/storefront/"
+          },
+          {
+            "expiresSoon": false,
+            "availableSince": 1727223773,
+            "link": "https://www.disneyplus.com/browse/entity-9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "audios": [
+              {
+                "language": "ces"
+              },
+              {
+                "language": "cmn"
+              },
+              {
+                "language": "deu"
+              },
+              {
+                "language": "eng"
+              },
+              {
+                "region": "FRA",
+                "language": "fra"
+              },
+              {
+                "language": "hun"
+              },
+              {
+                "language": "ita"
+              },
+              {
+                "language": "jpn"
+              },
+              {
+                "language": "kor"
+              },
+              {
+                "language": "pol"
+              },
+              {
+                "region": "BRA",
+                "language": "por"
+              },
+              {
+                "language": "slk"
+              },
+              {
+                "region": "419",
+                "language": "spa"
+              },
+              {
+                "region": "ESP",
+                "language": "spa"
+              },
+              {
+                "language": "tur"
+              }
+            ],
+            "videoLink": "https://www.disneyplus.com/play/9a280e53-fcc0-4e17-a02c-b1f40913eb0b",
+            "type": "subscription",
+            "quality": "uhd",
+            "serviceName": "Disney+",
+            "serviceThemeColorCode": "#01137c",
+            "serviceId": "disney",
+            "serviceImageSet": {
+              "lightThemeImage": "https://media.movieofthenight.com/services/disney/logo-light-theme.svg",
+              "whiteImage": "https://media.movieofthenight.com/services/disney/logo-white.svg",
+              "darkThemeImage": "https://media.movieofthenight.com/services/disney/logo-dark-theme.svg"
+            },
+            "serviceHomePage": "https://www.disneyplus.com/"
+          }
+        ]
+      }
+    }
+  ],
+  "generated_at": "2025-09-13T00:11:08.192Z",
+  "total_podcasts": 12
+}

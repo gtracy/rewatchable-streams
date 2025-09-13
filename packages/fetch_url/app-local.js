@@ -9,7 +9,7 @@ process.env.URL_EXPIRY_SECONDS = '3600'; // 1 hour
 process.env.AWS_REGION = 'us-east-2';
 
 // Set AWS profile for rewatchables-runner
-process.env.AWS_PROFILE = 'rewatchables-runner';
+//process.env.AWS_PROFILE = 'rewatchables-runner';
 
 const mockEvent = {};
 

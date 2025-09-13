@@ -1,13 +1,48 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table';
 import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PodcastPlayerModal from './PodcastPlayerModal';
 import './DataTable.css';
 
 const DataTable = ({ data, isLoading, error }) => {
+  // Modal state for podcast player
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPodcast, setSelectedPodcast] = useState(null);
+
+  const handlePodcastClick = (podcast) => {
+    setSelectedPodcast(podcast);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedPodcast(null);
+  };
+
+  const handleDirectorClick = (directorName, table) => {
+    // Set the director column filter to the clicked director name
+    table.setColumnFilters([
+      {
+        id: 'movie.directors',
+        value: directorName
+      }
+    ]);
+  };
+
+  const handleActorClick = (actorName, table) => {
+    // Set the actors column filter to the clicked actor name
+    table.setColumnFilters([
+      {
+        id: 'movie.cast',
+        value: actorName
+      }
+    ]);
+  };
+
   // Process data to add searchable text field
   const processedData = useMemo(() => {
     if (!data) return [];
@@ -64,6 +99,8 @@ const DataTable = ({ data, isLoading, error }) => {
             searchableValues.push('subscription');
           } else if (option.type === 'free') {
             searchableValues.push('free!');
+          } else if (option.type === 'addon') {
+            searchableValues.push('premium');
           }
         });
       }
@@ -106,8 +143,8 @@ const DataTable = ({ data, isLoading, error }) => {
                     src={imageUrl}
                     alt="Movie poster"
                     style={{
-                      height: '125px',
-                      width: '87.5px',
+                      height: '156px', // 25% bigger than 125px
+                      width: '109px', // 25% bigger than 87.5px
                       objectFit: 'cover',
                       borderRadius: '6px',
                       boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
@@ -119,8 +156,8 @@ const DataTable = ({ data, isLoading, error }) => {
                 ) : (
                   <Box
                     sx={{
-                      height: '125px',
-                      width: '87.5px',
+                      height: '156px', // Match new size
+                      width: '109px', // Match new size
                       backgroundColor: '#2d2d2d',
                       borderRadius: '6px',
                       display: 'flex',
@@ -136,7 +173,7 @@ const DataTable = ({ data, isLoading, error }) => {
                 )}
                 
                 {/* Movie Title with IMDB Link */}
-                <Box sx={{ marginTop: '6px', maxWidth: '87.5px' }}>
+                <Box sx={{ marginTop: '6px', maxWidth: '109px' }}> {/* Match new width */}
                   {row.original.movie?.imdb_id ? (
                     <a 
                       href={`https://www.imdb.com/title/${row.original.movie.imdb_id}/`}
@@ -175,25 +212,21 @@ const DataTable = ({ data, isLoading, error }) => {
               
               {/* Podcast Title and Date */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Box sx={{ fontWeight: 500, marginBottom: '4px', lineHeight: 1.3 }}>
-                  <a
-                    href={row.original.pod_link || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: '#ffffff',
-                      textDecoration: 'none',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.color = '#b0b0b0';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.color = '#ffffff';
-                    }}
-                  >
-                    {title}
-                  </a>
-                </Box>
+                   <Box
+                     onClick={() => handlePodcastClick(row.original)}
+                     sx={{
+                       color: '#ffffff',
+                       cursor: 'pointer',
+                       fontWeight: 500,
+                       marginBottom: '4px',
+                       lineHeight: 1.3,
+                       '&:hover': {
+                         color: '#b0b0b0',
+                       },
+                     }}
+                   >
+                     {title}
+                   </Box>
                 <Box sx={{ fontSize: '0.75rem', color: '#b0b0b0' }}>
                   {date.toLocaleDateString()}
                 </Box>
@@ -235,6 +268,8 @@ const DataTable = ({ data, isLoading, error }) => {
                   costText = 'Subscription';
                 } else if (type === 'free') {
                   costText = 'Free!';
+                } else if (type === 'addon') {
+                  costText = 'Premium';
                 } else if (type) {
                   costText = 'fixme';
                 }
@@ -363,15 +398,33 @@ const DataTable = ({ data, isLoading, error }) => {
             </Box>
           );
         },
-        enableColumnFilter: true,
       },
       {
         accessorKey: 'movie.directors',
         header: 'Director',
         size: 200,
-        Cell: ({ cell }) => {
+        Cell: ({ cell, table }) => {
           const directors = cell.getValue() || [];
-          return directors.join(', ');
+          return (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {directors.map((director, index) => (
+                <Box
+                  key={index}
+                  onClick={() => handleDirectorClick(director, table)}
+                  sx={{
+                    color: '#90caf9',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      color: '#ffffff',
+                    },
+                  }}
+                >
+                  {director}
+                  {index < directors.length - 1 && ', '}
+                </Box>
+              ))}
+            </Box>
+          );
         },
         enableColumnFilter: true,
         filterFn: (row, id, filterValue) => {
@@ -384,9 +437,28 @@ const DataTable = ({ data, isLoading, error }) => {
         accessorKey: 'movie.cast',
         header: 'Actors',
         size: 250,
-        Cell: ({ cell }) => {
+        Cell: ({ cell, table }) => {
           const cast = cell.getValue() || [];
-          return cast.join(', ');
+          return (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {cast.map((actor, index) => (
+                <Box
+                  key={index}
+                  onClick={() => handleActorClick(actor, table)}
+                  sx={{
+                    color: '#90caf9',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      color: '#ffffff',
+                    },
+                  }}
+                >
+                  {actor}
+                  {index < cast.length - 1 && ', '}
+                </Box>
+              ))}
+            </Box>
+          );
         },
         enableColumnFilter: true,
         filterFn: (row, id, filterValue) => {
@@ -411,10 +483,13 @@ const DataTable = ({ data, isLoading, error }) => {
     enableColumnFilters: true,
     globalFilterFn: 'includesString',
     enableSorting: true,
-    enableDensityToggle: true,
-    enableFullScreenToggle: true,
+    enableDensityToggle: false,
+    enableFullScreenToggle: false,
     enableHiding: false,
     enableColumnActions: false,
+    enableColumnVisibility: false,
+    enableToolbarInternalActions: false,
+    renderToolbarInternalActions: () => null,
     initialState: {
       density: 'comfortable',
       showGlobalFilter: true,
@@ -531,10 +606,12 @@ const DataTable = ({ data, isLoading, error }) => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-        Podcast & Movie Data
-      </Typography>
       <MaterialReactTable table={table} />
+      <PodcastPlayerModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        podcast={selectedPodcast}
+      />
     </Box>
   );
 };

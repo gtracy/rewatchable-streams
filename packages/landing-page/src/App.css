@@ -9,7 +9,6 @@
   flex: 1;
   padding: 1rem;
   background: #121212;
-  min-height: calc(100vh - 80px);
 }
 
 .main-content .MuiBox-root {
