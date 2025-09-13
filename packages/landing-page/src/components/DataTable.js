@@ -6,6 +6,7 @@ import {
 import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PodcastPlayerModal from './PodcastPlayerModal';
+import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingClick, trackSearch } from '../utils/analytics';
 import './DataTable.css';
 
 const DataTable = ({ data, isLoading, error }) => {
@@ -16,6 +17,7 @@ const DataTable = ({ data, isLoading, error }) => {
   const handlePodcastClick = (podcast) => {
     setSelectedPodcast(podcast);
     setModalOpen(true);
+    trackPodcastPlay(podcast.pod_title, podcast.movie?.movie_title);
   };
 
   const handleCloseModal = () => {
@@ -31,6 +33,7 @@ const DataTable = ({ data, isLoading, error }) => {
         value: directorName
       }
     ]);
+    trackDirectorClick(directorName);
   };
 
   const handleActorClick = (actorName, table) => {
@@ -41,6 +44,13 @@ const DataTable = ({ data, isLoading, error }) => {
         value: actorName
       }
     ]);
+    trackActorClick(actorName);
+  };
+
+  const handleSearch = (searchValue) => {
+    if (searchValue && searchValue.length > 2) {
+      trackSearch(searchValue);
+    }
   };
 
   // Process data to add searchable text field
@@ -141,7 +151,7 @@ const DataTable = ({ data, isLoading, error }) => {
                 {imageUrl ? (
                   <img
                     src={imageUrl}
-                    alt="Movie poster"
+                    alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
                     style={{
                       height: '156px', // 25% bigger than 125px
                       width: '109px', // 25% bigger than 87.5px
@@ -248,7 +258,7 @@ const DataTable = ({ data, isLoading, error }) => {
         accessorKey: 'movie.streamingOptions',
         header: 'Streams',
         size: 250,
-        Cell: ({ cell }) => {
+        Cell: ({ cell, row }) => {
           const streamingOptions = cell.getValue() || [];
           
           return (
@@ -356,6 +366,7 @@ const DataTable = ({ data, isLoading, error }) => {
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ textDecoration: 'none' }}
+                      onClick={() => trackStreamingClick(serviceName, row.original.movie?.movie_title)}
                     >
                       <Box
                         sx={{
@@ -482,6 +493,7 @@ const DataTable = ({ data, isLoading, error }) => {
     enableGlobalFilter: true,
     enableColumnFilters: true,
     globalFilterFn: 'includesString',
+    onGlobalFilterChange: handleSearch,
     enableSorting: true,
     enableDensityToggle: false,
     enableFullScreenToggle: false,

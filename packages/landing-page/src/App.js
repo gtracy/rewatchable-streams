@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import { fetchData } from './services/api';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { setupGAOptOut } from './utils/analytics';
 
 // Import Sora font from Google Fonts
 import '@fontsource/sora/400.css';
@@ -61,6 +62,7 @@ function App() {
     };
 
     loadData();
+    setupGAOptOut();
   }, []);
 
   return (

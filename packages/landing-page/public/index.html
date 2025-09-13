@@ -7,11 +7,52 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Modern landing page built with React"
+      content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options, listen to podcast episodes, and explore fan discussions about your favorite films."
     />
+    <meta name="keywords" content="movie podcasts, the rewatchables, bill simmons, movie discussions, film podcasts, streaming movies, fan sites, watch that pod" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Landing Page</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://watchthatpod.com/" />
+    <meta property="og:title" content="Watch That Pod - Movie Podcasts & The Rewatchables" />
+    <meta property="og:description" content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options and listen to fan discussions about your favorite films." />
+    <meta property="og:image" content="https://watchthatpod.com/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://watchthatpod.com/" />
+    <meta property="twitter:title" content="Watch That Pod - Movie Podcasts & The Rewatchables" />
+    <meta property="twitter:description" content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options and listen to fan discussions about your favorite films." />
+    <meta property="twitter:image" content="https://watchthatpod.com/og-image.jpg" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Watch That Pod",
+      "description": "Movie podcast discovery and The Rewatchables fan site",
+      "url": "https://watchthatpod.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://watchthatpod.com?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7Z6TRE44CZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7Z6TRE44CZ');
+    </script>
+    
+    <title>Watch That Pod - Movie Podcasts & The Rewatchables Fan Site</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
