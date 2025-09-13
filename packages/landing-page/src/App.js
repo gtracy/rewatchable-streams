@@ -2,18 +2,41 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header';
 import DataTable from './components/DataTable';
+import Footer from './components/Footer';
 import { fetchData } from './services/api';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-// Create a Material-UI theme
+// Import Sora font from Google Fonts
+import '@fontsource/sora/400.css';
+import '@fontsource/sora/500.css';
+import '@fontsource/sora/600.css';
+import '@fontsource/sora/700.css';
+
+// Import Geist font
+import '@fontsource/geist/400.css';
+import '@fontsource/geist/500.css';
+
+// Create a Material-UI theme with dark mode
 const theme = createTheme({
+  typography: {
+    fontFamily: '"Sora", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#667eea',
+      main: '#90caf9',
     },
     secondary: {
-      main: '#764ba2',
+      main: '#f48fb1',
+    },
+    background: {
+      default: '#121212',
+      paper: '#1e1e1e',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#b0b0b0',
     },
   },
 });
@@ -52,6 +75,7 @@ function App() {
             error={error} 
           />
         </main>
+        <Footer />
       </div>
     </ThemeProvider>
   );

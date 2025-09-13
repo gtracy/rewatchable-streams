@@ -1,4 +1,5 @@
 import React from 'react';
+import { Typography } from '@mui/material';
 import './Header.css';
 
 const Header = () => {
@@ -6,16 +7,18 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="nav-brand">
-          <h2>Your App</h2>
-        </div>
-        <nav className="nav-menu">
-          <a href="#" className="nav-link">Home</a>
-          <a href="#" className="nav-link">Dashboard</a>
-          <a href="#" className="nav-link">Settings</a>
-        </nav>
-        <div className="nav-actions">
-          <button className="btn btn-outline">Sign In</button>
-          <button className="btn btn-primary">Sign Up</button>
+          <Typography 
+            variant="h4" 
+            component="h1"
+            sx={{
+              fontFamily: '"Sora", "Roboto", "Helvetica", "Arial", sans-serif',
+              fontWeight: 600,
+              fontSize: '2rem',
+              color: '#ffffff',
+            }}
+          >
+            find my pod movie
+          </Typography>
         </div>
       </div>
     </header>

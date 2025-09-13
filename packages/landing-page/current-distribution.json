@@ -1,5 +1,5 @@
 {
-    "ETag": "E3GA73F9PM6GIB",
+    "ETag": "E226S54SNA3O5T",
     "DistributionConfig": {
         "CallerReference": "rewatchable-streams-webapp-1757284749",
         "Aliases": {
@@ -11,7 +11,7 @@
             "Items": [
                 {
                     "Id": "S3-rewatchable-streams-webapp-1757203168",
-                    "DomainName": "rewatchable-streams-webapp-1757203168.s3.amazonaws.com",
+                    "DomainName": "rewatchable-streams-webapp-1757203168.s3.us-east-2.amazonaws.com",
                     "OriginPath": "",
                     "CustomHeaders": {
                         "Quantity": 0
@@ -24,7 +24,7 @@
                     "OriginShield": {
                         "Enabled": false
                     },
-                    "OriginAccessControlId": ""
+                    "OriginAccessControlId": "E26WAMPXC4C5VM"
                 }
             ]
         },
@@ -87,7 +87,7 @@
         "CustomErrorResponses": {
             "Quantity": 0
         },
-        "Comment": "React App Distribution with HTTPS",
+        "Comment": "React App Distribution with HTTPS - us-east-2",
         "Logging": {
             "Enabled": false,
             "IncludeCookies": false,

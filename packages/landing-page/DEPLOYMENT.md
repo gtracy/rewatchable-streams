@@ -1,37 +1,49 @@
-# Static Deployment Guide
+# Rewatchables Webapp Deployment Guide
 
-This guide covers how to deploy your React web app to various static hosting services.
+This guide covers how to deploy the React webapp to the rewatchables S3 bucket with CloudFront.
 
-## 🚀 Quick Deploy Options
+## 🚀 Quick Deploy
 
-### 1. AWS S3 + CloudFront (Recommended)
+### AWS S3 + CloudFront (Current Setup)
 
-**Pros**: Fast, reliable, cost-effective, global CDN
-**Cost**: ~$1-5/month for low traffic
+**Location**: `s3://rewatchables/webapp/`  
+**URL**: `https://d2is5arv1ipfdl.cloudfront.net/webapp/`  
+**Profile**: `rewatchables-runner`
 
-#### Setup Steps:
+#### One-Command Deployment:
 
-1. **Create S3 Bucket**:
+```bash
+cd packages/landing-page
+./deploy-webapp.sh
+```
+
+This script will:
+1. ✅ Build React app with `/webapp/` public URL
+2. ✅ Upload to `s3://rewatchables/webapp/`
+3. ✅ Update CloudFront distribution (if needed)
+4. ✅ Invalidate CloudFront cache for `/webapp/*`
+
+#### Manual Steps (if needed):
+
+1. **Build with correct public URL**:
    ```bash
-   aws s3 mb s3://your-unique-bucket-name
+   npm run build
    ```
 
-2. **Configure for Static Website**:
+2. **Upload to S3**:
    ```bash
-   aws s3 website s3://your-bucket-name --index-document index.html --error-document index.html
+   AWS_PROFILE=rewatchables-runner aws s3 sync build/ s3://rewatchables/webapp/ --delete
    ```
 
-3. **Deploy**:
+3. **Update CloudFront** (first time only):
    ```bash
-   chmod +x deploy-s3.sh
-   ./deploy-s3.sh
+   ./update-cloudfront-webapp.sh
    ```
 
-4. **Set up CloudFront** (optional, for custom domain and HTTPS):
-   - Go to AWS CloudFront console
-   - Create distribution
-   - Origin: your S3 bucket
-   - Default root object: `index.html`
+4. **Invalidate cache**:
+   ```bash
+   AWS_PROFILE=rewatchables-runner aws cloudfront create-invalidation --distribution-id E7U2S8GNRUT2S --paths "/webapp/*"
+   ```
 
 ### 2. Vercel (Easiest)
 
