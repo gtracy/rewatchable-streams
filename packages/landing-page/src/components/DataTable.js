@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -45,12 +45,6 @@ const DataTable = ({ data, isLoading, error }) => {
       }
     ]);
     trackActorClick(actorName);
-  };
-
-  const handleSearch = (searchValue) => {
-    if (searchValue && searchValue.length > 2) {
-      trackSearch(searchValue);
-    }
   };
 
   // Process data to add searchable text field
@@ -258,6 +252,40 @@ const DataTable = ({ data, isLoading, error }) => {
         accessorKey: 'movie.streamingOptions',
         header: 'Streams',
         size: 250,
+        enableColumnFilter: true,
+        filterFn: (row, id, filterValue) => {
+          const streamingOptions = row.getValue(id) || [];
+          const searchTerm = filterValue.toLowerCase();
+          
+          return streamingOptions.some(option => {
+            // Check service name
+            if (option.serviceName && option.serviceName.toLowerCase().includes(searchTerm)) {
+              return true;
+            }
+            
+            // Check streaming type
+            if (option.type && option.type.toLowerCase().includes(searchTerm)) {
+              return true;
+            }
+            
+            // Check for "free" specifically
+            if (searchTerm === 'free' && option.type === 'free') {
+              return true;
+            }
+            
+            // Check for "premium" for addon type
+            if (searchTerm === 'premium' && option.type === 'addon') {
+              return true;
+            }
+            
+            // Check for "subscription" type
+            if (searchTerm === 'subscription' && option.type === 'subscription') {
+              return true;
+            }
+            
+            return false;
+          });
+        },
         Cell: ({ cell, row }) => {
           const streamingOptions = cell.getValue() || [];
           
@@ -493,7 +521,6 @@ const DataTable = ({ data, isLoading, error }) => {
     enableGlobalFilter: true,
     enableColumnFilters: true,
     globalFilterFn: 'includesString',
-    onGlobalFilterChange: handleSearch,
     enableSorting: true,
     enableDensityToggle: false,
     enableFullScreenToggle: false,
