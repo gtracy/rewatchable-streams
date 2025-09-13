@@ -31,7 +31,7 @@ const Header = () => {
               lineHeight: 1.4,
             }}
           >
-            Discover movie podcasts, The Rewatchables episodes, and streaming options for your favorite films
+            Discover your favorite and forgotten The Rewatchables episodes, and streaming options for your favorite films
           </Typography>
         </div>
       </div>
