@@ -8,9 +8,85 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import './DataTable.css';
 
 const DataTable = ({ data, isLoading, error }) => {
+  // Process data to add searchable text field
+  const processedData = useMemo(() => {
+    if (!data) return [];
+    
+    return data.map(item => {
+      const searchableValues = [];
+      
+      // Add podcast title
+      if (item.pod_title) {
+        searchableValues.push(item.pod_title.toLowerCase());
+      }
+      
+      // Add movie title
+      if (item.movie?.movie_title) {
+        searchableValues.push(item.movie.movie_title.toLowerCase());
+      }
+      
+      // Add podcast date
+      if (item.pod_date) {
+        const date = new Date(item.pod_date);
+        searchableValues.push(date.toLocaleDateString().toLowerCase());
+      }
+      
+      // Add movie year
+      if (item.movie?.releaseYear) {
+        searchableValues.push(`movie year: ${item.movie.releaseYear}`.toLowerCase());
+      }
+      
+      // Add directors
+      if (item.movie?.directors) {
+        const directors = Array.isArray(item.movie.directors) 
+          ? item.movie.directors 
+          : [];
+        searchableValues.push(directors.join(', ').toLowerCase());
+      }
+      
+      // Add actors
+      if (item.movie?.cast) {
+        const cast = Array.isArray(item.movie.cast) 
+          ? item.movie.cast 
+          : [];
+        searchableValues.push(cast.join(', ').toLowerCase());
+      }
+      
+      // Add streaming service names and costs
+      if (item.movie?.streamingOptions) {
+        item.movie.streamingOptions.forEach(option => {
+          if (option.serviceName) {
+            searchableValues.push(option.serviceName.toLowerCase());
+          }
+          if (option.type === 'rent' && option.price?.amount) {
+            searchableValues.push(`$${option.price.amount}`);
+          } else if (option.type === 'subscription') {
+            searchableValues.push('subscription');
+          } else if (option.type === 'free') {
+            searchableValues.push('free!');
+          }
+        });
+      }
+      
+      return {
+        ...item,
+        searchableText: searchableValues.join(' ')
+      };
+    });
+  }, [data]);
+
   // Define columns for the table
   const columns = useMemo(
     () => [
+      // Hidden column for global search
+      {
+        accessorKey: 'searchableText',
+        header: 'Searchable Text',
+        enableHiding: true,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: () => null, // Don't render anything
+      },
       {
         accessorKey: 'pod_date',
         header: 'Podcast',
@@ -30,8 +106,8 @@ const DataTable = ({ data, isLoading, error }) => {
                     src={imageUrl}
                     alt="Movie poster"
                     style={{
-                      height: '100px',
-                      width: '70px',
+                      height: '125px',
+                      width: '87.5px',
                       objectFit: 'cover',
                       borderRadius: '6px',
                       boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
@@ -43,8 +119,8 @@ const DataTable = ({ data, isLoading, error }) => {
                 ) : (
                   <Box
                     sx={{
-                      height: '100px',
-                      width: '70px',
+                      height: '125px',
+                      width: '87.5px',
                       backgroundColor: '#2d2d2d',
                       borderRadius: '6px',
                       display: 'flex',
@@ -60,7 +136,7 @@ const DataTable = ({ data, isLoading, error }) => {
                 )}
                 
                 {/* Movie Title with IMDB Link */}
-                <Box sx={{ marginTop: '6px', maxWidth: '70px' }}>
+                <Box sx={{ marginTop: '6px', maxWidth: '87.5px' }}>
                   {row.original.movie?.imdb_id ? (
                     <a 
                       href={`https://www.imdb.com/title/${row.original.movie.imdb_id}/`}
@@ -69,7 +145,7 @@ const DataTable = ({ data, isLoading, error }) => {
                       style={{
                         color: '#90caf9',
                         textDecoration: 'none',
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
                         fontWeight: 500,
                         display: 'block',
                         textAlign: 'center',
@@ -86,7 +162,7 @@ const DataTable = ({ data, isLoading, error }) => {
                     </a>
                   ) : (
                     <span style={{ 
-                      fontSize: '0.75rem', 
+                      fontSize: '0.7rem', 
                       color: '#b0b0b0',
                       textAlign: 'center',
                       display: 'block'
@@ -100,21 +176,40 @@ const DataTable = ({ data, isLoading, error }) => {
               {/* Podcast Title and Date */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Box sx={{ fontWeight: 500, marginBottom: '4px', lineHeight: 1.3 }}>
-                  {title}
+                  <a
+                    href={row.original.pod_link || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.color = '#b0b0b0';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.color = '#ffffff';
+                    }}
+                  >
+                    {title}
+                  </a>
                 </Box>
                 <Box sx={{ fontSize: '0.75rem', color: '#b0b0b0' }}>
                   {date.toLocaleDateString()}
+                </Box>
+                <Box sx={{ 
+                  fontSize: '0.7rem', 
+                  color: '#b0b0b0', 
+                  fontStyle: 'italic',
+                  textAlign: 'left',
+                  marginTop: '2px'
+                }}>
+                  movie year: {row.original.movie?.releaseYear || 'Unknown'}
                 </Box>
               </Box>
             </Box>
           );
         },
-      },
-      {
-        accessorKey: 'movie.releaseYear',
-        header: 'Movie Year',
-        size: 80,
-        enableColumnFilter: true,
       },
       {
         accessorKey: 'movie.streamingOptions',
@@ -138,6 +233,8 @@ const DataTable = ({ data, isLoading, error }) => {
                   costText = `$${price.amount}`;
                 } else if (type === 'subscription') {
                   costText = 'Subscription';
+                } else if (type === 'free') {
+                  costText = 'Free!';
                 } else if (type) {
                   costText = 'fixme';
                 }
@@ -269,16 +366,6 @@ const DataTable = ({ data, isLoading, error }) => {
         enableColumnFilter: true,
       },
       {
-        accessorKey: 'movie.genres',
-        header: 'Genres',
-        size: 200,
-        Cell: ({ cell }) => {
-          const genres = cell.getValue() || [];
-          return genres.join(', ');
-        },
-        enableColumnFilter: true,
-      },
-      {
         accessorKey: 'movie.directors',
         header: 'Director',
         size: 200,
@@ -287,6 +374,26 @@ const DataTable = ({ data, isLoading, error }) => {
           return directors.join(', ');
         },
         enableColumnFilter: true,
+        filterFn: (row, id, filterValue) => {
+          const directors = row.getValue(id) || [];
+          const directorString = directors.join(', ').toLowerCase();
+          return directorString.includes(filterValue.toLowerCase());
+        },
+      },
+      {
+        accessorKey: 'movie.cast',
+        header: 'Actors',
+        size: 250,
+        Cell: ({ cell }) => {
+          const cast = cell.getValue() || [];
+          return cast.join(', ');
+        },
+        enableColumnFilter: true,
+        filterFn: (row, id, filterValue) => {
+          const cast = row.getValue(id) || [];
+          const castString = cast.join(', ').toLowerCase();
+          return castString.includes(filterValue.toLowerCase());
+        },
       },
     ],
     []
@@ -294,7 +401,7 @@ const DataTable = ({ data, isLoading, error }) => {
 
   const table = useMaterialReactTable({
     columns,
-    data: data || [],
+    data: processedData,
     state: {
       isLoading,
     },
@@ -302,6 +409,7 @@ const DataTable = ({ data, isLoading, error }) => {
     enableColumnOrdering: false,
     enableGlobalFilter: true,
     enableColumnFilters: true,
+    globalFilterFn: 'includesString',
     enableSorting: true,
     enableDensityToggle: true,
     enableFullScreenToggle: true,
@@ -317,6 +425,9 @@ const DataTable = ({ data, isLoading, error }) => {
           desc: true, // Sort in descending order (newest first)
         },
       ],
+      columnVisibility: {
+        searchableText: false,
+      },
     },
     muiTableContainerProps: {
       sx: {
