@@ -1,14 +1,13 @@
 # Rewatchables Webapp Deployment Guide
 
-This guide covers how to deploy the React webapp to the rewatchables S3 bucket with CloudFront.
+This guide covers how to deploy the React webapp to the rewatchables S3 bucket.
 
 ## 🚀 Quick Deploy
 
-### AWS S3 + CloudFront (Current Setup)
+### AWS S3 (Current Setup)
 
 **Location**: `s3://rewatchables/webapp/`  
-**URL**: `https://d2is5arv1ipfdl.cloudfront.net/webapp/`  
-**Profile**: `rewatchables-runner`
+**Profile**: `default`
 
 #### One-Command Deployment:
 
@@ -20,10 +19,9 @@ cd packages/landing-page
 This script will:
 1. ✅ Build React app with `/webapp/` public URL
 2. ✅ Upload to `s3://rewatchables/webapp/`
-3. ✅ Update CloudFront distribution (if needed)
-4. ✅ Invalidate CloudFront cache for `/webapp/*`
+3. ℹ️ CloudFront operations disabled (no distribution configured)
 
-#### Manual Steps (if needed):
+#### Manual Steps:
 
 1. **Build with correct public URL**:
    ```bash
@@ -32,18 +30,10 @@ This script will:
 
 2. **Upload to S3**:
    ```bash
-   AWS_PROFILE=rewatchables-runner aws s3 sync build/ s3://rewatchables/webapp/ --delete
+   aws s3 sync build/ s3://rewatchables/webapp/ --delete
    ```
 
-3. **Update CloudFront** (first time only):
-   ```bash
-   ./update-cloudfront-webapp.sh
-   ```
-
-4. **Invalidate cache**:
-   ```bash
-   AWS_PROFILE=rewatchables-runner aws cloudfront create-invalidation --distribution-id E7U2S8GNRUT2S --paths "/webapp/*"
-   ```
+**Note**: CloudFront distribution not configured. Files are only accessible via S3.
 
 ### 2. Vercel (Easiest)
 

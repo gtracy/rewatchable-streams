@@ -130,9 +130,10 @@ const DataTable = ({ data, isLoading, error }) => {
       },
       {
         accessorKey: 'pod_date',
-        header: 'Podcast',
+        header: 'Podcast Date',
         size: 400,
         enableColumnFilter: true,
+        sortingFn: 'datetime',
         Cell: ({ cell, row }) => {
           const title = row.original.pod_title;
           const date = new Date(cell.getValue());

@@ -6,14 +6,14 @@
 BUCKET_NAME="rewatchables"
 WEBAPP_FOLDER="webapp"
 REGION="us-east-2"
-CLOUDFRONT_DISTRIBUTION_ID="E7U2S8GNRUT2S"
-PROFILE="rewatchables-runner"
+CLOUDFRONT_DISTRIBUTION_ID="E3UTGKV2VWOXDQ"
+PROFILE="default"
 
 echo "🚀 Starting webapp deployment to rewatchables bucket..."
 
-# Step 1: Build React app with correct public URL
-echo "📦 Building React app with /webapp/ public URL..."
-npm run build
+# Step 1: Build React app without public URL (CloudFront handles path)
+echo "📦 Building React app for CloudFront..."
+PUBLIC_URL= npm run build
 
 if [ $? -ne 0 ]; then
     echo "❌ Build failed. Exiting."
@@ -29,18 +29,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Step 3: Update CloudFront distribution (if needed)
-echo "🌐 Checking if CloudFront needs updating..."
-CURRENT_ORIGIN=$(AWS_PROFILE=$PROFILE aws cloudfront get-distribution-config --id $CLOUDFRONT_DISTRIBUTION_ID --query 'DistributionConfig.Origins.Items[0].DomainName' --output text)
-
-if [ "$CURRENT_ORIGIN" != "rewatchables.s3.amazonaws.com" ]; then
-    echo "🔄 Updating CloudFront distribution for new origin..."
-    ./update-cloudfront-webapp.sh
-else
-    echo "✅ CloudFront already configured for rewatchables bucket"
-fi
-
-# Step 4: Invalidate CloudFront cache
+# Step 3: Invalidate CloudFront cache
 echo "🔄 Invalidating CloudFront cache for /webapp/*..."
 AWS_PROFILE=$PROFILE aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/webapp/*"
 
@@ -52,7 +41,8 @@ fi
 
 echo ""
 echo "🎉 Deployment complete!"
-echo "📍 Webapp URL: https://d2is5arv1ipfdl.cloudfront.net/webapp/"
+echo "📍 CloudFront URL: https://d17j4vszgpwat2.cloudfront.net/"
+echo "🌐 Custom Domain: https://watchthatpod.com/"
 echo "📁 S3 Path: s3://$BUCKET_NAME/$WEBAPP_FOLDER/"
 echo ""
 echo "Note: CloudFront changes may take 10-15 minutes to propagate globally."
