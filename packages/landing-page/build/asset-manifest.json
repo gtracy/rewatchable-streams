@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.4959f033.css",
-    "main.js": "/static/js/main.50a2fba7.js",
+    "main.css": "/static/css/main.22dd42a1.css",
+    "main.js": "/static/js/main.f51329cc.js",
     "reactPlayerHls.js": "/static/js/reactPlayerHls.5995ae43.chunk.js",
     "reactPlayerDash.js": "/static/js/reactPlayerDash.ec91618a.chunk.js",
     "reactPlayerMux.js": "/static/js/reactPlayerMux.9eda8860.chunk.js",
@@ -43,8 +43,8 @@
     "static/media/geist-cyrillic-500-normal.woff2": "/static/media/geist-cyrillic-500-normal.81116b3dc9dea9c79d7d.woff2",
     "static/media/geist-cyrillic-400-normal.woff2": "/static/media/geist-cyrillic-400-normal.85041daa1acec19ac818.woff2",
     "index.html": "/index.html",
-    "main.4959f033.css.map": "/static/css/main.4959f033.css.map",
-    "main.50a2fba7.js.map": "/static/js/main.50a2fba7.js.map",
+    "main.22dd42a1.css.map": "/static/css/main.22dd42a1.css.map",
+    "main.f51329cc.js.map": "/static/js/main.f51329cc.js.map",
     "reactPlayerHls.5995ae43.chunk.js.map": "/static/js/reactPlayerHls.5995ae43.chunk.js.map",
     "reactPlayerDash.ec91618a.chunk.js.map": "/static/js/reactPlayerDash.ec91618a.chunk.js.map",
     "reactPlayerMux.9eda8860.chunk.js.map": "/static/js/reactPlayerMux.9eda8860.chunk.js.map",
@@ -59,7 +59,7 @@
     "933.cc37897c.chunk.js.map": "/static/js/933.cc37897c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4959f033.css",
-    "static/js/main.50a2fba7.js"
+    "static/css/main.22dd42a1.css",
+    "static/js/main.f51329cc.js"
   ]
 }

@@ -3,7 +3,7 @@ const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb")
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { CloudFrontClient, CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
 
-const config = require('../../config');
+const config = require('./config');
 const logger = require('pino')(config.getLogConfig());
 
 // Environment variables
@@ -11,7 +11,7 @@ const PODCAST_MOVIES_TABLE = process.env.PODCAST_MOVIES_TABLE || 'podcast_movies
 const MOVIE_STREAMS_TABLE = process.env.MOVIE_STREAMS_TABLE || 'movie_streams';
 const S3_BUCKET = process.env.S3_BUCKET || 'rewatchables';
 const S3_KEY = process.env.S3_KEY || 'data_files/podcast_movie_data.json';
-const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || 'E7U2S8GNRUT2S';
+// const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || 'REPLACE_WITH_NEW_DISTRIBUTION_ID';
 
 /**
  * Main application function that generates JSON data for the website
@@ -46,13 +46,13 @@ async function generateRewatchableStreamsData() {
         await uploadToS3(s3Client, result);
         logger.info('Successfully uploaded data to S3');
         
-        // Invalidate CloudFront cache (optional - don't fail if permissions are missing)
-        try {
-            await invalidateCloudFrontCache(cloudFrontClient);
-            logger.info('Successfully invalidated CloudFront cache');
-        } catch (cloudFrontError) {
-            logger.error('CloudFront cache invalidation failed (this is optional):', cloudFrontError.message);
-        }
+        // CloudFront cache invalidation disabled - no distribution configured
+        // try {
+        //     await invalidateCloudFrontCache(cloudFrontClient);
+        //     logger.info('Successfully invalidated CloudFront cache');
+        // } catch (cloudFrontError) {
+        //     logger.error('CloudFront cache invalidation failed (this is optional):', cloudFrontError.message);
+        // }
         
         return {
             success: true,
@@ -225,25 +225,26 @@ async function uploadToS3(s3Client, data) {
 
 /**
  * Invalidate CloudFront cache for the data.json file
+ * DISABLED - No CloudFront distribution configured
  */
-async function invalidateCloudFrontCache(cloudFrontClient) {
-    const params = {
-        DistributionId: CLOUDFRONT_DISTRIBUTION_ID,
-        InvalidationBatch: {
-            CallerReference: `data-json-${Date.now()}`,
-            Paths: {
-                Quantity: 1,
-                Items: ['/data.json']
-            }
-        }
-    };
-    
-    const command = new CreateInvalidationCommand(params);
-    const result = await cloudFrontClient.send(command);
-    
-    logger.info(`CloudFront invalidation created: ${result.Invalidation.Id}`);
-    return result;
-}
+// async function invalidateCloudFrontCache(cloudFrontClient) {
+//     const params = {
+//         DistributionId: CLOUDFRONT_DISTRIBUTION_ID,
+//         InvalidationBatch: {
+//             CallerReference: `data-json-${Date.now()}`,
+//             Paths: {
+//                 Quantity: 1,
+//                 Items: ['/data.json']
+//             }
+//         }
+//     };
+//     
+//     const command = new CreateInvalidationCommand(params);
+//     const result = await cloudFrontClient.send(command);
+//     
+//     logger.info(`CloudFront invalidation created: ${result.Invalidation.Id}`);
+//     return result;
+// }
 
 /**
  * Lambda handler function
@@ -277,6 +278,6 @@ module.exports = {
     fetchMovieData,
     filterStreamingOptions,
     flattenGenres,
-    uploadToS3,
-    invalidateCloudFrontCache
+    uploadToS3
+    // invalidateCloudFrontCache - disabled, no CloudFront distribution configured
 };
