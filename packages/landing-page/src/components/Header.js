@@ -13,12 +13,12 @@ const Header = () => {
             sx={{
               fontFamily: '"Sora", "Roboto", "Helvetica", "Arial", sans-serif',
               fontWeight: 600,
-              fontSize: '2rem',
+              fontSize: '2.5rem',
               color: '#ffffff',
               margin: 0,
             }}
           >
-            Watch That Pod - Movie Podcasts & The Rewatchables
+            watch that pod
           </Typography>
           <Typography 
             variant="h6" 
@@ -31,7 +31,7 @@ const Header = () => {
               lineHeight: 1.4,
             }}
           >
-            Discover your favorite and forgotten The Rewatchables episodes, and streaming options for your favorite films
+            Discover your favorite and forgotten The Rewatchables episodes, and all of the streaming options available for your best-loved movies.
           </Typography>
         </div>
       </div>

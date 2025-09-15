@@ -546,8 +546,9 @@ const DataTable = ({ data, isLoading, error }) => {
     muiTableContainerProps: {
       sx: {
         maxHeight: '600px',
-        border: '1px solid #333',
+        border: 'none',
         borderRadius: '4px',
+        boxShadow: 'none',
       },
     },
     muiTableHeadCellProps: {
@@ -596,11 +597,36 @@ const DataTable = ({ data, isLoading, error }) => {
     },
     muiTableBodyRowProps: ({ row }) => ({
       sx: {
+        border: '1px solid #444',
+        borderRadius: '8px',
+        margin: '8px 0',
+        boxShadow: 'none',
         '&:hover': {
           backgroundColor: '#2d2d2d',
         },
+        '& td:first-of-type': {
+          borderTopLeftRadius: '8px',
+          borderBottomLeftRadius: '8px',
+        },
+        '& td:last-of-type': {
+          borderTopRightRadius: '8px',
+          borderBottomRightRadius: '8px',
+        },
       },
     }),
+    muiTableBodyProps: {
+      sx: {
+        '& .MuiTableRow-root': {
+          marginBottom: '12px',
+          '&:last-child': {
+            marginBottom: '0',
+          },
+        },
+        '& .MuiTableRow-root .MuiTableCell-root': {
+          borderBottom: 'none',
+        },
+      },
+    },
         muiTableProps: {
           sx: {
             '& .MuiTableHead-root': {
@@ -622,6 +648,16 @@ const DataTable = ({ data, isLoading, error }) => {
             },
             '& .MuiTableHead-root .MuiTableCell-root .MuiSvgIcon-root': {
               color: '#ffffff !important',
+            },
+            '& .MuiTableBody-root .MuiTableRow-root': {
+              boxShadow: 'none !important',
+              '&:hover': {
+                boxShadow: 'none !important',
+              },
+            },
+            '& .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root': {
+              boxShadow: 'none !important',
+              borderBottom: 'none !important',
             },
           },
         },

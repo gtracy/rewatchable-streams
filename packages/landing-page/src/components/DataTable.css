@@ -80,3 +80,15 @@
   padding: 8px 16px;
   font-size: 0.875rem;
 }
+
+/* Remove all box shadows and drop shadows */
+.MuiTableContainer-root,
+.MuiTable-root,
+.MuiTableBody-root,
+.MuiTableBody-root .MuiTableRow-root,
+.MuiTableBody-root .MuiTableRow-root .MuiTableCell-root,
+.MuiTableBody-root .MuiTableRow-root:hover {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
