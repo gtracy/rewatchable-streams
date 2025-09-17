@@ -5,6 +5,7 @@ import {
 } from 'material-react-table';
 import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PodcastPlayerModal from './PodcastPlayerModal';
 import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingClick, trackSearch } from '../utils/analytics';
 import './DataTable.css';
@@ -230,7 +231,23 @@ const DataTable = ({ data, isLoading, error }) => {
                        },
                      }}
                    >
-                     {title}
+                     {title.split(' ').map((word, index, array) => (
+                       <React.Fragment key={index}>
+                         {word}
+                         {index === array.length - 1 && (
+                           <PlayCircleOutlineIcon 
+                             sx={{ 
+                               fontSize: '1.6em',
+                               color: 'inherit',
+                               opacity: 0.7,
+                               marginLeft: '4px',
+                               verticalAlign: 'middle',
+                             }} 
+                           />
+                         )}
+                         {index < array.length - 1 && ' '}
+                       </React.Fragment>
+                     ))}
                    </Box>
                 <Box sx={{ fontSize: '0.75rem', color: '#b0b0b0' }}>
                   {date.toLocaleDateString()}
