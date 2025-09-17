@@ -11,6 +11,10 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://watchthatpod.com/" />
+    <link rel="alternate" hreflang="en" href="https://watchthatpod.com/" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <meta
       name="description"
       content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options, listen to podcast episodes, and explore fan discussions about your favorite films."
@@ -37,12 +41,23 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Watch That Pod",
+      "alternateName": "Watch That Pod - Movie Podcasts & The Rewatchables",
       "description": "Movie podcast discovery and The Rewatchables fan site",
       "url": "https://watchthatpod.com",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Watch That Pod",
+        "url": "https://watchthatpod.com"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://watchthatpod.com?search={search_term_string}",
         "query-input": "required name=search_term_string"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "name": "Movie Podcasts and Episodes",
+        "description": "Collection of The Rewatchables podcast episodes and movie discussions"
       }
     }
     </script>
