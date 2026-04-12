@@ -24,7 +24,7 @@
         "dotenv-json": "^1.0.0",
         "pino": "^9.3.2",
         "rss-parser": "^3.13.0",
-        "underscore": "^1.13.7"
+        "underscore": "^1.13.8"
     },
     "devDependencies": {
     }
