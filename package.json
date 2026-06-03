@@ -14,6 +14,6 @@
     },
     "homepage": "https://github.com/gtracy/rewatchable-streams#readme",
     "dependencies": {
-        "react-router-dom": "^7.12.0"
+        "react-router-dom": "^7.16.0"
     }
 }
