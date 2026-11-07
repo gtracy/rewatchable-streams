@@ -3,14 +3,19 @@
     "description": "fetch stream details for a movie",
     "author": "greg tracy",
     "version": "0.1.0",
+    "scripts": {
+        "test": "vitest run --passWithNoTests"
+    },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.1053.0",
         "@aws-sdk/lib-dynamodb": "^3.637.0",
-        "dotenv-json": "^1.0.0",
         "axios": "^1.20.0",
+        "dotenv-json": "^1.0.0",
         "pino": "^9.3.2",
         "streaming-availability": "^4.4.0"
     },
     "devDependencies": {
+        "aws-sdk-client-mock": "^4.1.0",
+        "vitest": "^4.1.12"
     }
 }

@@ -4,6 +4,9 @@
     "author": "greg tracy",
     "version": "0.1.0",
     "private": true,
+    "scripts": {
+        "test": "for d in packages/fetch_url packages/rss_polling packages/streams_fetch packages/streams_refresh packages/www_job bin utils; do (cd \"$d\" && npm test) || exit 1; done"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gtracy/rewatchable-streams.git"

@@ -11,41 +11,9 @@ const logger = require('pino')(config.getLogConfig());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { extractMovieTitle } = require('./title');
 
 const TMDB_API_BASE_URL = 'https://api.themoviedb.org/3/search/movie';
-
-function extractMovieTitle(str) {
-  const regex = /['\u2018\u2019\u0022\u201C\u201d](.*?)['\u2018\u2019\u0022\u201C\u201d]/;
-  const match = str.match(regex);
-  if( match ) {
-    logger.debug(str);
-
-    // Some of the movie titles are just wrong. Fix them here.
-    if( match[1] === 'A Few Good (Re)Men' ) {
-      return 'A Few Good Men';
-    } else if( match[1] === 'Kicking and Screaming (1995)' ) {
-      return 'Kicking and Screaming';
-    } else if( match[1] === 'The Re-Heat' ) {
-      return 'Heat';
-    } else if( match[1] === 'The Re-Departed' ) {
-      return 'The Departed';
-    } else if( match[1] === 'Wayne' ) {
-      return 'Wayne\'s World';
-    } else {
-      return match[1];
-    }
-    // some of the movie titles are poorly formatted. fix those too.
-  } else if( str === 'Creed With Bill Simmons, Wesley Morris, Sean Fennessey, and K. Austin Collins' ) {
-    return 'Creed';
-  } else if( str === "The Omen’ With Bill Simmons and Chris Ryan" ) {
-    return 'The Omen';
-  } else if( str === "Miami Vice: Calderone’s Return (Part 1 + 2)" ) {
-    return 'Miami Vice';
-} else {
-    logger.error('missing movie title - '+str);
-    return null;
-  }
-}
 
 exports.handler = async (event) => {
   if( !process.env.TMDB_API_KEY ) {
@@ -72,7 +40,7 @@ exports.handler = async (event) => {
     for (const episode of episodes) {
       pod_count++;
 
-      const movieTitle = extractMovieTitle(episode.title);
+      const movieTitle = extractMovieTitle(episode.title, logger);
       if( !movieTitle ) {
         continue;
       }
