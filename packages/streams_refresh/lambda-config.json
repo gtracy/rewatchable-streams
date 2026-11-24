@@ -1,0 +1,21 @@
+{
+  "Description": "Refreshes streaming availability for the oldest movies in the catalog (hourly batch)",
+  "Environment": {
+    "Variables": {
+      "DYNAMO_MOVIE_STREAMS_TABLE": "movie_streams",
+      "STREAM_REFRESH_LIMIT": "5",
+      "STREAM_REFRESH_PACING_MS": "500"
+    }
+  },
+  "FunctionName": "rewatchable-streams-streams-refresh",
+  "Handler": "packages/streams_refresh/app-lambda.handler",
+  "MemorySize": 512,
+  "Role": "arn:aws:iam::315817266687:role/lambda-execution-role",
+  "Runtime": "nodejs20.x",
+  "Tags": {
+    "Environment": "production",
+    "Project": "rewatchable-streams",
+    "Purpose": "data-refresh"
+  },
+  "Timeout": 300
+}
