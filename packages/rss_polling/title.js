@@ -12,7 +12,7 @@ function extractMovieTitle(str, log) {
   const regex = /['\u2018\u2019\u0022\u201C\u201d](.*?)['\u2018\u2019\u0022\u201C\u201d]/;
   const match = str.match(regex);
   if( match ) {
-    logger.debug(str);
+    logger.debug({ title: str }, 'Extracted movie title');
 
     // Some of the movie titles are just wrong. Fix them here.
     if( match[1] === 'A Few Good (Re)Men' ) {
@@ -36,7 +36,7 @@ function extractMovieTitle(str, log) {
   } else if( str === "Miami Vice: Calderone’s Return (Part 1 + 2)" ) {
     return 'Miami Vice';
 } else {
-    logger.error('missing movie title - '+str);
+    logger.error({ title: str }, 'Missing movie title');
     return null;
   }
 }

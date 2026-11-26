@@ -3,15 +3,7 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 
-// Stub dotenv-json and utils/streams before loading app.js.
-const dotenvJsonPath = require.resolve('dotenv-json');
-require.cache[dotenvJsonPath] = {
-  id: dotenvJsonPath,
-  filename: dotenvJsonPath,
-  loaded: true,
-  exports: () => ({}),
-};
-
+// Stub utils/streams before loading app.js.
 const mockFetchStream = vi.fn();
 const utilsStreamsPath = require.resolve('../../../utils/streams');
 require.cache[utilsStreamsPath] = {
@@ -24,6 +16,8 @@ require.cache[utilsStreamsPath] = {
 process.env.LOG_LEVEL = 'silent';
 
 const fixtures = require('../../../test/fixtures');
+const rootConfig = require('../../../config');
+const localConfig = require('../config');
 const app = require('../app');
 const appLambda = require('../app-lambda');
 
@@ -90,13 +84,38 @@ describe('packages/streams_fetch/app.js', () => {
     expect(mockFetchStream).not.toHaveBeenCalled();
   });
 
-  it('propagates errors if fetchStream rejects', async () => {
-    mockFetchStream.mockRejectedValueOnce(new Error('Stream API failure'));
+  it('catches and logs errors if fetchStream rejects and continues processing remaining records', async () => {
+    const apiError = new Error('Stream API failure');
+    const errorSpy = vi.spyOn(app.logger, 'error');
+    mockFetchStream.mockRejectedValueOnce(apiError).mockResolvedValueOnce(undefined);
     const event = {
-      Records: [{ eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '11' } } } }],
+      Records: [
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '11' } } } },
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '680' } } } },
+      ],
     };
 
-    await expect(app.handler(event, {})).rejects.toThrow('Stream API failure');
+    await expect(app.handler(event, {})).resolves.toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledWith(
+      { err: apiError, tmdbId: 11 },
+      'Error refreshing streaming details'
+    );
+    expect(mockFetchStream).toHaveBeenCalledTimes(2);
+    expect(mockFetchStream.mock.calls).toEqual([[11], [680]]);
+  });
+});
+
+describe('config getSQSConfig logging', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns undefined without calling console.log in root and package config', () => {
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    expect(rootConfig.getSQSConfig('test-queue')).toBeUndefined();
+    expect(localConfig.getSQSConfig('test-queue')).toBeUndefined();
+    expect(consoleLogSpy).not.toHaveBeenCalled();
   });
 });
 

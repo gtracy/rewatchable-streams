@@ -5,15 +5,7 @@ import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
 const require = createRequire(import.meta.url);
 
-// Stub dotenv-json and streaming-availability before loading utils/streams.js.
-const dotenvJsonPath = require.resolve('dotenv-json');
-require.cache[dotenvJsonPath] = {
-  id: dotenvJsonPath,
-  filename: dotenvJsonPath,
-  loaded: true,
-  exports: () => ({}),
-};
-
+// Stub streaming-availability before loading utils/streams.js.
 const mockGetShow = vi.fn();
 const configCalls = [];
 const clientCalls = [];
@@ -154,11 +146,25 @@ describe('utils/streams.js fetchStream', () => {
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(1);
   });
 
-  it('catches malformed API responses missing imageSet or streamingOptions', async () => {
+  it('safely handles API responses missing imageSet or streamingOptions', async () => {
     mockGetShow.mockResolvedValue({
       id: '266',
-      title: 'Broken Payload',
+      title: 'Partial Payload',
+      imageSet: null,
+      streamingOptions: null,
     });
+    ddbMock.on(PutCommand).resolves({});
+
+    await expect(fetchStream(115)).resolves.toBeUndefined();
+    const putCalls = ddbMock.commandCalls(PutCommand);
+    expect(putCalls).toHaveLength(1);
+    expect(putCalls[0].args[0].input.Item.imageSet).toBeUndefined();
+    expect(putCalls[0].args[0].input.Item.streamingOptions).toBeUndefined();
+    expect(putCalls[0].args[0].input.Item.tmdb_id).toBe(115);
+  });
+
+  it('safely handles null API response without writing to DynamoDB', async () => {
+    mockGetShow.mockResolvedValue(null);
 
     await expect(fetchStream(115)).resolves.toBeUndefined();
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
@@ -223,12 +229,12 @@ describe('utils/streams.js filterServices', () => {
     expect(knownThenUnknown[0].type).toBe('buy');
   });
 
-  it('updates to the later entry when both entries have unknown types', () => {
+  it('preserves the first entry when both entries have unknown types', () => {
     const result = filterServices([
       { service: { id: 'tubi' }, type: 'free', link: 'first' },
       { service: { id: 'tubi' }, type: 'addon', link: 'second' },
     ]);
     expect(result).toHaveLength(1);
-    expect(result[0].link).toBe('second');
+    expect(result[0].link).toBe('first');
   });
 });

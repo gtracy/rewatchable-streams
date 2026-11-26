@@ -1,9 +1,14 @@
+'use strict';
+
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, ScanCommand, GetCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
-const streamingAvailability = require('streaming-availability');
+const { DynamoDBDocumentClient, ScanCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../.env.json')});
+
+const envPath = path.resolve(__dirname, '../.env.json');
+if (fs.existsSync(envPath)) {
+  require('dotenv-json')({ path: envPath });
+}
 
 const config = require('../config');
 const logger = require('pino')(config.getLogConfig());
@@ -13,22 +18,24 @@ const fetchStream = require('../utils/streams').fetchStream;
 const client = new DynamoDBClient(config.getAWSConfig());
 const docClient = DynamoDBDocumentClient.from(client);
 
-const MOVIE_STREAMS_TABLE = process.env.DYNAMO_MOVIE_STREAMS_TABLE;
-
 // Helper function to pause for ms milliseconds
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function processPodcastMovies() {
+  let tmdbId;
+  const podcastMoviesTable = process.env.DYNAMO_PODCAST_MOVIES_TABLE;
+  const movieStreamsTable = process.env.DYNAMO_MOVIE_STREAMS_TABLE;
+
   try {
-    logger.info(`Scanning table: ${process.env.DYNAMO_PODCAST_MOVIES_TABLE}`);
+    logger.info({ tableName: podcastMoviesTable }, 'Scanning podcast movies table');
     let items = [];
     let lastEvaluatedKey = undefined;
 
     do {
       const scanCommand = new ScanCommand({
-        TableName: process.env.DYNAMO_PODCAST_MOVIES_TABLE,
+        TableName: podcastMoviesTable,
         ExclusiveStartKey: lastEvaluatedKey
       });
       const scanResult = await docClient.send(scanCommand);
@@ -37,7 +44,7 @@ async function processPodcastMovies() {
       }
       lastEvaluatedKey = scanResult.LastEvaluatedKey;
     } while (lastEvaluatedKey);
-    logger.info(`Found ${items.length} entries in ${process.env.DYNAMO_PODCAST_MOVIES_TABLE}`);
+    logger.info({ count: items.length, tableName: podcastMoviesTable }, 'Found podcast movie entries');
 
     // Collect tmdb_id values
     const tmdbIds = items
@@ -47,15 +54,15 @@ async function processPodcastMovies() {
     // Write tmdb_id list to a file
     const outputPath = path.resolve(__dirname, 'tmdb_ids.json');
     fs.writeFileSync(outputPath, JSON.stringify(tmdbIds, null, 2));
-    logger.info(`Wrote ${tmdbIds.length} tmdb_id values to ${outputPath}`);
+    logger.info({ count: tmdbIds.length, outputPath }, 'Wrote tmdb_id values to file');
 
     for (const movie of items) {
       if (movie.tmdb_id) {
-        const tmdbId = movie.tmdb_id;
-        logger.info(`Looking up tmdb_id: ${tmdbId} in ${MOVIE_STREAMS_TABLE}`);
+        tmdbId = movie.tmdb_id;
+        logger.info({ tmdbId, tableName: movieStreamsTable }, 'Looking up tmdb_id in movie streams table');
 
         const getCommand = new GetCommand({
-          TableName: MOVIE_STREAMS_TABLE,
+          TableName: movieStreamsTable,
           Key: {
             tmdb_id: tmdbId,
           },
@@ -64,27 +71,27 @@ async function processPodcastMovies() {
         const getResult = await docClient.send(getCommand);
 
         if (getResult.Item) {
-          logger.info(`Found entry for tmdb_id: ${tmdbId} in ${MOVIE_STREAMS_TABLE}`);
+          logger.info({ tmdbId, tableName: movieStreamsTable }, 'Found existing stream entry');
         } else {
-          logger.info(`tmdb_id: ${tmdbId} not found in ${MOVIE_STREAMS_TABLE}. Creating new entry.`);
-          fetchStream(tmdbId);
-          logger.info('Streaming options saved for movie: '+ tmdbId);
+          logger.info({ tmdbId, tableName: movieStreamsTable }, 'Stream entry not found, creating new entry');
+          await fetchStream(tmdbId);
+          logger.info({ tmdbId }, 'Streaming options saved for movie');
 
           // Pause a random amount of time between 0 and 10 seconds
           const pauseMs = Math.floor(Math.random() * 10001);
-          logger.info(`Pausing for ${pauseMs} ms...`);
+          logger.info({ pauseMs, tmdbId }, 'Pausing before next fetch');
           await sleep(pauseMs);
         } // end if getResult.Item
       } else {
-        logger.error(`Entry in ${PODCAST_MOVIES_TABLE} missing tmdb_id:`, movie);
+        logger.error({ tableName: podcastMoviesTable, movie }, 'Entry missing tmdb_id');
       }
 
     }
 
-    logger.info('Finished processing podcast movies.');
+    logger.info('Finished processing podcast movies');
 
   } catch (error) {
-    logger.error({error},'Error scanning podcast movies table: '+tmdbId);
+    logger.error({ err: error, tmdbId }, 'Error scanning podcast movies table');
   }
 }
 
@@ -92,4 +99,4 @@ if (require.main === module) {
   processPodcastMovies();
 }
 
-module.exports = { processPodcastMovies, sleep };
+module.exports = { processPodcastMovies, sleep, logger };

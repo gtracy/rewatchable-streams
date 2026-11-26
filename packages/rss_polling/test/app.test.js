@@ -1,18 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'module';
+import path from 'path';
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 
 const require = createRequire(import.meta.url);
-
-// Stub dotenv-json before loading app.js so tests do not require a root .env.json file.
-const dotenvJsonPath = require.resolve('dotenv-json');
-require.cache[dotenvJsonPath] = {
-  id: dotenvJsonPath,
-  filename: dotenvJsonPath,
-  loaded: true,
-  exports: () => ({}),
-};
 
 process.env.LOG_LEVEL = 'silent';
 
@@ -41,6 +33,8 @@ describe('packages/rss_polling/app.js', () => {
   let parseURLSpy;
   let axiosGetSpy;
   let consoleLogSpy;
+  let loggerInfoSpy;
+  let loggerErrorSpy;
 
   beforeEach(() => {
     ddbMock.reset();
@@ -49,6 +43,8 @@ describe('packages/rss_polling/app.js', () => {
     parseURLSpy = vi.spyOn(Parser.prototype, 'parseURL');
     axiosGetSpy = vi.spyOn(axios, 'get');
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    loggerInfoSpy = vi.spyOn(app.logger, 'info');
+    loggerErrorSpy = vi.spyOn(app.logger, 'error');
   });
 
   afterEach(() => {
@@ -65,6 +61,10 @@ describe('packages/rss_polling/app.js', () => {
     expect(parseURLSpy).not.toHaveBeenCalled();
     expect(axiosGetSpy).not.toHaveBeenCalled();
     expect(ddbMock.calls()).toHaveLength(0);
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      { envPath: path.resolve(__dirname, '../../../.env.json') },
+      'Failed to initialize job: missing TMDB_API_KEY'
+    );
   });
 
   it('parses RSS feed, searches TMDB (filtering English and picking most popular), fetches details, and saves to DynamoDB', async () => {
@@ -131,8 +131,10 @@ describe('packages/rss_polling/app.js', () => {
       gsi_pk: 'ALL_PODS',
     });
     expect(putInput.Item.last_updated).toBeTruthy();
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Processed: 1, Saved: 1, Skipped: 0')
+    expect(consoleLogSpy).not.toHaveBeenCalled();
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      { podCount: 1, saveCount: 1, skipCount: 0 },
+      'Podcast processing complete'
     );
   });
 
@@ -190,8 +192,9 @@ describe('packages/rss_polling/app.js', () => {
     expect(result).toBe('Lambda function execution successful!');
     expect(axiosGetSpy).toHaveBeenCalledTimes(1);
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Processed: 1, Saved: 0, Skipped: 1')
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      { podCount: 1, saveCount: 0, skipCount: 1 },
+      'Podcast processing complete'
     );
   });
 
@@ -212,8 +215,9 @@ describe('packages/rss_polling/app.js', () => {
     expect(result).toBe('Lambda function execution successful!');
     expect(axiosGetSpy).toHaveBeenCalledTimes(1);
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Processed: 1, Saved: 0, Skipped: 1')
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      { podCount: 1, saveCount: 0, skipCount: 1 },
+      'Podcast processing complete'
     );
   });
 
@@ -241,8 +245,9 @@ describe('packages/rss_polling/app.js', () => {
 
     expect(result).toBe('Lambda function execution successful!');
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(2);
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Processed: 2, Saved: 1, Skipped: 1')
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      { podCount: 2, saveCount: 1, skipCount: 1 },
+      'Podcast processing complete'
     );
   });
 
@@ -311,8 +316,8 @@ describe('packages/rss_polling/app.js findBestMatch', () => {
     expect(app.findBestMatch(results, 'Test')).toEqual(results[2]);
   });
 
-  it('throws ReferenceError on empty array due to bug in results.length == 0 branch', () => {
-    expect(() => app.findBestMatch([], 'Empty')).toThrow(ReferenceError);
+  it('returns null when results is empty', () => {
+    expect(app.findBestMatch([], 'Empty')).toBeNull();
   });
 });
 
@@ -321,14 +326,14 @@ describe('packages/rss_polling/app-lambda.js', () => {
     vi.restoreAllMocks();
   });
 
-  it('delegates to app.handler(null, event, context) and returns its result', async () => {
+  it('delegates to app.handler(event, context) and returns its result', async () => {
     const handlerSpy = vi.spyOn(app, 'handler').mockResolvedValue('Lambda function execution successful!');
     const event = { source: 'aws.events' };
     const context = { awsRequestId: 'req-123' };
 
     const result = await appLambda.handler(event, context);
 
-    expect(handlerSpy).toHaveBeenCalledWith(null, event, context);
+    expect(handlerSpy).toHaveBeenCalledWith(event, context);
     expect(result).toBe('Lambda function execution successful!');
   });
 });

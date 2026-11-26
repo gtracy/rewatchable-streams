@@ -5,15 +5,7 @@ import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
 const require = createRequire(import.meta.url);
 
-// Stub dotenv-json and utils/streams before loading app.js.
-const dotenvJsonPath = require.resolve('dotenv-json');
-require.cache[dotenvJsonPath] = {
-  id: dotenvJsonPath,
-  filename: dotenvJsonPath,
-  loaded: true,
-  exports: () => ({}),
-};
-
+// Stub utils/streams before loading app.js.
 const mockFetchStream = vi.fn();
 const utilsStreamsPath = require.resolve('../../../utils/streams');
 require.cache[utilsStreamsPath] = {
@@ -114,7 +106,7 @@ describe('packages/streams_refresh/app.js handler', () => {
     expect(mockFetchStream.mock.calls).toEqual([[11], [680]]);
   });
 
-  it('uses STREAM_REFRESH_LIMIT env var when provided', async () => {
+  it('uses STREAM_REFRESH_LIMIT env var parsed as integer when provided', async () => {
     process.env.STREAM_REFRESH_LIMIT = '15';
     ddbMock.on(QueryCommand).resolves({ Items: [] });
 
@@ -122,9 +114,23 @@ describe('packages/streams_refresh/app.js handler', () => {
 
     const queryCalls = ddbMock.commandCalls(QueryCommand);
     expect(queryCalls).toHaveLength(1);
-    expect(queryCalls[0].args[0].input.Limit).toBe('15');
+    expect(queryCalls[0].args[0].input.Limit).toBe(15);
     expect(mockFetchStream).not.toHaveBeenCalled();
   });
+
+  it.each(['not-a-number', '0', '-5', ''])(
+    'falls back to default limit of 5 when STREAM_REFRESH_LIMIT is "%s"',
+    async (invalidLimit) => {
+      process.env.STREAM_REFRESH_LIMIT = invalidLimit;
+      ddbMock.on(QueryCommand).resolves({ Items: [] });
+
+      await app.handler({}, {});
+
+      const queryCalls = ddbMock.commandCalls(QueryCommand);
+      expect(queryCalls).toHaveLength(1);
+      expect(queryCalls[0].args[0].input.Limit).toBe(5);
+    }
+  );
 
   it('catches DynamoDB query errors without throwing', async () => {
     ddbMock.on(QueryCommand).rejects(new Error('DynamoDB unavailable'));

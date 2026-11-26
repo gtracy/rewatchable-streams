@@ -5,15 +5,7 @@ import { DynamoDBDocumentClient, ScanCommand, GetCommand } from '@aws-sdk/lib-dy
 
 const require = createRequire(import.meta.url);
 
-// Stub dotenv-json and utils/streams before loading backfill-streams.js.
-const dotenvJsonPath = require.resolve('dotenv-json');
-require.cache[dotenvJsonPath] = {
-  id: dotenvJsonPath,
-  filename: dotenvJsonPath,
-  loaded: true,
-  exports: () => ({}),
-};
-
+// Stub utils/streams before loading backfill-streams.js.
 const mockFetchStream = vi.fn();
 const utilsStreamsPath = require.resolve('../../utils/streams');
 require.cache[utilsStreamsPath] = {
@@ -126,15 +118,64 @@ describe('bin/backfill-streams.js', () => {
     expect(resolved).toBe(true);
   });
 
-  it('throws ReferenceError in catch block when ScanCommand fails because tmdbId is out of scope (known bug)', async () => {
-    ddbMock.on(ScanCommand).rejects(new Error('Scan failed'));
+  it('awaits fetchStream before pausing and logging completion', async () => {
+    const events = [];
+    let resolveFetch;
+    mockFetchStream.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          events.push('fetchStream:start');
+          resolveFetch = () => {
+            events.push('fetchStream:end');
+            resolve();
+          };
+        })
+    );
+    const infoSpy = vi.spyOn(backfill.logger, 'info').mockImplementation((obj, msg) => {
+      if (msg === 'Streaming options saved for movie') {
+        events.push('saved:log');
+      }
+    });
 
-    await expect(backfill.processPodcastMovies()).rejects.toThrow(ReferenceError);
+    ddbMock.on(ScanCommand).resolves({ Items: [{ pod_guid: 'g2', tmdb_id: 115 }] });
+    ddbMock.on(GetCommand).resolves({});
+
+    const runPromise = backfill.processPodcastMovies();
+    await vi.waitFor(() => expect(events).toEqual(['fetchStream:start']));
+    expect(events).not.toContain('saved:log');
+
+    resolveFetch();
+    await runPromise;
+
+    expect(events).toEqual(['fetchStream:start', 'fetchStream:end', 'saved:log']);
+    expect(infoSpy).toHaveBeenCalledWith({ tmdbId: 115 }, 'Streaming options saved for movie');
   });
 
-  it('throws ReferenceError when an item is missing tmdb_id due to undefined PODCAST_MOVIES_TABLE and tmdbId (known bug)', async () => {
-    ddbMock.on(ScanCommand).resolves({ Items: [{ pod_guid: 'g-missing-tmdb' }] });
+  it('logs error cleanly when ScanCommand fails without throwing ReferenceError', async () => {
+    const scanError = new Error('Scan failed');
+    const errorSpy = vi.spyOn(backfill.logger, 'error');
+    ddbMock.on(ScanCommand).rejects(scanError);
 
-    await expect(backfill.processPodcastMovies()).rejects.toThrow(ReferenceError);
+    await expect(backfill.processPodcastMovies()).resolves.toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledWith(
+      { err: scanError, tmdbId: undefined },
+      'Error scanning podcast movies table'
+    );
+  });
+
+  it('logs error and continues when an item is missing tmdb_id', async () => {
+    const errorSpy = vi.spyOn(backfill.logger, 'error');
+    const missingItem = { pod_guid: 'g-missing-tmdb' };
+    ddbMock.on(ScanCommand).resolves({
+      Items: [missingItem, { pod_guid: 'g-valid', tmdb_id: 115 }],
+    });
+    ddbMock.on(GetCommand).resolves({ Item: { tmdb_id: 115 } });
+
+    await expect(backfill.processPodcastMovies()).resolves.toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledWith(
+      { tableName: 'test-podcast-movies', movie: missingItem },
+      'Entry missing tmdb_id'
+    );
+    expect(ddbMock.commandCalls(GetCommand)).toHaveLength(1);
   });
 });
