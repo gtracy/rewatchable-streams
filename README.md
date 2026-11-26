@@ -22,3 +22,23 @@ A mono-repo with multiple lambda functions.
     - the MOTN API has a 100 call limit/day so we need to track state
     a. scan podcast_movie and re-fetch streaming details from MOTN API
     a. stash results in movie_streams
+
+## Testing
+
+Install dependencies across all backend and frontend packages from the repo root:
+
+```bash
+npm run install:all
+```
+
+Run tests:
+
+```bash
+npm test                # Run fixture checks, backend tests, and frontend tests
+npm run test:fixtures   # Validate shared JSON fixtures in test/fixtures.js
+npm run test:backend    # Run Vitest suites across packages/*, bin, and utils
+npm run test:frontend   # Run Vitest suite in packages/landing-page
+npm run build:frontend  # Verify the landing-page production Vite build
+```
+
+GitHub Actions (`.github/workflows/test.yml`) runs these checks automatically on pushes to `main` and on pull requests.

@@ -5,7 +5,13 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "test": "for d in packages/fetch_url packages/rss_polling packages/streams_fetch packages/streams_refresh packages/www_job bin utils; do (cd \"$d\" && npm test) || exit 1; done"
+        "install:all": "for d in packages/fetch_url packages/rss_polling packages/streams_fetch packages/streams_refresh packages/www_job packages/landing-page bin utils; do echo \"==> Installing $d\" && (cd \"$d\" && npm install) || exit 1; done",
+        "setup": "npm run install:all",
+        "test:fixtures": "node --test test/fixtures.test.js",
+        "test:backend": "for d in packages/fetch_url packages/rss_polling packages/streams_fetch packages/streams_refresh packages/www_job bin utils; do echo \"==> Testing $d\" && (cd \"$d\" && npm test) || exit 1; done",
+        "test:frontend": "cd packages/landing-page && npm test",
+        "build:frontend": "cd packages/landing-page && npm run build",
+        "test": "npm run test:fixtures && npm run test:backend && npm run test:frontend"
     },
     "repository": {
         "type": "git",
