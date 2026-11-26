@@ -34,14 +34,12 @@ A modern, responsive React landing page with a clean design and smooth animation
    npm start
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+4. Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
 ## Available Scripts
 
-- `npm start` - Runs the app in development mode
-- `npm build` - Builds the app for production
-- `npm test` - Launches the test runner
-- `npm eject` - Ejects from Create React App (one-way operation)
+- `npm start` - Runs the app in development mode (Vite dev server)
+- `npm run build` - Builds the app for production into `build/`
 
 ## Project Structure
 
