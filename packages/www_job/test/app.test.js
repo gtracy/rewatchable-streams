@@ -1,11 +1,11 @@
 import { createRequire } from 'module';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mockClient } from 'aws-sdk-client-mock';
 
 const require = createRequire(import.meta.url);
-const Module = require('module');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
@@ -13,6 +13,7 @@ const fixtures = require('../../../test/fixtures');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_PATH = path.resolve(__dirname, '../app.js');
+const APP_LOCAL_PATH = path.resolve(__dirname, '../app-local.js');
 const LAMBDA_PATH = path.resolve(__dirname, '../app-lambda.js');
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
@@ -23,12 +24,11 @@ const ENV_KEYS = [
     'MOVIE_STREAMS_TABLE',
     'S3_BUCKET',
     'S3_KEY',
-    'AWS_REGION'
+    'AWS_REGION',
+    'LOG_LEVEL'
 ];
 
-let origModuleLoad;
 let savedEnv;
-let consoleDirSpy;
 
 function loadAppFresh() {
     delete require.cache[APP_PATH];
@@ -79,27 +79,13 @@ beforeEach(() => {
         savedEnv[key] = process.env[key];
         delete process.env[key];
     }
-
-    // Silence console.dir(process.env) inside generateRewatchableStreamsData
-    consoleDirSpy = vi.spyOn(console, 'dir').mockImplementation(() => {});
-
-    // Intercept missing ./config module required by packages/www_job/app.js
-    origModuleLoad = Module._load;
-    Module._load = function (request, parent, isMain) {
-        if (request === './config' && parent && parent.filename === APP_PATH) {
-            return { getLogConfig: () => ({ level: 'silent' }) };
-        }
-        return origModuleLoad.apply(this, arguments);
-    };
+    process.env.LOG_LEVEL = 'silent';
 
     ddbMock.reset();
     s3Mock.reset();
 });
 
 afterEach(() => {
-    Module._load = origModuleLoad;
-    consoleDirSpy.mockRestore();
-
     for (const key of ENV_KEYS) {
         if (savedEnv[key] === undefined) {
             delete process.env[key];
@@ -139,19 +125,25 @@ describe('fetchAllPodcasts', () => {
         expect(await fetchAllPodcasts(docClient)).toEqual([]);
     });
 
-    it('performs a single scan even if LastEvaluatedKey is present (documents no pagination)', async () => {
+    it('paginates through all pages when LastEvaluatedKey is present', async () => {
         const { fetchAllPodcasts } = loadAppFresh();
         const { podcastItem } = buildSamplePodcastAndMovie();
-        ddbMock.on(ScanCommand).resolves({
-            Items: [podcastItem],
-            LastEvaluatedKey: { pod_guid: 'guid-godfather' }
-        });
+        const secondPodcast = { ...podcastItem, pod_guid: 'guid-heat', pod_title: 'Heat', tmdb_id: 949 };
+        const lastKey = { pod_guid: 'guid-godfather' };
+
+        ddbMock
+            .on(ScanCommand)
+            .resolvesOnce({ Items: [podcastItem], LastEvaluatedKey: lastKey })
+            .resolvesOnce({ Items: [secondPodcast] });
 
         const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
         const items = await fetchAllPodcasts(docClient);
 
-        expect(items).toHaveLength(1);
-        expect(ddbMock.commandCalls(ScanCommand)).toHaveLength(1);
+        expect(items).toEqual([podcastItem, secondPodcast]);
+        const calls = ddbMock.commandCalls(ScanCommand);
+        expect(calls).toHaveLength(2);
+        expect(calls[0].args[0].input.ExclusiveStartKey).toBeUndefined();
+        expect(calls[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
     });
 
     it('propagates DynamoDB errors', async () => {
@@ -182,6 +174,25 @@ describe('fetchMovieData', () => {
             FilterExpression: 'tmdb_id = :tmdb_id',
             ExpressionAttributeValues: { ':tmdb_id': 238 }
         });
+    });
+
+    it('paginates across empty filtered pages until a matching movie is found', async () => {
+        const { fetchMovieData } = loadAppFresh();
+        const { movieItem } = buildSamplePodcastAndMovie();
+        const lastKey = { tmdb_id: 100 };
+
+        ddbMock
+            .on(ScanCommand)
+            .resolvesOnce({ Items: [], LastEvaluatedKey: lastKey })
+            .resolvesOnce({ Items: [movieItem] });
+
+        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
+        const result = await fetchMovieData(docClient, 238);
+
+        expect(result).toEqual(movieItem);
+        const calls = ddbMock.commandCalls(ScanCommand);
+        expect(calls).toHaveLength(2);
+        expect(calls[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
     });
 
     it('returns null when no items match or Items is undefined', async () => {
@@ -245,6 +256,48 @@ describe('enrichPodcastsWithMovieData', () => {
         }
     });
 
+    it('performs a single scan of movie_streams to enrich multiple podcasts (no N+1)', async () => {
+        const { enrichPodcastsWithMovieData } = loadAppFresh();
+        const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
+        const podcast2 = { ...podcastItem, pod_guid: 'guid-2', pod_title: 'Heat', tmdb_id: 949 };
+        const podcast3 = { ...podcastItem, pod_guid: 'guid-3', pod_title: 'Jaws', tmdb_id: 578 };
+        const movie2 = { ...movieItem, tmdb_id: 949, title: 'Heat' };
+        const movie3 = { ...movieItem, tmdb_id: 578, title: 'Jaws' };
+
+        ddbMock.on(ScanCommand, { TableName: 'movie_streams' }).resolves({
+            Items: [movieItem, movie2, movie3]
+        });
+
+        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
+        const enriched = await enrichPodcastsWithMovieData(docClient, [podcastItem, podcast2, podcast3]);
+
+        expect(enriched).toHaveLength(3);
+        expect(enriched.map(e => e.movie.title)).toEqual(['The Godfather', 'Heat', 'Jaws']);
+        expect(ddbMock.commandCalls(ScanCommand)).toHaveLength(1);
+    });
+
+    it('paginates movie_streams table when enriching podcasts across multiple pages', async () => {
+        const { enrichPodcastsWithMovieData } = loadAppFresh();
+        const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
+        const podcast2 = { ...podcastItem, pod_guid: 'guid-2', pod_title: 'Heat', tmdb_id: 949 };
+        const movie2 = { ...movieItem, tmdb_id: 949, title: 'Heat' };
+        const lastKey = { tmdb_id: 238 };
+
+        ddbMock
+            .on(ScanCommand, { TableName: 'movie_streams' })
+            .resolvesOnce({ Items: [movieItem], LastEvaluatedKey: lastKey })
+            .resolvesOnce({ Items: [movie2] });
+
+        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
+        const enriched = await enrichPodcastsWithMovieData(docClient, [podcastItem, podcast2]);
+
+        expect(enriched).toHaveLength(2);
+        expect(enriched.map(e => e.movie.title)).toEqual(['The Godfather', 'Heat']);
+        const calls = ddbMock.commandCalls(ScanCommand);
+        expect(calls).toHaveLength(2);
+        expect(calls[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
+    });
+
     it('handles missing optional movie fields (releaseYear, genres, cast, directors, streamingOptions)', async () => {
         const { enrichPodcastsWithMovieData } = loadAppFresh();
         const podcast = {
@@ -280,11 +333,7 @@ describe('enrichPodcastsWithMovieData', () => {
             tmdb_id: 999999
         };
 
-        ddbMock
-            .on(ScanCommand, { ExpressionAttributeValues: { ':tmdb_id': 999999 } })
-            .resolves({ Items: [] })
-            .on(ScanCommand, { ExpressionAttributeValues: { ':tmdb_id': 238 } })
-            .resolves({ Items: [movieItem] });
+        ddbMock.on(ScanCommand, { TableName: 'movie_streams' }).resolves({ Items: [movieItem] });
 
         const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
         const enriched = await enrichPodcastsWithMovieData(docClient, [
@@ -294,25 +343,18 @@ describe('enrichPodcastsWithMovieData', () => {
 
         expect(enriched).toHaveLength(1);
         expect(enriched[0].movie.tmdb_id).toBe(238);
+        expect(ddbMock.commandCalls(ScanCommand)).toHaveLength(1);
     });
 
-    it('continues enriching remaining podcasts when one movie lookup throws', async () => {
+    it('continues enriching remaining podcasts when one podcast entry fails to transform', async () => {
         const { enrichPodcastsWithMovieData } = loadAppFresh();
         const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
-        const failingPodcast = {
-            pod_title: 'Failing Episode',
-            tmdb_id: 500
-        };
 
-        ddbMock
-            .on(ScanCommand, { ExpressionAttributeValues: { ':tmdb_id': 500 } })
-            .rejects(new Error('Transient scan failure'))
-            .on(ScanCommand, { ExpressionAttributeValues: { ':tmdb_id': 238 } })
-            .resolves({ Items: [movieItem] });
+        ddbMock.on(ScanCommand, { TableName: 'movie_streams' }).resolves({ Items: [movieItem] });
 
         const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
         const enriched = await enrichPodcastsWithMovieData(docClient, [
-            failingPodcast,
+            null,
             podcastItem
         ]);
 
@@ -487,5 +529,14 @@ describe('handler and app-lambda', () => {
 
         expect(response.statusCode).toBe(200);
         expect(JSON.parse(response.body).total_podcasts).toBe(0);
+    });
+});
+
+describe('logging hygiene', () => {
+    it('contains zero console.* calls in app.js and app-local.js', () => {
+        for (const filePath of [APP_PATH, APP_LOCAL_PATH]) {
+            const content = fs.readFileSync(filePath, 'utf8');
+            expect(content).not.toMatch(/\bconsole\./);
+        }
     });
 });

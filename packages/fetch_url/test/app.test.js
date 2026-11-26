@@ -1,4 +1,5 @@
 import { createRequire } from 'module';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -9,9 +10,10 @@ const { GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_PATH = path.resolve(__dirname, '../app.js');
+const APP_LOCAL_PATH = path.resolve(__dirname, '../app-local.js');
 const LAMBDA_PATH = path.resolve(__dirname, '../app-lambda.js');
 
-const ENV_KEYS = ['S3_BUCKET', 'S3_KEY', 'URL_EXPIRY_SECONDS', 'AWS_REGION'];
+const ENV_KEYS = ['S3_BUCKET', 'S3_KEY', 'URL_EXPIRY_SECONDS', 'AWS_REGION', 'LOG_LEVEL'];
 
 const EXPECTED_CORS_HEADERS = {
     'Content-Type': 'application/json',
@@ -26,8 +28,6 @@ const SAMPLE_SIGNED_URL =
 let origModuleLoad;
 let savedEnv;
 let mockGetSignedUrl;
-let consoleLogSpy;
-let consoleErrorSpy;
 
 function loadAppFresh() {
     delete require.cache[APP_PATH];
@@ -41,10 +41,9 @@ beforeEach(() => {
         savedEnv[key] = process.env[key];
         delete process.env[key];
     }
+    process.env.LOG_LEVEL = 'silent';
 
     mockGetSignedUrl = vi.fn().mockResolvedValue(SAMPLE_SIGNED_URL);
-    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     origModuleLoad = Module._load;
     Module._load = function (request, parent, isMain) {
@@ -57,8 +56,6 @@ beforeEach(() => {
 
 afterEach(() => {
     Module._load = origModuleLoad;
-    consoleLogSpy.mockRestore();
-    consoleErrorSpy.mockRestore();
 
     for (const key of ENV_KEYS) {
         if (savedEnv[key] === undefined) {
@@ -127,7 +124,7 @@ describe('generateSignedUrl', () => {
         });
     });
 
-    it.each(['not-a-number', '', '0'])(
+    it.each(['not-a-number', '', '0', '-1', '-3600'])(
         'falls back to 3600s when URL_EXPIRY_SECONDS is %j',
         async (expiryVal) => {
             process.env.URL_EXPIRY_SECONDS = expiryVal;
@@ -184,13 +181,33 @@ describe('handler', () => {
         expect(new Date(body.generated_at).toISOString()).toBe(body.generated_at);
     });
 
-    it('returns 200 with signed URL for OPTIONS events (documents lack of OPTIONS short-circuit)', async () => {
+    it('short-circuits REST API Gateway OPTIONS preflight without calling getSignedUrl', async () => {
         const { handler } = loadAppFresh();
         const response = await handler({ httpMethod: 'OPTIONS' }, {});
 
         expect(response.statusCode).toBe(200);
         expect(response.headers).toEqual(EXPECTED_CORS_HEADERS);
-        expect(mockGetSignedUrl).toHaveBeenCalledTimes(1);
+        expect(response.body).toBe('');
+        expect(mockGetSignedUrl).not.toHaveBeenCalled();
+    });
+
+    it('short-circuits HTTP API v2 OPTIONS preflight without calling getSignedUrl', async () => {
+        const { handler } = loadAppFresh();
+        const response = await handler({ requestContext: { http: { method: 'OPTIONS' } } }, {});
+
+        expect(response.statusCode).toBe(200);
+        expect(response.headers).toEqual(EXPECTED_CORS_HEADERS);
+        expect(response.body).toBe('');
+        expect(mockGetSignedUrl).not.toHaveBeenCalled();
+    });
+});
+
+describe('logging hygiene', () => {
+    it('contains zero console.* calls in app.js and app-local.js', () => {
+        for (const filePath of [APP_PATH, APP_LOCAL_PATH]) {
+            const content = fs.readFileSync(filePath, 'utf8');
+            expect(content).not.toMatch(/\bconsole\./);
+        }
     });
 });
 

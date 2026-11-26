@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 const require = createRequire(import.meta.url);
-const Module = require('module');
 const fixtures = require('../../../test/fixtures');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -12,25 +11,22 @@ const APP_PATH = path.resolve(__dirname, '../app.js');
 
 let filterStreamingOptions;
 let flattenGenres;
-let origModuleLoad;
+let savedLogLevel;
 
 beforeAll(() => {
-    // packages/www_job/app.js requires './config' which is missing from the repo.
-    // Intercept only that require so we can test app.js without altering production files.
-    origModuleLoad = Module._load;
-    Module._load = function (request, parent, isMain) {
-        if (request === './config' && parent && parent.filename === APP_PATH) {
-            return { getLogConfig: () => ({ level: 'silent' }) };
-        }
-        return origModuleLoad.apply(this, arguments);
-    };
+    savedLogLevel = process.env.LOG_LEVEL;
+    process.env.LOG_LEVEL = 'silent';
 
     delete require.cache[APP_PATH];
     ({ filterStreamingOptions, flattenGenres } = require('../app'));
 });
 
 afterAll(() => {
-    Module._load = origModuleLoad;
+    if (savedLogLevel === undefined) {
+        delete process.env.LOG_LEVEL;
+    } else {
+        process.env.LOG_LEVEL = savedLogLevel;
+    }
     delete require.cache[APP_PATH];
 });
 
@@ -74,8 +70,14 @@ describe('flattenGenres', () => {
         }
     );
 
-    it('throws TypeError if an array element is null (documents missing null guard)', () => {
-        expect(() => flattenGenres([null])).toThrow(TypeError);
+    it('safely handles null elements without throwing TypeError', () => {
+        expect(flattenGenres([null])).toEqual([null]);
+        expect(flattenGenres([null, { id: '28', name: 'Action' }, undefined, 'Drama'])).toEqual([
+            null,
+            'Action',
+            undefined,
+            'Drama'
+        ]);
     });
 });
 

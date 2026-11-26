@@ -1,9 +1,8 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const { CloudFrontClient, CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
 
-const config = require('./config');
+const config = require('../../config');
 const logger = require('pino')(config.getLogConfig());
 
 // Environment variables
@@ -11,89 +10,138 @@ const PODCAST_MOVIES_TABLE = process.env.PODCAST_MOVIES_TABLE || 'podcast_movies
 const MOVIE_STREAMS_TABLE = process.env.MOVIE_STREAMS_TABLE || 'movie_streams';
 const S3_BUCKET = process.env.S3_BUCKET || 'rewatchables';
 const S3_KEY = process.env.S3_KEY || 'data_files/podcast_movie_data.json';
-// const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || 'REPLACE_WITH_NEW_DISTRIBUTION_ID';
 
 /**
  * Main application function that generates JSON data for the website
  */
 async function generateRewatchableStreamsData() {
     logger.info('Starting rewatchable streams data generation...');
-    
+
     try {
         // Initialize AWS clients
-        console.dir(process.env);
-        const dynamoClient = new DynamoDBClient({ region: 'us-east-2' });
+        const region = process.env.AWS_REGION || 'us-east-2';
+        const dynamoClient = new DynamoDBClient({ region });
         const docClient = DynamoDBDocumentClient.from(dynamoClient);
-        const s3Client = new S3Client({ region: process.env.AWS_REGION || 'us-east-2' });
-        const cloudFrontClient = new CloudFrontClient({ region: 'us-east-2' });
-        
+        const s3Client = new S3Client({ region });
+
         // Fetch all podcasts from DynamoDB
         const podcasts = await fetchAllPodcasts(docClient);
-        logger.info(`Found ${podcasts.length} podcasts`);
-        
+        logger.info({ count: podcasts.length }, 'Found podcasts');
+
         // Fetch movie data for each podcast and merge
         const enrichedPodcasts = await enrichPodcastsWithMovieData(docClient, podcasts);
-        logger.info(`Enriched ${enrichedPodcasts.length} podcasts with movie data`);
-        
+        logger.info({ count: enrichedPodcasts.length }, 'Enriched podcasts with movie data');
+
         // Create the final JSON structure
         const result = {
             podcasts: enrichedPodcasts,
             generated_at: new Date().toISOString(),
             total_podcasts: enrichedPodcasts.length
         };
-        
+
         // Upload to S3
         await uploadToS3(s3Client, result);
-        logger.info('Successfully uploaded data to S3');
-        
-        // CloudFront cache invalidation disabled - no distribution configured
-        // try {
-        //     await invalidateCloudFrontCache(cloudFrontClient);
-        //     logger.info('Successfully invalidated CloudFront cache');
-        // } catch (cloudFrontError) {
-        //     logger.error('CloudFront cache invalidation failed (this is optional):', cloudFrontError.message);
-        // }
-        
+        logger.info({ bucket: S3_BUCKET, key: S3_KEY }, 'Successfully uploaded data to S3');
+
         return {
             success: true,
             total_podcasts: enrichedPodcasts.length,
             generated_at: result.generated_at
         };
-        
+
     } catch (error) {
-        logger.error(error,'Error generating data:');
+        logger.error({ err: error }, 'Error generating data');
         throw error;
     }
 }
 
 /**
- * Fetch all podcasts from the podcast_movies table
+ * Fetch all podcasts from the podcast_movies table with pagination
  */
 async function fetchAllPodcasts(docClient) {
-    const params = {
-        TableName: PODCAST_MOVIES_TABLE,
-        FilterExpression: 'gsi_pk = :gsi_pk',
-        ExpressionAttributeValues: {
-            ':gsi_pk': 'ALL_PODS'
+    const items = [];
+    let lastEvaluatedKey;
+
+    do {
+        const params = {
+            TableName: PODCAST_MOVIES_TABLE,
+            FilterExpression: 'gsi_pk = :gsi_pk',
+            ExpressionAttributeValues: {
+                ':gsi_pk': 'ALL_PODS'
+            }
+        };
+
+        if (lastEvaluatedKey) {
+            params.ExclusiveStartKey = lastEvaluatedKey;
         }
-    };
-    
-    const command = new ScanCommand(params);
-    const result = await docClient.send(command);
-    return result.Items || [];
+
+        try {
+            const command = new ScanCommand(params);
+            const result = await docClient.send(command);
+            if (result.Items) {
+                items.push(...result.Items);
+            }
+            lastEvaluatedKey = result.LastEvaluatedKey;
+        } catch (error) {
+            logger.error({ err: error, table: PODCAST_MOVIES_TABLE }, 'Error scanning podcasts table');
+            throw error;
+        }
+    } while (lastEvaluatedKey);
+
+    return items;
 }
 
 /**
- * Enrich podcasts with movie data from movie_streams table
+ * Fetch all movies from movie_streams table with pagination and index by tmdb_id
+ */
+async function fetchAllMovies(docClient) {
+    const moviesByTmdbId = new Map();
+    let lastEvaluatedKey;
+
+    do {
+        const params = {
+            TableName: MOVIE_STREAMS_TABLE
+        };
+
+        if (lastEvaluatedKey) {
+            params.ExclusiveStartKey = lastEvaluatedKey;
+        }
+
+        try {
+            const command = new ScanCommand(params);
+            const result = await docClient.send(command);
+            if (result.Items) {
+                for (const item of result.Items) {
+                    if (item && item.tmdb_id !== undefined && !moviesByTmdbId.has(item.tmdb_id)) {
+                        moviesByTmdbId.set(item.tmdb_id, item);
+                    }
+                }
+            }
+            lastEvaluatedKey = result.LastEvaluatedKey;
+        } catch (error) {
+            logger.error({ err: error, table: MOVIE_STREAMS_TABLE }, 'Error scanning movie streams table');
+            throw error;
+        }
+    } while (lastEvaluatedKey);
+
+    return moviesByTmdbId;
+}
+
+/**
+ * Enrich podcasts with movie data from movie_streams table using a single paginated scan
  */
 async function enrichPodcastsWithMovieData(docClient, podcasts) {
+    if (!Array.isArray(podcasts) || podcasts.length === 0) {
+        return [];
+    }
+
+    const moviesByTmdbId = await fetchAllMovies(docClient);
     const enrichedPodcasts = [];
-    
+
     for (const podcast of podcasts) {
         try {
-            // Get movie data by tmdb_id
-            const movieData = await fetchMovieData(docClient, podcast.tmdb_id);
-            
+            const movieData = moviesByTmdbId.get(podcast.tmdb_id);
+
             if (movieData) {
                 // Merge podcast and movie data
                 const enrichedPodcast = {
@@ -120,38 +168,55 @@ async function enrichPodcastsWithMovieData(docClient, podcasts) {
                         streamingOptions: filterStreamingOptions(movieData.streamingOptions || [])
                     }
                 };
-                
+
                 enrichedPodcasts.push(enrichedPodcast);
             } else {
-                logger.warn(`No movie data found for tmdb_id: ${podcast.tmdb_id}`);
+                logger.warn({ tmdbId: podcast.tmdb_id }, 'No movie data found for podcast');
             }
         } catch (error) {
-            logger.error(`Error enriching podcast ${podcast.pod_title}:`, error);
+            logger.error(
+                { err: error, podTitle: podcast?.pod_title, tmdbId: podcast?.tmdb_id },
+                'Error enriching podcast'
+            );
         }
     }
-    
+
     return enrichedPodcasts;
 }
 
 /**
- * Fetch movie data from movie_streams table
+ * Fetch movie data from movie_streams table by tmdb_id with pagination
  */
 async function fetchMovieData(docClient, tmdbId) {
-    const params = {
-        TableName: MOVIE_STREAMS_TABLE,
-        FilterExpression: 'tmdb_id = :tmdb_id',
-        ExpressionAttributeValues: {
-            ':tmdb_id': tmdbId
+    let lastEvaluatedKey;
+
+    do {
+        const params = {
+            TableName: MOVIE_STREAMS_TABLE,
+            FilterExpression: 'tmdb_id = :tmdb_id',
+            ExpressionAttributeValues: {
+                ':tmdb_id': tmdbId
+            }
+        };
+
+        if (lastEvaluatedKey) {
+            params.ExclusiveStartKey = lastEvaluatedKey;
         }
-    };
-    
-    const command = new ScanCommand(params);
-    const result = await docClient.send(command);
-    
-    if (result.Items && result.Items.length > 0) {
-        return result.Items[0];
-    }
-    
+
+        try {
+            const command = new ScanCommand(params);
+            const result = await docClient.send(command);
+
+            if (result.Items && result.Items.length > 0) {
+                return result.Items[0];
+            }
+            lastEvaluatedKey = result.LastEvaluatedKey;
+        } catch (error) {
+            logger.error({ err: error, tmdbId, table: MOVIE_STREAMS_TABLE }, 'Error fetching movie data');
+            throw error;
+        }
+    } while (lastEvaluatedKey);
+
     return null;
 }
 
@@ -162,31 +227,31 @@ function filterStreamingOptions(streamingOptions) {
     if (!Array.isArray(streamingOptions)) {
         return [];
     }
-    
+
     return streamingOptions.map(option => {
         // Create a copy of the option to avoid mutating the original
         const filteredOption = { ...option };
-        
+
         // Remove subtitles if it exists
         if (filteredOption.subtitles) {
             delete filteredOption.subtitles;
         }
-        
+
         // Flatten service object properties into the main option
         if (filteredOption.service) {
             const service = filteredOption.service;
-            
+
             // Add service properties directly to the option
             filteredOption.serviceName = service.name;
             filteredOption.serviceThemeColorCode = service.themeColorCode;
             filteredOption.serviceId = service.id;
             filteredOption.serviceImageSet = service.imageSet;
             filteredOption.serviceHomePage = service.homePage;
-            
+
             // Remove the original service object
             delete filteredOption.service;
         }
-        
+
         return filteredOption;
     });
 }
@@ -198,9 +263,9 @@ function flattenGenres(genres) {
     if (!Array.isArray(genres)) {
         return [];
     }
-    
+
     return genres.map(genre => {
-        if (typeof genre === 'object' && genre.name) {
+        if (genre && typeof genre === 'object' && genre.name) {
             return genre.name;
         }
         return genre;
@@ -218,33 +283,15 @@ async function uploadToS3(s3Client, data) {
         ContentType: 'application/json',
         CacheControl: 'max-age=3600' // Cache for 1 hour
     };
-    
-    const command = new PutObjectCommand(params);
-    await s3Client.send(command);
-}
 
-/**
- * Invalidate CloudFront cache for the data.json file
- * DISABLED - No CloudFront distribution configured
- */
-// async function invalidateCloudFrontCache(cloudFrontClient) {
-//     const params = {
-//         DistributionId: CLOUDFRONT_DISTRIBUTION_ID,
-//         InvalidationBatch: {
-//             CallerReference: `data-json-${Date.now()}`,
-//             Paths: {
-//                 Quantity: 1,
-//                 Items: ['/data.json']
-//             }
-//         }
-//     };
-//     
-//     const command = new CreateInvalidationCommand(params);
-//     const result = await cloudFrontClient.send(command);
-//     
-//     logger.info(`CloudFront invalidation created: ${result.Invalidation.Id}`);
-//     return result;
-// }
+    try {
+        const command = new PutObjectCommand(params);
+        await s3Client.send(command);
+    } catch (error) {
+        logger.error({ err: error, bucket: S3_BUCKET, key: S3_KEY }, 'Error uploading data to S3');
+        throw error;
+    }
+}
 
 /**
  * Lambda handler function
@@ -260,6 +307,7 @@ async function handler(event, context) {
             })
         };
     } catch (error) {
+        logger.error({ err: error }, 'Lambda handler error');
         return {
             statusCode: 500,
             body: JSON.stringify({
@@ -274,10 +322,10 @@ module.exports = {
     handler,
     generateRewatchableStreamsData,
     fetchAllPodcasts,
+    fetchAllMovies,
     enrichPodcastsWithMovieData,
     fetchMovieData,
     filterStreamingOptions,
     flattenGenres,
     uploadToS3
-    // invalidateCloudFrontCache - disabled, no CloudFront distribution configured
 };
