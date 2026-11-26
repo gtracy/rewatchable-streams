@@ -1,5 +1,6 @@
 import { createRequire } from 'module';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -25,7 +26,9 @@ const ENV_KEYS = [
     'S3_BUCKET',
     'S3_KEY',
     'AWS_REGION',
-    'LOG_LEVEL'
+    'LOG_LEVEL',
+    'LOCAL_OUTPUT_PATH',
+    'NODE_ENV'
 ];
 
 let savedEnv;
@@ -481,6 +484,36 @@ describe('generateRewatchableStreamsData', () => {
         s3Mock.on(PutObjectCommand).rejects(new Error('S3 PutObject failed'));
 
         await expect(generateRewatchableStreamsData()).rejects.toThrow('S3 PutObject failed');
+    });
+
+    it('writes JSON to LOCAL_OUTPUT_PATH and skips S3 upload when LOCAL_OUTPUT_PATH is set', async () => {
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'www-job-local-'));
+        const outPath = path.join(tmpDir, 'nested', 'local-data.json');
+        process.env.LOCAL_OUTPUT_PATH = outPath;
+
+        try {
+            const { generateRewatchableStreamsData } = loadAppFresh();
+            const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
+
+            ddbMock
+                .on(ScanCommand, { TableName: 'podcast_movies' })
+                .resolves({ Items: [podcastItem] })
+                .on(ScanCommand, { TableName: 'movie_streams' })
+                .resolves({ Items: [movieItem] });
+
+            const summary = await generateRewatchableStreamsData();
+
+            expect(summary.success).toBe(true);
+            expect(summary.total_podcasts).toBe(1);
+            expect(s3Mock.commandCalls(PutObjectCommand)).toHaveLength(0);
+
+            const written = JSON.parse(fs.readFileSync(outPath, 'utf8'));
+            expect(written.total_podcasts).toBe(1);
+            expect(written.podcasts).toHaveLength(1);
+            expect(written.podcasts[0].pod_title).toBe(podcastItem.pod_title);
+        } finally {
+            fs.rmSync(tmpDir, { recursive: true, force: true });
+        }
     });
 });
 

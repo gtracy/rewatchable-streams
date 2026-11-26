@@ -10,6 +10,7 @@ describe('api service', () => {
 
   afterEach(() => {
     global.fetch = originalFetch;
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
 
@@ -102,6 +103,27 @@ describe('api service', () => {
       global.fetch.mockRejectedValueOnce(new Error('Network down'));
 
       await expect(fetchData()).rejects.toThrow('API Error: Network down');
+    });
+
+    it('fetches directly from VITE_DATA_URL when set, skipping the signed URL endpoint', async () => {
+      vi.stubEnv('VITE_DATA_URL', '/local-data.json');
+      const localPodcasts = [
+        { pod_title: 'Jaws', pod_date: '2024-07-04', movie: { movie_title: 'Jaws' } },
+      ];
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ podcasts: localPodcasts }),
+      });
+
+      const result = await fetchData();
+
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch).toHaveBeenCalledWith('/local-data.json');
+      expect(result).toEqual({
+        data: localPodcasts,
+        success: true,
+      });
     });
   });
 

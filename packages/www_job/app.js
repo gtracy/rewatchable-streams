@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -20,9 +22,11 @@ async function generateRewatchableStreamsData() {
     try {
         // Initialize AWS clients
         const region = process.env.AWS_REGION || 'us-east-2';
-        const dynamoClient = new DynamoDBClient({ region });
+        const awsConfig = config.getAWSConfig();
+        const dynamoClient = new DynamoDBClient(
+            awsConfig.endpoint ? { region, endpoint: awsConfig.endpoint } : { region }
+        );
         const docClient = DynamoDBDocumentClient.from(dynamoClient);
-        const s3Client = new S3Client({ region });
 
         // Fetch all podcasts from DynamoDB
         const podcasts = await fetchAllPodcasts(docClient);
@@ -39,9 +43,18 @@ async function generateRewatchableStreamsData() {
             total_podcasts: enrichedPodcasts.length
         };
 
-        // Upload to S3
-        await uploadToS3(s3Client, result);
-        logger.info({ bucket: S3_BUCKET, key: S3_KEY }, 'Successfully uploaded data to S3');
+        // Write to local file when LOCAL_OUTPUT_PATH is set, otherwise upload to S3
+        const localOutputPath = process.env.LOCAL_OUTPUT_PATH;
+        if (localOutputPath) {
+            const resolvedPath = path.resolve(localOutputPath);
+            fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
+            fs.writeFileSync(resolvedPath, JSON.stringify(result, null, 2), 'utf8');
+            logger.info({ outputPath: resolvedPath }, 'Successfully wrote data to local file');
+        } else {
+            const s3Client = new S3Client({ region });
+            await uploadToS3(s3Client, result);
+            logger.info({ bucket: S3_BUCKET, key: S3_KEY }, 'Successfully uploaded data to S3');
+        }
 
         return {
             success: true,
