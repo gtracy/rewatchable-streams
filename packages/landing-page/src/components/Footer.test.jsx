@@ -35,7 +35,7 @@ describe('Footer', () => {
     await user.click(screen.getByRole('link', { name: /privacy/i }));
     expect(screen.getByRole('heading', { name: /privacy/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button', { name: /close/i }));
     expect(screen.queryByRole('heading', { name: /privacy/i })).not.toBeInTheDocument();
   });
 });

@@ -67,6 +67,7 @@ describe('DataTable', () => {
     vi.spyOn(analytics, 'trackDirectorClick').mockImplementation(() => {});
     vi.spyOn(analytics, 'trackActorClick').mockImplementation(() => {});
     vi.spyOn(analytics, 'trackStreamingClick').mockImplementation(() => {});
+    vi.spyOn(analytics, 'trackSearch').mockImplementation(() => {});
     vi.spyOn(window.HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
   });
 
@@ -107,6 +108,35 @@ describe('DataTable', () => {
     expect(screen.getByText(/Ray Liotta/)).toBeInTheDocument();
   });
 
+  it('safely renders rows with missing pod_title and unknown streaming option types', () => {
+    const edgeCaseData = [
+      {
+        pod_title: null,
+        pod_date: '2024-03-01T12:00:00Z',
+        pod_link: 'https://cdn.example.com/unknown.mp3',
+        movie: {
+          movie_title: 'Casino',
+          releaseYear: 1995,
+          directors: ['Martin Scorsese'],
+          cast: ['Robert De Niro'],
+          streamingOptions: [
+            {
+              serviceName: 'Apple TV',
+              type: 'buy',
+              link: 'https://tv.apple.com/casino',
+            },
+          ],
+        },
+      },
+    ];
+
+    render(<DataTable data={edgeCaseData} isLoading={false} error={null} />);
+
+    expect(screen.getByText(/Untitled Episode/)).toBeInTheDocument();
+    expect(screen.getByText('Buy')).toBeInTheDocument();
+    expect(screen.queryByText('fixme')).not.toBeInTheDocument();
+  });
+
   it('sorts by pod_date descending by default (newest first) and toggles order on header click', async () => {
     const user = userEvent.setup();
     render(<DataTable data={sampleData} isLoading={false} error={null} />);
@@ -143,9 +173,11 @@ describe('DataTable', () => {
     expect(screen.getByText('Goodfellas')).toBeInTheDocument();
   });
 
-  it('filters rows via the global search input', async () => {
+  it('filters rows via the global search input and tracks search analytics', async () => {
     const user = userEvent.setup();
     render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+    expect(analytics.trackSearch).not.toHaveBeenCalled();
 
     const searchInput = screen.getByPlaceholderText('Search');
     await user.type(searchInput, 'Scorsese');
@@ -154,6 +186,7 @@ describe('DataTable', () => {
       expect(screen.queryByRole('link', { name: 'Heat' })).not.toBeInTheDocument();
     });
     expect(screen.getByText('Goodfellas')).toBeInTheDocument();
+    expect(analytics.trackSearch).toHaveBeenCalledWith('Scorsese');
   });
 
   it('filters by director and tracks analytics when clicking a director name', async () => {
@@ -178,6 +211,30 @@ describe('DataTable', () => {
     expect(screen.queryByRole('link', { name: 'Heat' })).not.toBeInTheDocument();
   });
 
+  it('preserves other active column filters when clicking a director or actor', async () => {
+    const user = userEvent.setup();
+    render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+    // First apply a Streams filter for Netflix (matches Heat)
+    const streamsFilter = screen.getByPlaceholderText(/Filter by Streams/i);
+    await user.type(streamsFilter, 'netflix');
+
+    await waitFor(() => {
+      expect(screen.queryByText('Goodfellas')).not.toBeInTheDocument();
+    });
+
+    // Clicking director should preserve the Streams filter
+    await user.click(screen.getByText('Michael Mann'));
+    expect(streamsFilter).toHaveValue('netflix');
+    expect(screen.getByPlaceholderText(/Filter by Director/i)).toHaveValue('Michael Mann');
+
+    // Clicking actor should preserve both Streams and Director filters
+    await user.click(screen.getByText(/Al Pacino/));
+    expect(streamsFilter).toHaveValue('netflix');
+    expect(screen.getByPlaceholderText(/Filter by Director/i)).toHaveValue('Michael Mann');
+    expect(screen.getByPlaceholderText(/Filter by Actors/i)).toHaveValue('Al Pacino');
+  });
+
   it('opens PodcastPlayerModal and tracks analytics when clicking a podcast title', async () => {
     const user = userEvent.setup();
     render(<DataTable data={sampleData} isLoading={false} error={null} />);
@@ -190,7 +247,7 @@ describe('DataTable', () => {
 
     // Close modal
     const modal = document.querySelector('[aria-labelledby="podcast-player-modal"]');
-    await user.click(within(modal).getByTestId('CloseIcon').closest('button'));
+    await user.click(within(modal).getByRole('button', { name: /Close podcast player/i }));
     expect(screen.queryByText('Movie: Heat')).not.toBeInTheDocument();
   });
 

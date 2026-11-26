@@ -6,28 +6,48 @@ import {
   IconButton,
   Paper,
   Slider,
+  Alert,
 } from '@mui/material';
-import { 
-  Close as CloseIcon, 
-  PlayArrow, 
+import {
+  Close as CloseIcon,
+  PlayArrow,
   Pause,
   FastForward,
   FastRewind,
 } from '@mui/icons-material';
-import ReactPlayer from 'react-player';
+
+export const formatTime = (seconds) => {
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) {
+    return '0:00';
+  }
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
 const PodcastPlayerModal = ({ open, onClose, podcast }) => {
   const [playing, setPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
-  const [useNativePlayer, setUseNativePlayer] = React.useState(true);
   const [audioError, setAudioError] = React.useState(null);
   const [isSeeking, setIsSeeking] = React.useState(false);
   const audioRef = React.useRef(null);
 
+  React.useEffect(() => {
+    setPlaying(false);
+    setProgress(0);
+    setDuration(0);
+    setAudioError(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [podcast]);
+
   const handleClose = () => {
     setPlaying(false);
     setProgress(0);
+    setAudioError(null);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -36,41 +56,34 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
   };
 
   const handlePlayPause = async () => {
-    if (useNativePlayer && audioRef.current) {
+    if (audioRef.current) {
       try {
         if (playing) {
           audioRef.current.pause();
         } else {
+          setAudioError(null);
           await audioRef.current.play();
         }
         setPlaying(!playing);
       } catch (error) {
         console.error('Audio play error:', error);
-        setAudioError(error.message);
+        setAudioError(error.message || 'Failed to play audio');
       }
     }
-  };
-
-  const handleProgress = (state) => {
-    setProgress(state.played);
-  };
-
-  const handleDuration = (duration) => {
-    setDuration(duration);
   };
 
   const handleNativeProgress = () => {
     if (audioRef.current && !isSeeking) {
       const currentTime = audioRef.current.currentTime;
       const totalTime = audioRef.current.duration;
-      if (totalTime) {
+      if (Number.isFinite(totalTime) && totalTime > 0) {
         setProgress(currentTime / totalTime);
       }
     }
   };
 
   const handleNativeDuration = () => {
-    if (audioRef.current) {
+    if (audioRef.current && Number.isFinite(audioRef.current.duration)) {
       setDuration(audioRef.current.duration);
     }
   };
@@ -101,13 +114,6 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
     if (audioRef.current) {
       audioRef.current.currentTime = Math.max(audioRef.current.currentTime - 15, 0);
     }
-  };
-
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (!podcast) return null;
@@ -154,6 +160,7 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
           </Box>
           <IconButton
             onClick={handleClose}
+            aria-label="Close podcast player"
             sx={{ color: '#ffffff', ml: 1 }}
           >
             <CloseIcon />
@@ -162,55 +169,34 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
 
         {/* Audio Player */}
         <Box sx={{ mb: 3 }}>
-          {!useNativePlayer ? (
-            <ReactPlayer
-              url={podcast.pod_link}
-              playing={playing}
-              onProgress={handleProgress}
-              onDuration={handleDuration}
-              width="100%"
-              height="60px"
-              controls={false}
-              config={{
-                file: {
-                  attributes: {
-                    controls: false,
-                    preload: 'metadata',
-                  },
-                },
-              }}
-              onReady={() => console.log('ReactPlayer ready')}
-              onError={(error) => {
-                console.log('ReactPlayer error:', error);
-                setUseNativePlayer(true);
-              }}
-            />
-          ) : (
-            <audio
-              ref={audioRef}
-              src={podcast.pod_link}
-              onTimeUpdate={handleNativeProgress}
-              onLoadedMetadata={handleNativeDuration}
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-              onError={(e) => {
-                console.error('Audio error:', e);
-                setAudioError('Failed to load audio');
-              }}
-              onLoadStart={() => console.log('Audio loading started')}
-              onCanPlay={() => console.log('Audio can play')}
-              onCanPlayThrough={() => console.log('Audio can play through')}
-              preload="metadata"
-              crossOrigin="anonymous"
-            />
+          <audio
+            ref={audioRef}
+            src={podcast.pod_link}
+            onTimeUpdate={handleNativeProgress}
+            onLoadedMetadata={handleNativeDuration}
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onError={(e) => {
+              console.error('Audio error:', e);
+              setAudioError('Failed to load audio');
+            }}
+            preload="metadata"
+            crossOrigin="anonymous"
+          />
+
+          {audioError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {audioError}
+            </Alert>
           )}
-          
+
           {/* Advanced Controls */}
           <Box sx={{ mt: 2 }}>
             {/* Main Controls */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <IconButton
                 onClick={handleRewind}
+                aria-label="Rewind 15 seconds"
                 sx={{
                   color: '#90caf9',
                   '&:hover': { backgroundColor: '#2d2d2d' },
@@ -218,9 +204,10 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
               >
                 <FastRewind />
               </IconButton>
-              
+
               <IconButton
                 onClick={handlePlayPause}
+                aria-label={playing ? 'Pause' : 'Play'}
                 sx={{
                   color: '#90caf9',
                   backgroundColor: '#2d2d2d',
@@ -231,9 +218,10 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
               >
                 {playing ? <Pause /> : <PlayArrow />}
               </IconButton>
-              
+
               <IconButton
                 onClick={handleFastForward}
+                aria-label="Fast forward 15 seconds"
                 sx={{
                   color: '#90caf9',
                   '&:hover': { backgroundColor: '#2d2d2d' },
@@ -241,7 +229,7 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
               >
                 <FastForward />
               </IconButton>
-              
+
               <Typography variant="body2" sx={{ color: '#b0b0b0', minWidth: 80, ml: 2 }}>
                 {formatTime(progress * duration)} / {formatTime(duration)}
               </Typography>
@@ -250,10 +238,11 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
             {/* Seek Bar */}
             <Box sx={{ mb: 2 }}>
               <Slider
-                value={progress * 100}
+                value={Number.isFinite(progress) ? progress * 100 : 0}
                 onChange={handleSeek}
                 onChangeCommitted={handleSeekEnd}
                 onMouseDown={handleSeekStart}
+                aria-label="Playback progress"
                 sx={{
                   color: '#ffffff',
                   height: 8,
@@ -283,10 +272,8 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
                 }}
               />
             </Box>
-
           </Box>
         </Box>
-
 
         {/* Description */}
         {podcast.pod_desc && (
