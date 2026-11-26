@@ -93,3 +93,5 @@ function filterServices(services) {
 
   return Object.values(filteredServices);
 }
+
+module.exports.filterServices = filterServices;

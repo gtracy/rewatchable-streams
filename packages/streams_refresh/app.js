@@ -64,3 +64,5 @@ async function getOldestMovieStreams(limit) {
         throw error;
     }
 }
+
+exports.getOldestMovieStreams = getOldestMovieStreams;

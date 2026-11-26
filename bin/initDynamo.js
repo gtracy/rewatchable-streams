@@ -6,7 +6,6 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { CreateTableCommand } = require("@aws-sdk/client-dynamodb");
 
 const config = require('../config');
-console.dir(config.getAWSConfig());
 
 async function createPodcastMoviesTable(table_name) {
   const client = new DynamoDBClient(config.getAWSConfig());
@@ -86,8 +85,14 @@ async function createMovieStreamsTable(table_name) {
 }
 
 
-(async () => {
+if (require.main === module) {
+  console.dir(config.getAWSConfig());
+  (async () => {
     await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
     await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
-})();
+  })();
+}
+
+module.exports = { createPodcastMoviesTable, createMovieStreamsTable };
+
 

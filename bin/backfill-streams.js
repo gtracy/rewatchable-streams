@@ -88,4 +88,8 @@ async function processPodcastMovies() {
   }
 }
 
-processPodcastMovies();
+if (require.main === module) {
+  processPodcastMovies();
+}
+
+module.exports = { processPodcastMovies, sleep };

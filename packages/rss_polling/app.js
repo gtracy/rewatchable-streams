@@ -165,3 +165,5 @@ function findBestMatch(results, movieTitle) {
     return sortedResults[0];
   }
 }
+
+exports.findBestMatch = findBestMatch;
