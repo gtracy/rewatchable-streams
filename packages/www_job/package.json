@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run --passWithNoTests",
     "local": "node app-local.js",
     "deploy": "zip -r function.zip . && aws lambda update-function-code --function-name rewatchable-streams-www-job --zip-file fileb://function.zip"
   },
@@ -25,5 +25,9 @@
     "@aws-sdk/lib-dynamodb": "^3.1029.0",
     "dotenv-json": "^1.0.0",
     "pino": "^9.9.5"
+  },
+  "devDependencies": {
+    "aws-sdk-client-mock": "^4.1.0",
+    "vitest": "^4.1.12"
   }
 }
