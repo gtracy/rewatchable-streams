@@ -149,4 +149,51 @@ describe('filterStreamingOptions', () => {
             expect(filterStreamingOptions(input)).toEqual([]);
         }
     );
+
+    it('sanitizes option.link and serviceHomePage to http/https only', () => {
+        const options = [
+            {
+                type: 'subscription',
+                link: 'javascript:alert(1)',
+                service: { id: 'evil', name: 'Evil', themeColorCode: '#123', homePage: 'data:text/html,<script>alert(1)</script>' }
+            },
+            {
+                type: 'rent',
+                link: 'not-a-url',
+                service: { id: 'bad', name: 'Bad', themeColorCode: '#aabbcc', homePage: 'ftp://example.com' }
+            },
+            {
+                type: 'buy',
+                link: 'http://example.com/watch?id=1',
+                service: { id: 'good', name: 'Good', themeColorCode: '#11223344', homePage: 'https://example.com' }
+            }
+        ];
+
+        const filtered = filterStreamingOptions(options);
+        expect(filtered[0].link).toBeNull();
+        expect(filtered[0].serviceHomePage).toBeNull();
+        expect(filtered[0].serviceThemeColorCode).toBe('#123');
+
+        expect(filtered[1].link).toBeNull();
+        expect(filtered[1].serviceHomePage).toBeNull();
+        expect(filtered[1].serviceThemeColorCode).toBe('#aabbcc');
+
+        expect(filtered[2].link).toBe('http://example.com/watch?id=1');
+        expect(filtered[2].serviceHomePage).toBe('https://example.com');
+        expect(filtered[2].serviceThemeColorCode).toBe('#11223344');
+    });
+
+    it('falls back to #444 when serviceThemeColorCode is invalid or missing', () => {
+        const options = [
+            { type: 'free', link: 'https://example.com', service: { id: 'a', name: 'A', themeColorCode: 'red; background:url(x)' } },
+            { type: 'free', link: 'https://example.com', service: { id: 'b', name: 'B', themeColorCode: '#zzzzzz' } },
+            { type: 'free', link: 'https://example.com', service: { id: 'c', name: 'C', themeColorCode: '#12' } },
+            { type: 'free', link: 'https://example.com', service: { id: 'd', name: 'D' } }
+        ];
+
+        const filtered = filterStreamingOptions(options);
+        for (const opt of filtered) {
+            expect(opt.serviceThemeColorCode).toBe('#444');
+        }
+    });
 });

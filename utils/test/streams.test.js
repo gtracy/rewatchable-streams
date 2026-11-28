@@ -35,7 +35,7 @@ require.cache[streamingAvailabilityPath] = {
 process.env.LOG_LEVEL = 'silent';
 
 const fixtures = require('../../test/fixtures');
-const { fetchStream, filterServices } = require('../streams');
+const { fetchStream, filterServices, logger } = require('../streams');
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
 const sampleShowDetails = fixtures.loadSample('streamingDetails.json');
@@ -110,35 +110,52 @@ describe('utils/streams.js fetchStream', () => {
     expect(netflixOption.type).toBe('subscription');
   });
 
-  it('saves item without streamingOptions when US streaming options are absent', async () => {
+  it('skips DynamoDB PutCommand when US streaming options are absent or empty to avoid clobbering existing streams', async () => {
+    const warnSpy = vi.spyOn(logger, 'warn');
     const showWithoutUS = {
       ...sampleShowDetails,
       streamingOptions: {
         gb: [sampleStreamEntry],
       },
     };
-    mockGetShow.mockResolvedValue(showWithoutUS);
+    mockGetShow.mockResolvedValueOnce(showWithoutUS);
+    mockGetShow.mockResolvedValueOnce({
+      ...sampleShowDetails,
+      streamingOptions: { us: [] },
+    });
     ddbMock.on(PutCommand).resolves({});
 
     await fetchStream(115);
+    await fetchStream(116);
 
-    const putCalls = ddbMock.commandCalls(PutCommand);
-    expect(putCalls).toHaveLength(1);
-    expect(putCalls[0].args[0].input.Item.streamingOptions).toBeUndefined();
-    expect(putCalls[0].args[0].input.Item.tmdb_id).toBe(115);
+    expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
+    expect(warnSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('catches streaming API errors without throwing or writing to DynamoDB', async () => {
-    mockGetShow.mockRejectedValue(new Error('429 Too Many Requests'));
+  it('catches streaming API errors with sanitized pino context without throwing or writing to DynamoDB', async () => {
+    const errorSpy = vi.spyOn(logger, 'error');
+    const apiErr = new Error('429 Too Many Requests');
+    apiErr.response = { status: 429, headers: { authorization: 'Bearer secret-token' } };
+    mockGetShow.mockRejectedValue(apiErr);
 
     await expect(fetchStream(115)).resolves.toBeUndefined();
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
+    expect(errorSpy).toHaveBeenCalledWith(
+      {
+        tmdbId: 115,
+        errorName: 'Error',
+        errorMessage: '429 Too Many Requests',
+        statusCode: 429,
+      },
+      'Error fetching streaming details'
+    );
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain('secret-token');
   });
 
   it('catches DynamoDB PutCommand errors without throwing', async () => {
     mockGetShow.mockResolvedValue({
       ...sampleShowDetails,
-      streamingOptions: {},
+      streamingOptions: { us: [sampleStreamEntry] },
     });
     ddbMock.on(PutCommand).rejects(new Error('DynamoDB write failed'));
 
@@ -146,7 +163,24 @@ describe('utils/streams.js fetchStream', () => {
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(1);
   });
 
-  it('safely handles API responses missing imageSet or streamingOptions', async () => {
+  it('safely handles API responses missing imageSet when US streaming options exist', async () => {
+    mockGetShow.mockResolvedValue({
+      id: '266',
+      title: 'Partial Payload',
+      imageSet: null,
+      streamingOptions: { us: [sampleStreamEntry] },
+    });
+    ddbMock.on(PutCommand).resolves({});
+
+    await expect(fetchStream(115)).resolves.toBeUndefined();
+    const putCalls = ddbMock.commandCalls(PutCommand);
+    expect(putCalls).toHaveLength(1);
+    expect(putCalls[0].args[0].input.Item.imageSet).toBeUndefined();
+    expect(putCalls[0].args[0].input.Item.streamingOptions).toHaveLength(1);
+    expect(putCalls[0].args[0].input.Item.tmdb_id).toBe(115);
+  });
+
+  it('safely handles API responses with null streamingOptions without writing to DynamoDB', async () => {
     mockGetShow.mockResolvedValue({
       id: '266',
       title: 'Partial Payload',
@@ -156,11 +190,7 @@ describe('utils/streams.js fetchStream', () => {
     ddbMock.on(PutCommand).resolves({});
 
     await expect(fetchStream(115)).resolves.toBeUndefined();
-    const putCalls = ddbMock.commandCalls(PutCommand);
-    expect(putCalls).toHaveLength(1);
-    expect(putCalls[0].args[0].input.Item.imageSet).toBeUndefined();
-    expect(putCalls[0].args[0].input.Item.streamingOptions).toBeUndefined();
-    expect(putCalls[0].args[0].input.Item.tmdb_id).toBe(115);
+    expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
   });
 
   it('safely handles null API response without writing to DynamoDB', async () => {

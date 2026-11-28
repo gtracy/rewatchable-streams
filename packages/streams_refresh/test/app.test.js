@@ -118,6 +118,20 @@ describe('packages/streams_refresh/app.js handler', () => {
     expect(mockFetchStream).not.toHaveBeenCalled();
   });
 
+  it.each(['51', '100', '99999'])(
+    'caps STREAM_REFRESH_LIMIT "%s" at maximum of 50',
+    async (highLimit) => {
+      process.env.STREAM_REFRESH_LIMIT = highLimit;
+      ddbMock.on(QueryCommand).resolves({ Items: [] });
+
+      await app.handler({}, {});
+
+      const queryCalls = ddbMock.commandCalls(QueryCommand);
+      expect(queryCalls).toHaveLength(1);
+      expect(queryCalls[0].args[0].input.Limit).toBe(50);
+    }
+  );
+
   it.each(['not-a-number', '0', '-5', ''])(
     'falls back to default limit of 5 when STREAM_REFRESH_LIMIT is "%s"',
     async (invalidLimit) => {
