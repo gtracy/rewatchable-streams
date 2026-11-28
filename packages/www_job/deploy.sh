@@ -4,7 +4,7 @@ set -euo pipefail
 # Deploy Lambda function for rewatchable streams data generation
 # Make sure you have AWS CLI configured with appropriate credentials
 
-FUNCTION_NAME="rewatchable-streams-www-job"
+FUNCTION_NAME="${FUNCTION_NAME:-rewatchables-build-JSON}"
 REGION="${AWS_REGION:-us-east-2}"
 AWS_ARGS=()
 if [ -n "${AWS_PROFILE:-}" ]; then
@@ -46,7 +46,7 @@ else
     aws "${AWS_ARGS[@]}" lambda create-function \
         --function-name "$FUNCTION_NAME" \
         --runtime nodejs22.x \
-        --role arn:aws:iam::315817266687:role/lambda-execution-role \
+        --role arn:aws:iam::315817266687:role/rewatchables-runner \
         --handler app-lambda.handler \
         --zip-file "fileb://$ZIP_FILE" \
         --region "$REGION" \

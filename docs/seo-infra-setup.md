@@ -59,7 +59,7 @@ Enable daily S3 publishing of `llms.txt`, `llms-full.txt`, `sitemap.xml`, `index
 
 ### Environment Variables
 
-Set the following on the `rewatchable-streams-www-job` Lambda function (**AWS Console → Lambda → `rewatchable-streams-www-job` → Configuration → Environment variables**):
+Set the following on the `rewatchables-build-JSON` Lambda function (**AWS Console → Lambda → `rewatchables-build-JSON` → Configuration → Environment variables**):
 
 | Variable | Value | Notes |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ Or via AWS CLI:
 
 ```bash
 aws lambda update-function-configuration \
-  --function-name rewatchable-streams-www-job \
+  --function-name rewatchables-build-JSON \
   --environment "Variables={PODCAST_MOVIES_TABLE=podcast_movies,MOVIE_STREAMS_TABLE=movie_streams,S3_BUCKET=rewatchables,S3_KEY=data_files/podcast_movie_data.json,WEBAPP_PREFIX=webapp,CLOUDFRONT_DISTRIBUTION_ID=E3UTGKV2VWOXDQ}"
 ```
 
@@ -78,7 +78,7 @@ aws lambda update-function-configuration \
 
 ### IAM Execution Role Policy
 
-Ensure the Lambda execution role (e.g. `arn:aws:iam::315817266687:role/lambda-execution-role`) has:
+Ensure the Lambda execution role (e.g. `arn:aws:iam::315817266687:role/rewatchables-runner`) has:
 
 - `s3:GetObject` on `arn:aws:s3:::rewatchables/webapp/index.html` (to read the deployed SPA `index.html` before injecting fresh JSON-LD and `<noscript>` markup)
 - `s3:PutObject` on `arn:aws:s3:::rewatchables/webapp/*` and `arn:aws:s3:::rewatchables/data_files/*`
