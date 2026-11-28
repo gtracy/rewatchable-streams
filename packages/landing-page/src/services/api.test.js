@@ -109,7 +109,7 @@ describe('api service', () => {
           ok: true,
           json: async () => ({
             success: true,
-            url: 'https://s3.example.com/podcasts.json?sig=abc',
+            url: 'https://rewatchables.s3.us-east-2.amazonaws.com/podcasts.json?sig=abc',
           }),
         })
         .mockResolvedValueOnce({
@@ -148,7 +148,12 @@ describe('api service', () => {
       const result = await fetchData();
       expect(global.fetch).toHaveBeenCalledTimes(2);
       expect(global.fetch).toHaveBeenNthCalledWith(2, pathStyleUrl);
-      expect(result).toEqual({ data: [], success: true });
+      expect(result).toEqual({
+        data: [],
+        generatedAt: null,
+        totalPodcasts: 0,
+        success: true,
+      });
     });
 
     it('defaults to an empty array when podcasts key is missing', async () => {

@@ -222,6 +222,7 @@ const DataTable = ({ data, isLoading, error }) => {
                     <img
                       src={imageUrl}
                       alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
+                      referrerPolicy="no-referrer"
                       width="109"
                       height="156"
                       loading="lazy"

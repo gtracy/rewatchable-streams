@@ -359,6 +359,9 @@ describe('DataTable', () => {
       const evilIconBox = screen.getByText('EvilStream').parentElement;
       expect(getComputedStyle(evilIconBox).borderColor).not.toContain('red');
       expect(getComputedStyle(evilIconBox).backgroundImage).not.toContain('evil.com');
+    });
+  });
+
   it('uses semantic buttons for podcast titles, directors, and actors, descriptive Watch aria-labels, and explicit image dimensions', () => {
     render(<DataTable data={sampleData} isLoading={false} error={null} />);
 
