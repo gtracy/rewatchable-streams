@@ -34,8 +34,12 @@ export const fetchData = async () => {
 
     const podcastData = await dataResponse.json();
 
+    const podcasts = podcastData.podcasts || [];
+
     return {
-      data: podcastData.podcasts || [],
+      data: podcasts,
+      generatedAt: podcastData.generated_at || null,
+      totalPodcasts: podcastData.total_podcasts ?? podcasts.length,
       success: true,
     };
   } catch (error) {

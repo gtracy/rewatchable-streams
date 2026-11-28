@@ -17,6 +17,8 @@ describe('App', () => {
   it('fetches data, initializes GA opt-out, and renders Header, DataTable, and Footer', async () => {
     vi.spyOn(api, 'fetchData').mockResolvedValueOnce({
       success: true,
+      generatedAt: '2026-11-23T12:00:00Z',
+      totalPodcasts: 427,
       data: [
         {
           pod_title: "'Jaws' Rewatchable",
@@ -43,6 +45,7 @@ describe('App', () => {
       expect(screen.getByText('Jaws')).toBeInTheDocument();
     });
     expect(screen.getByText('Steven Spielberg')).toBeInTheDocument();
+    expect(screen.getByText('427 episodes indexed · Updated Nov 23, 2026')).toBeInTheDocument();
   });
 
   it('renders error state when fetchData fails', async () => {

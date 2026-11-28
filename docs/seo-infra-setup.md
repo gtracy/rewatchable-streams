@@ -1,0 +1,152 @@
+# SEO & AI Bot Infrastructure Setup Runbook
+
+This runbook covers the manual AWS and Cloudflare configuration steps required to complete traditional SEO and AI crawler support for **watchthatpod.com**.
+
+---
+
+## 1. Cloudflare Redirect Rule (`www` → Apex)
+
+Fixes the live `HTTP 525` SSL handshake error on `https://www.watchthatpod.com/` by redirecting all `www` traffic cleanly at the Cloudflare edge.
+
+1. Open the **Cloudflare Dashboard** → select the `watchthatpod.com` zone.
+2. Go to **Rules → Redirect Rules** → click **Create rule**.
+3. Configure the rule:
+   - **Rule name:** `Redirect www to apex`
+   - **When incoming requests match:** Custom filter expression
+     - Field: `Hostname` | Operator: `equals` | Value: `www.watchthatpod.com`
+   - **Then:** Dynamic URL redirect
+     - **Expression:** `concat("https://watchthatpod.com", http.request.uri.path)`
+     - **Status code:** `301`
+     - **Preserve query string:** Checked
+4. Click **Deploy**.
+5. Verify from a terminal:
+   ```bash
+   curl -I https://www.watchthatpod.com/
+   # Expect: HTTP/2 301 and location: https://watchthatpod.com/
+   ```
+
+---
+
+## 2. CloudFront Custom Error Responses (`E3UTGKV2VWOXDQ`)
+
+Serve the custom dark-themed `/404.html` page with an HTTP `404` status code instead of raw S3 XML `AccessDenied` responses.
+
+1. Open the **AWS Console → CloudFront → Distributions → `E3UTGKV2VWOXDQ`**.
+2. Go to the **Error pages** tab → click **Create custom error response** twice:
+   - **Rule 1 (`403` → `/404.html`):**
+     - **HTTP error code:** `403: Forbidden`
+     - **Customize error response:** `Yes`
+     - **Response page path:** `/404.html`
+     - **HTTP response code:** `404: Not Found`
+     - **Error caching minimum TTL:** `300`
+   - **Rule 2 (`404` → `/404.html`):**
+     - **HTTP error code:** `404: Not Found`
+     - **Customize error response:** `Yes`
+     - **Response page path:** `/404.html`
+     - **HTTP response code:** `404: Not Found`
+     - **Error caching minimum TTL:** `300`
+3. Wait for distribution deployment to complete, then verify:
+   ```bash
+   curl -i https://watchthatpod.com/non-existent-page
+   # Expect: HTTP/2 404 and the Watch That Pod 404 HTML page
+   ```
+
+---
+
+## 3. `www_job` Lambda Environment Variables & IAM Permissions
+
+Enable daily S3 publishing of `llms.txt`, `llms-full.txt`, `sitemap.xml`, `index.html` JSON-LD/`<noscript>` enrichment, and automatic CloudFront cache invalidation.
+
+### Environment Variables
+
+Set the following on the `rewatchable-streams-www-job` Lambda function (**AWS Console → Lambda → `rewatchable-streams-www-job` → Configuration → Environment variables**):
+
+| Variable | Value | Notes |
+| --- | --- | --- |
+| `CLOUDFRONT_DISTRIBUTION_ID` | `E3UTGKV2VWOXDQ` | Enables post-publish invalidation of `/index.html`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt` |
+| `WEBAPP_PREFIX` | `webapp` | Optional (defaults to `webapp` if omitted) |
+
+Or via AWS CLI:
+
+```bash
+aws lambda update-function-configuration \
+  --function-name rewatchable-streams-www-job \
+  --environment "Variables={PODCAST_MOVIES_TABLE=podcast_movies,MOVIE_STREAMS_TABLE=movie_streams,S3_BUCKET=rewatchables,S3_KEY=data_files/podcast_movie_data.json,WEBAPP_PREFIX=webapp,CLOUDFRONT_DISTRIBUTION_ID=E3UTGKV2VWOXDQ}"
+```
+
+> **Note:** Check the existing environment variables on the Lambda before running `update-function-configuration`, as the CLI replaces the entire `Variables` map.
+
+### IAM Execution Role Policy
+
+Ensure the Lambda execution role (e.g. `arn:aws:iam::315817266687:role/lambda-execution-role`) has:
+
+- `s3:GetObject` on `arn:aws:s3:::rewatchables/webapp/index.html` (to read the deployed SPA `index.html` before injecting fresh JSON-LD and `<noscript>` markup)
+- `s3:PutObject` on `arn:aws:s3:::rewatchables/webapp/*` and `arn:aws:s3:::rewatchables/data_files/*`
+- `cloudfront:CreateInvalidation` on `arn:aws:cloudfront::315817266687:distribution/E3UTGKV2VWOXDQ`
+
+Example inline policy statement:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadIndexHtmlForSeoInjection",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::rewatchables/webapp/index.html"
+    },
+    {
+      "Sid": "WriteDataAndSeoArtifacts",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::rewatchables/data_files/*",
+        "arn:aws:s3:::rewatchables/webapp/*"
+      ]
+    },
+    {
+      "Sid": "InvalidateSeoPaths",
+      "Effect": "Allow",
+      "Action": "cloudfront:CreateInvalidation",
+      "Resource": "arn:aws:cloudfront::315817266687:distribution/E3UTGKV2VWOXDQ"
+    }
+  ]
+}
+```
+
+---
+
+## 4. Cloudflare AI Crawl Control & Bot Fight Mode Verification
+
+Ensure major AI search and indexing crawlers are **not** blocked from fetching `/`, `/llms.txt`, `/llms-full.txt`, or `/sitemap.xml`.
+
+1. In the **Cloudflare Dashboard** → `watchthatpod.com` → **Security → Bots**:
+   - Check **AI Crawl Control** (or **Block AI Bots / AI Scrapers and Crawlers**): make sure it is **disabled** or configured to allow search/retrieval bots.
+   - If **Bot Fight Mode** or **Super Bot Fight Mode** is enabled, confirm verified bots are set to **Allow**.
+2. Verify each of the following user agents is allowed:
+   - `OAI-SearchBot` (OpenAI Search)
+   - `PerplexityBot` (Perplexity)
+   - `ClaudeBot` (Anthropic)
+   - `Google-Extended` (Google Gemini / AI)
+3. Spot-check after deployment:
+   ```bash
+   for ua in "OAI-SearchBot" "PerplexityBot" "ClaudeBot" "Google-Extended"; do
+     echo "=== $ua ==="
+     curl -sI -A "$ua" https://watchthatpod.com/llms.txt | head -n 5
+   done
+   # Expect: HTTP/2 200 and content-type: text/plain; charset=utf-8
+   ```
+
+---
+
+## 5. Search Engine Sitemap Submission
+
+1. **Google Search Console** (`https://search.google.com/search-console`):
+   - Select the `watchthatpod.com` domain property (verify via Cloudflare DNS TXT record if not yet verified).
+   - Navigate to **Indexing → Sitemaps**.
+   - Submit `https://watchthatpod.com/sitemap.xml` and confirm status is **Success**.
+   - Use **URL Inspection** on `https://watchthatpod.com/` to verify Google sees the injected JSON-LD (`WebSite`, `PodcastSeries`, `ItemList`) and `<noscript>` content.
+2. **Bing Webmaster Tools** (`https://www.bing.com/webmasters`):
+   - Add/verify `watchthatpod.com` (can import directly from Google Search Console).
+   - Navigate to **Sitemaps** → submit `https://watchthatpod.com/sitemap.xml`.

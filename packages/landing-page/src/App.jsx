@@ -44,6 +44,8 @@ const theme = createTheme({
 
 function App() {
   const [data, setData] = useState([]);
+  const [generatedAt, setGeneratedAt] = useState(null);
+  const [totalPodcasts, setTotalPodcasts] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -54,6 +56,8 @@ function App() {
         setError(null);
         const result = await fetchData();
         setData(result.data);
+        setGeneratedAt(result.generatedAt || null);
+        setTotalPodcasts(result.totalPodcasts ?? (result.data?.length || 0));
       } catch (err) {
         setError(err);
       } finally {
@@ -69,7 +73,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="App">
-        <Header />
+        <Header generatedAt={generatedAt} totalPodcasts={totalPodcasts} />
         <main className="main-content">
           <DataTable 
             data={data} 
