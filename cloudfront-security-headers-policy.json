@@ -4,7 +4,7 @@
   "SecurityHeadersConfig": {
     "ContentSecurityPolicy": {
       "Override": true,
-      "ContentSecurityPolicy": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://lyv84who21.execute-api.us-east-2.amazonaws.com https://rewatchables.s3.us-east-2.amazonaws.com; img-src 'self' data: https:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+      "ContentSecurityPolicy": "default-src 'self'; script-src 'self' 'sha256-3v/upYekEAQ9KRdUJiJGpbb31z0juSUVe1HswjX5x5U=' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://lyv84who21.execute-api.us-east-2.amazonaws.com https://rewatchables.s3.us-east-2.amazonaws.com; img-src 'self' data: https:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
     },
     "StrictTransportSecurity": {
       "Override": true,
