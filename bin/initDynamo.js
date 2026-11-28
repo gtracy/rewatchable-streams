@@ -1,12 +1,18 @@
 'use strict';
+
+const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../.env.json')});
+
+const envPath = path.resolve(__dirname, '../.env.json');
+if (fs.existsSync(envPath)) {
+  require('dotenv-json')({ path: envPath });
+}
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { CreateTableCommand } = require("@aws-sdk/client-dynamodb");
 
 const config = require('../config');
-console.dir(config.getAWSConfig());
+const logger = require('pino')(config.getLogConfig());
 
 async function createPodcastMoviesTable(table_name) {
   const client = new DynamoDBClient(config.getAWSConfig());
@@ -27,12 +33,12 @@ async function createPodcastMoviesTable(table_name) {
 
   try {
       const data = await client.send(new CreateTableCommand(params));
-      console.log("Table Created ", table_name);
+      logger.info({ tableName: table_name }, 'Table created');
   } catch (err) {
       if( err.name == 'ResourceInUseException' ) {
-        console.log(table_name + " already exists");
+        logger.info({ tableName: table_name }, 'Table already exists');
       } else {
-        console.error("Error", err);
+        logger.error({ err, tableName: table_name }, 'Error creating table');
       }
   }
 
@@ -75,19 +81,25 @@ async function createMovieStreamsTable(table_name) {
 
     try {
         const data = await client.send(new CreateTableCommand(params));
-        console.log("Table Created ", table_name);
+        logger.info({ tableName: table_name }, 'Table created');
     } catch (err) {
         if( err.name == 'ResourceInUseException' ) {
-          console.log(table_name + " already exists");
+          logger.info({ tableName: table_name }, 'Table already exists');
         } else {
-          console.error("Error", err);
+          logger.error({ err, tableName: table_name }, 'Error creating table');
         }
     }
 }
 
 
-(async () => {
+if (require.main === module) {
+  logger.debug({ awsConfig: config.getAWSConfig() }, 'Initializing DynamoDB tables');
+  (async () => {
     await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
     await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);
-})();
+  })();
+}
+
+module.exports = { createPodcastMoviesTable, createMovieStreamsTable, logger };
+
 

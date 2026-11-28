@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   Paper,
+  Link,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
@@ -36,6 +37,7 @@ const PrivacyModal = ({ open, onClose }) => {
         {/* Close Button */}
         <IconButton
           onClick={onClose}
+          aria-label="Close privacy modal"
           sx={{
             position: 'absolute',
             top: 16,
@@ -91,30 +93,36 @@ const PrivacyModal = ({ open, onClose }) => {
 
           <Typography variant="body1" sx={{ mb: 2 }}>
             If you would like to opt-out of this anonymous tracking, you can do so by clicking this link:{' '}
-            <a 
-              href="javascript:gaOptout();" 
-              style={{ 
-                color: '#90caf9', 
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' }
+            <Link
+              component="button"
+              type="button"
+              variant="body1"
+              underline="hover"
+              onClick={() => window.gaOptout?.()}
+              sx={{
+                color: '#90caf9',
+                verticalAlign: 'baseline',
               }}
             >
               Opt-Out of Google Analytics
-            </a>.
+            </Link>.
           </Typography>
 
           <Typography variant="body1">
             If you've previously opted out and would like to re-enable tracking, click here:{' '}
-            <a 
-              href="javascript:gaOptin();" 
-              style={{ 
-                color: '#90caf9', 
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' }
+            <Link
+              component="button"
+              type="button"
+              variant="body1"
+              underline="hover"
+              onClick={() => window.gaOptin?.()}
+              sx={{
+                color: '#90caf9',
+                verticalAlign: 'baseline',
               }}
             >
               Re-enable Google Analytics Tracking
-            </a>.
+            </Link>.
           </Typography>
         </Box>
       </Paper>

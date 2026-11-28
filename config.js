@@ -1,4 +1,13 @@
-'use script';
+'use strict';
+
+function getLogger() {
+    try {
+        const pino = require(require.resolve('pino', { paths: [__dirname, process.cwd()] }));
+        return pino(module.exports.getLogConfig());
+    } catch {
+        return null;
+    }
+}
 
 module.exports = {
 
@@ -43,7 +52,10 @@ module.exports = {
     },
 
     getSQSConfig : function getSQSConfig(queue) {
-        console.log('ERROR: missing SQS configuration');
+        const logger = getLogger();
+        if (logger) {
+            logger.error({ queue }, 'Missing SQS configuration');
+        }
         return undefined;
     }
 

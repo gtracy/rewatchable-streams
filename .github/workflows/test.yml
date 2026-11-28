@@ -1,0 +1,74 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixtures:
+    name: Shared Fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate shared fixtures
+        run: npm run test:fixtures
+
+  backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            packages/fetch_url/package-lock.json
+            packages/rss_polling/package-lock.json
+            packages/streams_fetch/package-lock.json
+            packages/streams_refresh/package-lock.json
+            packages/www_job/package-lock.json
+            bin/package-lock.json
+            utils/package-lock.json
+      - name: Install backend package dependencies
+        run: |
+          for d in packages/fetch_url packages/rss_polling packages/streams_fetch packages/streams_refresh packages/www_job bin utils; do
+            echo "==> Installing $d"
+            (cd "$d" && if [ -f package-lock.json ]; then npm ci; else npm install; fi) || exit 1
+          done
+      - name: Run backend tests
+        run: npm run test:backend
+
+  frontend:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: packages/landing-page/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: packages/landing-page
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+      - name: Run frontend tests
+        run: npm run test:frontend
+      - name: Build landing page
+        run: npm run build:frontend

@@ -29,7 +29,7 @@ else
         --function-name $FUNCTION_NAME \
         --runtime nodejs18.x \
         --role arn:aws:iam::315817266687:role/lambda-execution-role \
-        --handler index.handler \
+        --handler app-lambda.handler \
         --zip-file fileb://$ZIP_FILE \
         --description "Generates JSON data for rewatchable streams website" \
         --timeout 300 \

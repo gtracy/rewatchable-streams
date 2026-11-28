@@ -5,7 +5,6 @@ import {
 } from 'material-react-table';
 import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PodcastPlayerModal from './PodcastPlayerModal';
 import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingClick, trackSearch } from '../utils/analytics';
 import './DataTable.css';
@@ -14,6 +13,14 @@ const DataTable = ({ data, isLoading, error }) => {
   // Modal state for podcast player
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPodcast, setSelectedPodcast] = useState(null);
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  useEffect(() => {
+    const trimmed = typeof globalFilter === 'string' ? globalFilter.trim() : '';
+    if (trimmed) {
+      trackSearch(trimmed);
+    }
+  }, [globalFilter]);
 
   const handlePodcastClick = (podcast) => {
     setSelectedPodcast(podcast);
@@ -27,23 +34,25 @@ const DataTable = ({ data, isLoading, error }) => {
   };
 
   const handleDirectorClick = (directorName, table) => {
-    // Set the director column filter to the clicked director name
-    table.setColumnFilters([
+    // Update/replace only the director column filter while preserving other active column filters
+    table.setColumnFilters((prev = []) => [
+      ...prev.filter((filter) => filter.id !== 'movie.directors'),
       {
         id: 'movie.directors',
-        value: directorName
-      }
+        value: directorName,
+      },
     ]);
     trackDirectorClick(directorName);
   };
 
   const handleActorClick = (actorName, table) => {
-    // Set the actors column filter to the clicked actor name
-    table.setColumnFilters([
+    // Update/replace only the actors column filter while preserving other active column filters
+    table.setColumnFilters((prev = []) => [
+      ...prev.filter((filter) => filter.id !== 'movie.cast'),
       {
         id: 'movie.cast',
-        value: actorName
-      }
+        value: actorName,
+      },
     ]);
     trackActorClick(actorName);
   };
@@ -136,7 +145,7 @@ const DataTable = ({ data, isLoading, error }) => {
         enableColumnFilter: true,
         sortingFn: 'datetime',
         Cell: ({ cell, row }) => {
-          const title = row.original.pod_title;
+          const title = row.original.pod_title || 'Untitled Episode';
           const date = new Date(cell.getValue());
           const imageUrl = row.original.movie?.imageSet;
           
@@ -326,8 +335,8 @@ const DataTable = ({ data, isLoading, error }) => {
                   costText = 'Free!';
                 } else if (type === 'addon') {
                   costText = 'Premium';
-                } else if (type) {
-                  costText = 'fixme';
+                } else if (typeof type === 'string' && type.length > 0) {
+                  costText = type.charAt(0).toUpperCase() + type.slice(1);
                 }
                 
                 return (
@@ -533,7 +542,9 @@ const DataTable = ({ data, isLoading, error }) => {
     data: processedData,
     state: {
       isLoading,
+      globalFilter,
     },
+    onGlobalFilterChange: setGlobalFilter,
     enableRowSelection: false,
     enableColumnOrdering: false,
     enableGlobalFilter: true,

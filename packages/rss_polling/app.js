@@ -1,11 +1,15 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const axios = require('axios');
 let Parser = require('rss-parser');
 
-const dotenv = require('dotenv-json')({path:path.resolve(__dirname, '../../.env.json')});
+const envPath = path.resolve(__dirname, '../../.env.json');
+if (fs.existsSync(envPath)) {
+  require('dotenv-json')({ path: envPath });
+}
 const config = require('../../config');
 const logger = require('pino')(config.getLogConfig());
 
@@ -17,11 +21,10 @@ const TMDB_API_BASE_URL = 'https://api.themoviedb.org/3/search/movie';
 
 exports.handler = async (event) => {
   if( !process.env.TMDB_API_KEY ) {
-    logger.error('Failed to initialize job.');
-    logger.error(path.resolve(__dirname, '.env.json'));
+    logger.error({ envPath }, 'Failed to initialize job: missing TMDB_API_KEY');
     return;
   }
-  logger.debug(config.getAWSConfig());
+  logger.debug({ awsConfig: config.getAWSConfig() }, 'Initialized AWS config');
   const client = new DynamoDBClient(config.getAWSConfig());
   const docClient = DynamoDBDocumentClient.from(client);
 
@@ -52,12 +55,12 @@ exports.handler = async (event) => {
       };
       const existing = await docClient.send(new GetCommand(getParams));
       if (existing && existing.Item) {
-        logger.debug('Episode already exists, skipping: ' + episode.guid);
+        logger.debug({ podGuid: episode.guid }, 'Episode already exists, skipping');
         continue;
       }
 
       // Query TMDB by movie title
-      logger.debug('Query TMDB for: '+movieTitle);
+      logger.debug({ movieTitle }, 'Querying TMDB');
       const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}&include_adult=false&language=en-US`;
       const response = await axios.get(searchUrl);
       const results = response.data.results;
@@ -66,17 +69,22 @@ exports.handler = async (event) => {
         // Filter out non-English titles
         const englishResults = results.filter(result => result.original_language === 'en');
         if (englishResults.length === 0) {
-          logger.error('No English results found for: ' + movieTitle);
+          logger.error({ movieTitle }, 'No English results found');
           skip_count++;
           continue;
         }
         const first_english_match = findBestMatch(englishResults, movieTitle);
-        logger.info('TMDB search match - '+first_english_match.original_title);
+        if (!first_english_match) {
+          logger.error({ movieTitle }, 'No matching English result found');
+          skip_count++;
+          continue;
+        }
+        logger.info({ movieTitle, matchedTitle: first_english_match.original_title, tmdbId: first_english_match.id }, 'TMDB search match found');
 
         const movieId = first_english_match.id; // Get ID from first search result
 
         // Fetch movie details using TMDB ID
-        logger.debug('Fetch TMDB for '+movieTitle+' datails - '+movieId);
+        logger.debug({ movieTitle, movieId }, 'Fetching TMDB movie details');
         const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.TMDB_API_KEY}`;
         const detailsResponse = await axios.get(detailsUrl);
         const movieDetails = detailsResponse.data;
@@ -108,60 +116,64 @@ exports.handler = async (event) => {
   
         try {
             const data = await docClient.send(new PutCommand(item));
-            logger.info('new movie pod found - '+ movieDetails.original_title);
-            logger.info('inserted podcast details into Dynamo - '+item.Item.pod_guid);
+            logger.info({ movieTitle: movieDetails.original_title, podGuid: item.Item.pod_guid }, 'Inserted new movie podcast into DynamoDB');
             save_count++;
         } catch (error) {
           if (error.name === 'ConditionalCheckFailedException') {
-            logger.debug('Movie with guid: '+item.Item.pod_guid+' already exists - '+movieDetails.original_title);
+            logger.debug({ podGuid: item.Item.pod_guid, movieTitle: movieDetails.original_title }, 'Movie podcast already exists');
             skip_count++;
           } else {
-            logger.error({ 
-              error: {
-                message: error.message, 
-                stack: error.stack,
-              } 
-            }, "Error inserting item into DynamoDB");              
+            logger.error({
+              err: error,
+              podGuid: item.Item.pod_guid,
+            }, 'Error inserting item into DynamoDB');
             return false;
           }
         }
       } else {
-        logger.error(`Movie not found on TMDB: ${movieTitle}`);
+        logger.error({ movieTitle }, 'Movie not found on TMDB');
         skip_count++;
       }
     }
-    console.log(`\nPodcast processing complete. Processed: ${pod_count}, Saved: ${save_count}, Skipped: ${skip_count}`);
+    logger.info({ podCount: pod_count, saveCount: save_count, skipCount: skip_count }, 'Podcast processing complete');
     return 'Lambda function execution successful!';
   } catch (error) {
-    logger.error({error},'Error processing RSS feed');
+    logger.error({ err: error }, 'Error processing RSS feed');
     return 'Lambda function failed!';
   }
 };
 
 function findBestMatch(results, movieTitle) {
-  if( results.length == 0 ) {
-    logger.debug('single result found - '+first_english_match.original_title);
-    return results[0];
-  } else {
-    const sortedResults = _.sortBy(results, item => {
-        let popularity = item.popularity;
-
-        // Convert to a number. If it's not a valid number (e.g., undefined, null, non-numeric string),
-        // it will become NaN.
-        popularity = Number(popularity);
-
-        // If popularity is NaN, treat it as a very small number for sorting.
-        // This ensures items with missing/invalid popularity always sink to the bottom
-        // when sorting ascending, and thus stay at the bottom after reversing.
-        if (isNaN(popularity)) {
-            return -Infinity;
-        }
-
-        // Return the (cleaned) numeric popularity for sorting
-        return popularity;
-    }).reverse();
-    
-    logger.debug('multiple results found - '+sortedResults[0].original_title);
-    return sortedResults[0];
+  if (!results || results.length === 0) {
+    logger.debug({ movieTitle }, 'No TMDB results to match');
+    return null;
   }
+  if (results.length === 1) {
+    logger.debug({ movieTitle, matchedTitle: results[0].original_title }, 'Single TMDB result found');
+    return results[0];
+  }
+
+  const sortedResults = _.sortBy(results, item => {
+      let popularity = item.popularity;
+
+      // Convert to a number. If it's not a valid number (e.g., undefined, null, non-numeric string),
+      // it will become NaN.
+      popularity = Number(popularity);
+
+      // If popularity is NaN, treat it as a very small number for sorting.
+      // This ensures items with missing/invalid popularity always sink to the bottom
+      // when sorting ascending, and thus stay at the bottom after reversing.
+      if (isNaN(popularity)) {
+          return -Infinity;
+      }
+
+      // Return the (cleaned) numeric popularity for sorting
+      return popularity;
+  }).reverse();
+
+  logger.debug({ movieTitle, matchedTitle: sortedResults[0].original_title, resultCount: results.length }, 'Multiple TMDB results found');
+  return sortedResults[0];
 }
+
+exports.findBestMatch = findBestMatch;
+exports.logger = logger;

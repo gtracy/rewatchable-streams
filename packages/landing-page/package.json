@@ -6,7 +6,8 @@
     "build": "vite build",
     "build:dev": "vite build",
     "preview": "vite preview",
-    "start": "vite"
+    "start": "vite",
+    "test": "vitest run"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -15,15 +16,17 @@
     "@fontsource/sora": "^5.2.6",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
-    "@tanstack/react-query": "^5.87.1",
-    "gtag": "^1.0.1",
     "material-react-table": "^3.2.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-player": "^3.3.2"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.13",
     "@vitejs/plugin-react": "^5.1.2",
-    "vite": "^7.2.8"
+    "jsdom": "^29.1.1",
+    "vite": "^7.2.8",
+    "vitest": "^5.1.2"
   }
 }
