@@ -14,6 +14,7 @@ const {
     generateAiCatalogJson,
     injectSeoIntoIndexHtml
 } = require('./seo-artifacts');
+const { generateStaticPages } = require('./static-pages');
 
 // Environment variables
 const PODCAST_MOVIES_TABLE = process.env.PODCAST_MOVIES_TABLE || 'podcast_movies';
@@ -22,6 +23,7 @@ const S3_BUCKET = process.env.S3_BUCKET || 'rewatchables';
 const S3_KEY = process.env.S3_KEY || 'data_files/podcast_movie_data.json';
 const WEBAPP_PREFIX = (process.env.WEBAPP_PREFIX || 'webapp').replace(/^\/+|\/+$/g, '');
 const CLOUDFRONT_DISTRIBUTION_ID = process.env.CLOUDFRONT_DISTRIBUTION_ID || '';
+const STATIC_PAGE_UPLOAD_BATCH_SIZE = 20;
 const CLOUDFRONT_INVALIDATION_PATHS = [
     '/index.html',
     '/sitemap.xml',
@@ -29,7 +31,9 @@ const CLOUDFRONT_INVALIDATION_PATHS = [
     '/llms-full.txt',
     '/ai-catalog.json',
     '/.well-known/ai-catalog.json',
-    '/.well-known/ard.json'
+    '/.well-known/ard.json',
+    '/movie/*',
+    '/streaming/*'
 ];
 
 /**
@@ -74,7 +78,9 @@ async function generateRewatchableStreamsData() {
             await uploadToS3(s3Client, result);
             logger.info({ bucket: S3_BUCKET, key: S3_KEY }, 'Successfully uploaded data to S3');
 
-            await uploadSeoArtifacts(s3Client, enrichedPodcasts, result.generated_at);
+            const staticPagesResult = generateStaticPages(enrichedPodcasts, result.generated_at);
+            await uploadSeoArtifacts(s3Client, enrichedPodcasts, result.generated_at, staticPagesResult);
+            await uploadStaticPages(s3Client, staticPagesResult.pages);
             await enrichIndexHtmlInS3(s3Client, enrichedPodcasts, result.generated_at);
 
             if (CLOUDFRONT_DISTRIBUTION_ID) {
@@ -343,12 +349,14 @@ function buildWebappKey(filename) {
 /**
  * Upload static SEO and AI SEO artifacts (llms.txt, llms-full.txt, sitemap.xml) to S3
  */
-async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
+async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt, staticPagesResult = null) {
+    const hubs = staticPagesResult?.hubs || [];
+    const extraPaths = staticPagesResult?.paths || [];
     const aiCatalogBody = generateAiCatalogJson(enrichedPodcasts, generatedAt);
     const artifacts = [
         {
             key: buildWebappKey('llms.txt'),
-            body: generateLlmsTxt(enrichedPodcasts, generatedAt),
+            body: generateLlmsTxt(enrichedPodcasts, generatedAt, undefined, hubs),
             contentType: 'text/plain; charset=utf-8',
             cacheControl: 'max-age=3600'
         },
@@ -360,7 +368,7 @@ async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
         },
         {
             key: buildWebappKey('sitemap.xml'),
-            body: generateSitemapXml(generatedAt),
+            body: generateSitemapXml(generatedAt, undefined, extraPaths),
             contentType: 'application/xml; charset=utf-8',
             cacheControl: 'max-age=3600'
         },
@@ -406,6 +414,58 @@ async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
             throw error;
         }
     }
+}
+
+/**
+ * Upload generated static movie and streaming hub HTML pages to S3 in bounded concurrent batches.
+ */
+async function uploadStaticPages(s3Client, pages, batchSize = STATIC_PAGE_UPLOAD_BATCH_SIZE) {
+    if (!Array.isArray(pages) || pages.length === 0) {
+        logger.info({ bucket: S3_BUCKET, count: 0 }, 'No static pages to upload');
+        return 0;
+    }
+
+    const effectiveBatchSize = Math.max(1, Number(batchSize) || STATIC_PAGE_UPLOAD_BATCH_SIZE);
+    let moviePages = 0;
+    let streamingHubs = 0;
+
+    for (let i = 0; i < pages.length; i += effectiveBatchSize) {
+        const batch = pages.slice(i, i + effectiveBatchSize);
+        const batchIndex = Math.floor(i / effectiveBatchSize) + 1;
+
+        await Promise.all(
+            batch.map(async (page) => {
+                const key = buildWebappKey(page.key);
+                try {
+                    const command = new PutObjectCommand({
+                        Bucket: S3_BUCKET,
+                        Key: key,
+                        Body: page.html,
+                        ContentType: 'text/html; charset=utf-8',
+                        CacheControl: 'max-age=3600'
+                    });
+                    await s3Client.send(command);
+                    if (page.type === 'movie') {
+                        moviePages += 1;
+                    } else if (page.type === 'streaming') {
+                        streamingHubs += 1;
+                    }
+                } catch (error) {
+                    logger.error(
+                        { err: error, bucket: S3_BUCKET, key, batchIndex },
+                        'Error uploading static page to S3'
+                    );
+                    throw error;
+                }
+            })
+        );
+    }
+
+    logger.info(
+        { bucket: S3_BUCKET, count: pages.length, moviePages, streamingHubs },
+        'Uploaded static HTML pages to S3'
+    );
+    return pages.length;
 }
 
 /**
@@ -562,6 +622,8 @@ module.exports = {
     flattenGenres,
     uploadToS3,
     uploadSeoArtifacts,
+    uploadStaticPages,
     enrichIndexHtmlInS3,
-    invalidateCloudFrontCache
+    invalidateCloudFrontCache,
+    CLOUDFRONT_INVALIDATION_PATHS
 };

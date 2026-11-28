@@ -17,6 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_PATH = path.resolve(__dirname, '../app.js');
 const APP_LOCAL_PATH = path.resolve(__dirname, '../app-local.js');
 const SEO_ARTIFACTS_PATH = path.resolve(__dirname, '../seo-artifacts.js');
+const STATIC_PAGES_PATH = path.resolve(__dirname, '../static-pages.js');
 const LAMBDA_PATH = path.resolve(__dirname, '../app-lambda.js');
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
@@ -430,9 +431,17 @@ describe('generateRewatchableStreamsData', () => {
         expect(new Date(summary.generated_at).toISOString()).toBe(summary.generated_at);
 
         const s3Calls = s3Mock.commandCalls(PutObjectCommand);
-        expect(s3Calls).toHaveLength(7);
-
         const byKey = Object.fromEntries(s3Calls.map((call) => [call.args[0].input.Key, call.args[0].input]));
+
+        // Data JSON + 6 SEO artifacts + 1 movie page + streaming hubs for The Godfather
+        expect(s3Calls.length).toBeGreaterThan(7);
+        expect(byKey['webapp/movie/the-godfather-1972/index.html']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'text/html; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/movie/the-godfather-1972/index.html'].Body).toContain('Where to Stream The Godfather (1972)');
+        expect(byKey['webapp/sitemap.xml'].Body).toContain('<loc>https://watchthatpod.com/movie/the-godfather-1972/</loc>');
 
         const uploaded = JSON.parse(byKey['data_files/podcast_movie_data.json'].Body);
         expect(uploaded.total_podcasts).toBe(1);
@@ -520,7 +529,7 @@ describe('generateRewatchableStreamsData', () => {
         expect(summary.success).toBe(true);
 
         const s3Calls = s3Mock.commandCalls(PutObjectCommand);
-        expect(s3Calls).toHaveLength(8);
+        expect(s3Calls.length).toBeGreaterThan(8);
         const indexPut = s3Calls.find((c) => c.args[0].input.Key === 'webapp/index.html');
         expect(indexPut).toBeTruthy();
         expect(indexPut.args[0].input).toMatchObject({
@@ -537,7 +546,7 @@ describe('generateRewatchableStreamsData', () => {
         expect(cfCalls).toHaveLength(1);
         expect(cfCalls[0].args[0].input.DistributionId).toBe('E3UTGKV2VWOXDQ');
         expect(cfCalls[0].args[0].input.InvalidationBatch.Paths).toEqual({
-            Quantity: 7,
+            Quantity: 9,
             Items: [
                 '/index.html',
                 '/sitemap.xml',
@@ -545,7 +554,9 @@ describe('generateRewatchableStreamsData', () => {
                 '/llms-full.txt',
                 '/ai-catalog.json',
                 '/.well-known/ai-catalog.json',
-                '/.well-known/ard.json'
+                '/.well-known/ard.json',
+                '/movie/*',
+                '/streaming/*'
             ]
         });
     });
@@ -590,15 +601,19 @@ describe('generateRewatchableStreamsData', () => {
             Bucket: c.args[0].input.Bucket,
             Key: c.args[0].input.Key
         }));
-        expect(putKeys).toEqual([
-            { Bucket: 'custom-bucket', Key: 'custom/data.json' },
-            { Bucket: 'custom-bucket', Key: 'site/llms.txt' },
-            { Bucket: 'custom-bucket', Key: 'site/llms-full.txt' },
-            { Bucket: 'custom-bucket', Key: 'site/sitemap.xml' },
-            { Bucket: 'custom-bucket', Key: 'site/ai-catalog.json' },
-            { Bucket: 'custom-bucket', Key: 'site/.well-known/ai-catalog.json' },
-            { Bucket: 'custom-bucket', Key: 'site/.well-known/ard.json' }
-        ]);
+        expect(putKeys).toEqual(
+            expect.arrayContaining([
+                { Bucket: 'custom-bucket', Key: 'custom/data.json' },
+                { Bucket: 'custom-bucket', Key: 'site/llms.txt' },
+                { Bucket: 'custom-bucket', Key: 'site/llms-full.txt' },
+                { Bucket: 'custom-bucket', Key: 'site/sitemap.xml' },
+                { Bucket: 'custom-bucket', Key: 'site/ai-catalog.json' },
+                { Bucket: 'custom-bucket', Key: 'site/.well-known/ai-catalog.json' },
+                { Bucket: 'custom-bucket', Key: 'site/.well-known/ard.json' },
+                { Bucket: 'custom-bucket', Key: 'site/movie/the-godfather-1972/index.html' }
+            ])
+        );
+        expect(putKeys.every((item) => item.Bucket === 'custom-bucket')).toBe(true);
     });
 
     it('handles an empty podcast_movies table and uploads empty podcasts array', async () => {
@@ -710,9 +725,49 @@ describe('handler and app-lambda', () => {
     });
 });
 
+describe('uploadStaticPages', () => {
+    it('uploads pages in bounded batches with text/html content type and cache control', async () => {
+        const { uploadStaticPages } = loadAppFresh();
+        s3Mock.on(PutObjectCommand).resolves({});
+
+        const s3Client = new S3Client({ region: 'us-east-2' });
+        const pages = Array.from({ length: 5 }, (_, idx) => ({
+            key: `movie/movie-${idx + 1}/index.html`,
+            path: `/movie/movie-${idx + 1}/`,
+            type: 'movie',
+            html: `<html><body>Movie ${idx + 1}</body></html>`
+        }));
+
+        const uploadedCount = await uploadStaticPages(s3Client, pages, 2);
+        expect(uploadedCount).toBe(5);
+
+        const calls = s3Mock.commandCalls(PutObjectCommand);
+        expect(calls).toHaveLength(5);
+        expect(calls[0].args[0].input).toEqual({
+            Bucket: 'rewatchables',
+            Key: 'webapp/movie/movie-1/index.html',
+            Body: '<html><body>Movie 1</body></html>',
+            ContentType: 'text/html; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+    });
+
+    it('propagates S3 errors when uploading a static page fails', async () => {
+        const { uploadStaticPages } = loadAppFresh();
+        s3Mock.on(PutObjectCommand).rejects(new Error('S3 throttling'));
+
+        const s3Client = new S3Client({ region: 'us-east-2' });
+        await expect(
+            uploadStaticPages(s3Client, [
+                { key: 'streaming/free/index.html', type: 'streaming', html: '<html></html>' }
+            ])
+        ).rejects.toThrow('S3 throttling');
+    });
+});
+
 describe('logging hygiene', () => {
-    it('contains zero console.* calls in app.js, app-local.js, and seo-artifacts.js', () => {
-        for (const filePath of [APP_PATH, APP_LOCAL_PATH, SEO_ARTIFACTS_PATH]) {
+    it('contains zero console.* calls in app.js, app-local.js, seo-artifacts.js, and static-pages.js', () => {
+        for (const filePath of [APP_PATH, APP_LOCAL_PATH, SEO_ARTIFACTS_PATH, STATIC_PAGES_PATH]) {
             const content = fs.readFileSync(filePath, 'utf8');
             expect(content).not.toMatch(/\bconsole\./);
         }
