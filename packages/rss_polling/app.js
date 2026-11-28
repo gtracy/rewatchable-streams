@@ -18,14 +18,40 @@ const { DynamoDBDocumentClient, PutCommand, GetCommand } = require("@aws-sdk/lib
 const { extractMovieTitle } = require('./title');
 
 const TMDB_API_BASE_URL = 'https://api.themoviedb.org/3/search/movie';
+const AXIOS_REQUEST_OPTIONS = {
+  timeout: 15000,
+  maxContentLength: 5 * 1024 * 1024,
+};
+
+function sanitizeAxiosError(error) {
+  let sanitizedUrl;
+  if (error?.config?.url) {
+    try {
+      const parsed = new URL(error.config.url);
+      sanitizedUrl = `${parsed.origin}${parsed.pathname}`;
+    } catch {
+      sanitizedUrl = String(error.config.url).split('?')[0];
+    }
+  }
+  const message = typeof error?.message === 'string'
+    ? error.message.replace(/api_key=[^&\s]+/gi, 'api_key=[REDACTED]')
+    : String(error);
+  return {
+    message,
+    status: error?.response?.status,
+    code: error?.code,
+    ...(sanitizedUrl ? { url: sanitizedUrl } : {}),
+  };
+}
 
 exports.handler = async (event) => {
   if( !process.env.TMDB_API_KEY ) {
     logger.error({ envPath }, 'Failed to initialize job: missing TMDB_API_KEY');
     return;
   }
-  logger.debug({ awsConfig: config.getAWSConfig() }, 'Initialized AWS config');
-  const client = new DynamoDBClient(config.getAWSConfig());
+  const awsConfig = config.getAWSConfig();
+  logger.debug({ region: awsConfig.region }, 'Initialized AWS config');
+  const client = new DynamoDBClient(awsConfig);
   const docClient = DynamoDBDocumentClient.from(client);
 
   // Fetch Podcast RSS Feed
@@ -36,110 +62,148 @@ exports.handler = async (event) => {
 
     let parser = new Parser();
     const feed = await parser.parseURL('https://feeds.megaphone.fm/the-rewatchables');
-    const episodes = feed.items;
+    const episodes = Array.isArray(feed?.items) ? feed.items : [];
 
     // Loop through each episode and lookup the movie
     // details from the TMDB API
     for (const episode of episodes) {
       pod_count++;
 
-      const movieTitle = extractMovieTitle(episode.title, logger);
-      if( !movieTitle ) {
-        continue;
-      }
-
-      // Check if episode already exists in DynamoDB
-      const getParams = {
-        TableName: process.env.DYNAMO_PODCAST_MOVIES_TABLE,
-        Key: { pod_guid: episode.guid }
-      };
-      const existing = await docClient.send(new GetCommand(getParams));
-      if (existing && existing.Item) {
-        logger.debug({ podGuid: episode.guid }, 'Episode already exists, skipping');
-        continue;
-      }
-
-      // Query TMDB by movie title
-      logger.debug({ movieTitle }, 'Querying TMDB');
-      const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}&include_adult=false&language=en-US`;
-      const response = await axios.get(searchUrl);
-      const results = response.data.results;
-
-      if (results.length > 0) {
-        // Filter out non-English titles
-        const englishResults = results.filter(result => result.original_language === 'en');
-        if (englishResults.length === 0) {
-          logger.error({ movieTitle }, 'No English results found');
+      try {
+        if (!episode || typeof episode.guid !== 'string' || !episode.guid.trim()) {
+          logger.error({ podTitle: episode?.title }, 'Skipping episode with missing or invalid guid');
           skip_count++;
           continue;
         }
-        const first_english_match = findBestMatch(englishResults, movieTitle);
-        if (!first_english_match) {
-          logger.error({ movieTitle }, 'No matching English result found');
-          skip_count++;
+
+        const movieTitle = extractMovieTitle(episode.title, logger);
+        if( !movieTitle ) {
           continue;
         }
-        logger.info({ movieTitle, matchedTitle: first_english_match.original_title, tmdbId: first_english_match.id }, 'TMDB search match found');
 
-        const movieId = first_english_match.id; // Get ID from first search result
-
-        // Fetch movie details using TMDB ID
-        logger.debug({ movieTitle, movieId }, 'Fetching TMDB movie details');
-        const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.TMDB_API_KEY}`;
-        const detailsResponse = await axios.get(detailsUrl);
-        const movieDetails = detailsResponse.data;
-
-        const item = {
+        // Check if episode already exists in DynamoDB
+        const getParams = {
           TableName: process.env.DYNAMO_PODCAST_MOVIES_TABLE,
-          Item: {
-            tmdb_id : movieId,
-            imdb_id : movieDetails.imdb_id,
-            movie_title : movieDetails.original_title,
-            tagline : movieDetails.tagline,
-            overview : movieDetails.overview,
-            runtime : movieDetails.runtime,
-            release_date : movieDetails.release_date,
-            img : movieDetails.poster_path,
-            genres : movieDetails.genres,
-          
-            pod_title : episode.title,
-            pod_link : episode.enclosure ? episode.enclosure.url : 'https://www.theringer.com/podcasts/the-rewatchables',
-            pod_date : new Date(episode.pubDate).toISOString(),
-            pod_desc : episode.content,
-            pod_guid : episode.guid, // Key
-
-            last_updated : new Date().toISOString(),
-            gsi_pk : 'ALL_PODS'
-          },
-          ConditionExpression: 'attribute_not_exists(pod_guid)'
+          Key: { pod_guid: episode.guid }
         };
-  
-        try {
-            const data = await docClient.send(new PutCommand(item));
-            logger.info({ movieTitle: movieDetails.original_title, podGuid: item.Item.pod_guid }, 'Inserted new movie podcast into DynamoDB');
-            save_count++;
-        } catch (error) {
-          if (error.name === 'ConditionalCheckFailedException') {
-            logger.debug({ podGuid: item.Item.pod_guid, movieTitle: movieDetails.original_title }, 'Movie podcast already exists');
-            skip_count++;
-          } else {
-            logger.error({
-              err: error,
-              podGuid: item.Item.pod_guid,
-            }, 'Error inserting item into DynamoDB');
-            return false;
-          }
+        const existing = await docClient.send(new GetCommand(getParams));
+        if (existing && existing.Item) {
+          logger.debug({ podGuid: episode.guid }, 'Episode already exists, skipping');
+          continue;
         }
-      } else {
-        logger.error({ movieTitle }, 'Movie not found on TMDB');
+
+        // Query TMDB by movie title
+        logger.debug({ movieTitle }, 'Querying TMDB');
+        const searchUrl = `${TMDB_API_BASE_URL}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}&include_adult=false&language=en-US`;
+        let response;
+        try {
+          response = await axios.get(searchUrl, AXIOS_REQUEST_OPTIONS);
+        } catch (error) {
+          logger.error({
+            err: sanitizeAxiosError(error),
+            movieTitle,
+            podGuid: episode.guid,
+          }, 'Error querying TMDB search API');
+          skip_count++;
+          continue;
+        }
+        const results = response.data.results;
+
+        if (results.length > 0) {
+          // Filter out non-English titles
+          const englishResults = results.filter(result => result.original_language === 'en');
+          if (englishResults.length === 0) {
+            logger.error({ movieTitle }, 'No English results found');
+            skip_count++;
+            continue;
+          }
+          const first_english_match = findBestMatch(englishResults, movieTitle);
+          if (!first_english_match) {
+            logger.error({ movieTitle }, 'No matching English result found');
+            skip_count++;
+            continue;
+          }
+          logger.info({ movieTitle, matchedTitle: first_english_match.original_title, tmdbId: first_english_match.id }, 'TMDB search match found');
+
+          const movieId = first_english_match.id; // Get ID from first search result
+
+          // Fetch movie details using TMDB ID
+          logger.debug({ movieTitle, movieId }, 'Fetching TMDB movie details');
+          const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.TMDB_API_KEY}`;
+          let detailsResponse;
+          try {
+            detailsResponse = await axios.get(detailsUrl, AXIOS_REQUEST_OPTIONS);
+          } catch (error) {
+            logger.error({
+              err: sanitizeAxiosError(error),
+              movieTitle,
+              movieId,
+              podGuid: episode.guid,
+            }, 'Error fetching TMDB movie details');
+            skip_count++;
+            continue;
+          }
+          const movieDetails = detailsResponse.data;
+
+          const item = {
+            TableName: process.env.DYNAMO_PODCAST_MOVIES_TABLE,
+            Item: {
+              tmdb_id : movieId,
+              imdb_id : movieDetails.imdb_id,
+              movie_title : movieDetails.original_title,
+              tagline : movieDetails.tagline,
+              overview : movieDetails.overview,
+              runtime : movieDetails.runtime,
+              release_date : movieDetails.release_date,
+              img : movieDetails.poster_path,
+              genres : movieDetails.genres,
+            
+              pod_title : episode.title,
+              pod_link : episode.enclosure ? episode.enclosure.url : 'https://www.theringer.com/podcasts/the-rewatchables',
+              pod_date : new Date(episode.pubDate).toISOString(),
+              pod_desc : episode.content,
+              pod_guid : episode.guid, // Key
+
+              last_updated : new Date().toISOString(),
+              gsi_pk : 'ALL_PODS'
+            },
+            ConditionExpression: 'attribute_not_exists(pod_guid)'
+          };
+    
+          try {
+              const data = await docClient.send(new PutCommand(item));
+              logger.info({ movieTitle: movieDetails.original_title, podGuid: item.Item.pod_guid }, 'Inserted new movie podcast into DynamoDB');
+              save_count++;
+          } catch (error) {
+            if (error.name === 'ConditionalCheckFailedException') {
+              logger.debug({ podGuid: item.Item.pod_guid, movieTitle: movieDetails.original_title }, 'Movie podcast already exists');
+              skip_count++;
+            } else {
+              logger.error({
+                err: error,
+                podGuid: item.Item.pod_guid,
+              }, 'Error inserting item into DynamoDB');
+              return false;
+            }
+          }
+        } else {
+          logger.error({ movieTitle }, 'Movie not found on TMDB');
+          skip_count++;
+        }
+      } catch (episodeError) {
+        logger.error({
+          err: sanitizeAxiosError(episodeError),
+          podGuid: episode?.guid,
+          podTitle: episode?.title,
+        }, 'Error processing episode, continuing');
         skip_count++;
       }
     }
     logger.info({ podCount: pod_count, saveCount: save_count, skipCount: skip_count }, 'Podcast processing complete');
     return 'Lambda function execution successful!';
   } catch (error) {
-    logger.error({ err: error }, 'Error processing RSS feed');
-    return 'Lambda function failed!';
+    logger.error({ err: sanitizeAxiosError(error) }, 'Error processing RSS feed');
+    throw error;
   }
 };
 

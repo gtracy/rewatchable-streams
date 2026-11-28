@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Deploy React app to AWS S3 and CloudFront
 # Uses rewatchables-runner profile for deployment
@@ -16,7 +17,7 @@ echo "Uploading to S3..."
 AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete --exclude "llms-full.txt"
 
 echo "Invalidating CloudFront cache..."
-AWS_PROFILE=$PROFILE aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/webapp/*"
+AWS_PROFILE="$PROFILE" aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/webapp/*"
 
 echo "Deployment complete!"
 echo "CloudFront URL: https://d17j4vszgpwat2.cloudfront.net/"

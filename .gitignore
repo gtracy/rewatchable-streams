@@ -1,4 +1,10 @@
+.env
+.env.*
 .env.json
+*.pem
+*.key
+response.json
+*.zip
 node_modules
 function.zip
 .DS_Store

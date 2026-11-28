@@ -166,63 +166,6 @@ describe('fetchAllPodcasts', () => {
     });
 });
 
-describe('fetchMovieData', () => {
-    it('scans movie_streams table by tmdb_id and returns the first matching item', async () => {
-        const { fetchMovieData } = loadAppFresh();
-        const { movieItem } = buildSamplePodcastAndMovie();
-        ddbMock.on(ScanCommand).resolves({ Items: [movieItem, { ...movieItem, id: 'duplicate' }] });
-
-        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
-        const result = await fetchMovieData(docClient, 238);
-
-        expect(result).toEqual(movieItem);
-        const calls = ddbMock.commandCalls(ScanCommand);
-        expect(calls).toHaveLength(1);
-        expect(calls[0].args[0].input).toEqual({
-            TableName: 'movie_streams',
-            FilterExpression: 'tmdb_id = :tmdb_id',
-            ExpressionAttributeValues: { ':tmdb_id': 238 }
-        });
-    });
-
-    it('paginates across empty filtered pages until a matching movie is found', async () => {
-        const { fetchMovieData } = loadAppFresh();
-        const { movieItem } = buildSamplePodcastAndMovie();
-        const lastKey = { tmdb_id: 100 };
-
-        ddbMock
-            .on(ScanCommand)
-            .resolvesOnce({ Items: [], LastEvaluatedKey: lastKey })
-            .resolvesOnce({ Items: [movieItem] });
-
-        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
-        const result = await fetchMovieData(docClient, 238);
-
-        expect(result).toEqual(movieItem);
-        const calls = ddbMock.commandCalls(ScanCommand);
-        expect(calls).toHaveLength(2);
-        expect(calls[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
-    });
-
-    it('returns null when no items match or Items is undefined', async () => {
-        const { fetchMovieData } = loadAppFresh();
-        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
-
-        ddbMock.on(ScanCommand).resolvesOnce({ Items: [] }).resolvesOnce({});
-
-        expect(await fetchMovieData(docClient, 999999)).toBeNull();
-        expect(await fetchMovieData(docClient, 888888)).toBeNull();
-    });
-
-    it('propagates DynamoDB errors', async () => {
-        const { fetchMovieData } = loadAppFresh();
-        ddbMock.on(ScanCommand).rejects(new Error('DynamoDB unavailable'));
-
-        const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }));
-        await expect(fetchMovieData(docClient, 238)).rejects.toThrow('DynamoDB unavailable');
-    });
-});
-
 describe('enrichPodcastsWithMovieData', () => {
     it('merges podcast metadata with movie data, flattening genres and streamingOptions', async () => {
         const { enrichPodcastsWithMovieData } = loadAppFresh();
@@ -684,7 +627,7 @@ describe('handler and app-lambda', () => {
         expect(body.generated_at).toBeTruthy();
     });
 
-    it('returns HTTP 500 with error details when generation fails', async () => {
+    it('returns HTTP 500 with generic client-safe error message when generation fails', async () => {
         const { handler } = loadAppFresh();
         ddbMock.on(ScanCommand).rejects(new Error('Boom from DynamoDB'));
 
@@ -693,8 +636,14 @@ describe('handler and app-lambda', () => {
         expect(response.statusCode).toBe(500);
         expect(JSON.parse(response.body)).toEqual({
             message: 'Error generating data',
-            error: 'Boom from DynamoDB'
+            error: 'Internal server error'
         });
+        expect(response.body).not.toContain('Boom from DynamoDB');
+    });
+
+    it('does not export removed dead function fetchMovieData', () => {
+        const appModule = loadAppFresh();
+        expect(appModule.fetchMovieData).toBeUndefined();
     });
 
     it('app-lambda.js exports handler delegating to app.handler', async () => {

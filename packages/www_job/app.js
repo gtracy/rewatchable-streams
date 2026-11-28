@@ -224,40 +224,29 @@ async function enrichPodcastsWithMovieData(docClient, podcasts) {
     return enrichedPodcasts;
 }
 
-/**
- * Fetch movie data from movie_streams table by tmdb_id with pagination
- */
-async function fetchMovieData(docClient, tmdbId) {
-    let lastEvaluatedKey;
+const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{3,8}$/;
+const DEFAULT_THEME_COLOR = '#444';
 
-    do {
-        const params = {
-            TableName: MOVIE_STREAMS_TABLE,
-            FilterExpression: 'tmdb_id = :tmdb_id',
-            ExpressionAttributeValues: {
-                ':tmdb_id': tmdbId
-            }
-        };
-
-        if (lastEvaluatedKey) {
-            params.ExclusiveStartKey = lastEvaluatedKey;
+function sanitizeHttpUrl(rawUrl) {
+    if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
+        return null;
+    }
+    try {
+        const parsed = new URL(rawUrl);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+            return rawUrl;
         }
-
-        try {
-            const command = new ScanCommand(params);
-            const result = await docClient.send(command);
-
-            if (result.Items && result.Items.length > 0) {
-                return result.Items[0];
-            }
-            lastEvaluatedKey = result.LastEvaluatedKey;
-        } catch (error) {
-            logger.error({ err: error, tmdbId, table: MOVIE_STREAMS_TABLE }, 'Error fetching movie data');
-            throw error;
-        }
-    } while (lastEvaluatedKey);
-
+    } catch {
+        // Invalid URL
+    }
     return null;
+}
+
+function sanitizeThemeColor(color) {
+    if (typeof color === 'string' && HEX_COLOR_REGEX.test(color)) {
+        return color;
+    }
+    return DEFAULT_THEME_COLOR;
 }
 
 /**
@@ -272,6 +261,11 @@ function filterStreamingOptions(streamingOptions) {
         // Create a copy of the option to avoid mutating the original
         const filteredOption = { ...option };
 
+        // Validate option.link to http:/https:
+        if ('link' in filteredOption) {
+            filteredOption.link = sanitizeHttpUrl(filteredOption.link);
+        }
+
         // Remove subtitles if it exists
         if (filteredOption.subtitles) {
             delete filteredOption.subtitles;
@@ -283,10 +277,10 @@ function filterStreamingOptions(streamingOptions) {
 
             // Add service properties directly to the option
             filteredOption.serviceName = service.name;
-            filteredOption.serviceThemeColorCode = service.themeColorCode;
+            filteredOption.serviceThemeColorCode = sanitizeThemeColor(service.themeColorCode);
             filteredOption.serviceId = service.id;
             filteredOption.serviceImageSet = service.imageSet;
-            filteredOption.serviceHomePage = service.homePage;
+            filteredOption.serviceHomePage = sanitizeHttpUrl(service.homePage);
 
             // Remove the original service object
             delete filteredOption.service;
@@ -545,7 +539,7 @@ async function handler(event, context) {
             statusCode: 500,
             body: JSON.stringify({
                 message: 'Error generating data',
-                error: error.message
+                error: 'Internal server error'
             })
         };
     }
@@ -557,7 +551,6 @@ module.exports = {
     fetchAllPodcasts,
     fetchAllMovies,
     enrichPodcastsWithMovieData,
-    fetchMovieData,
     filterStreamingOptions,
     flattenGenres,
     uploadToS3,

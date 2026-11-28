@@ -1,0 +1,27 @@
+{
+  "Name": "rewatchables-security-headers-policy",
+  "Comment": "Security response headers policy for watchthatpod.com CloudFront distribution",
+  "SecurityHeadersConfig": {
+    "ContentSecurityPolicy": {
+      "Override": true,
+      "ContentSecurityPolicy": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://lyv84who21.execute-api.us-east-2.amazonaws.com https://rewatchables.s3.us-east-2.amazonaws.com; img-src 'self' data: https:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    },
+    "StrictTransportSecurity": {
+      "Override": true,
+      "IncludeSubdomains": true,
+      "Preload": true,
+      "AccessControlMaxAgeSec": 31536000
+    },
+    "ContentTypeOptions": {
+      "Override": true
+    },
+    "ReferrerPolicy": {
+      "Override": true,
+      "ReferrerPolicy": "strict-origin-when-cross-origin"
+    },
+    "FrameOptions": {
+      "Override": true,
+      "FrameOption": "DENY"
+    }
+  }
+}

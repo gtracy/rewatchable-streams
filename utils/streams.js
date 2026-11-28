@@ -49,12 +49,14 @@ module.exports.fetchStream = async function(tmdb_id) {
         }
 
         // grab the streaming options for the US
-        if (streamingDetails.streamingOptions?.us) {
-            logger.info({ tmdbId: tmdb_id }, 'Fetching streaming options for US');
-            movieStream.streamingOptions = filterServices(streamingDetails.streamingOptions.us);
-        } else {
-            logger.error({ tmdbId: tmdb_id }, 'No streaming options for US');
+        const usStreamingOptions = streamingDetails.streamingOptions?.us;
+        if (!Array.isArray(usStreamingOptions) || usStreamingOptions.length === 0) {
+            logger.warn({ tmdbId: tmdb_id }, 'No streaming options for US; skipping DynamoDB update');
+            return;
         }
+
+        logger.info({ tmdbId: tmdb_id }, 'Fetching streaming options for US');
+        movieStream.streamingOptions = filterServices(usStreamingOptions);
 
         const dynamo_doc = {
             TableName: process.env.DYNAMO_MOVIE_STREAMS_TABLE,
@@ -63,7 +65,12 @@ module.exports.fetchStream = async function(tmdb_id) {
         await docClient.send(new PutCommand(dynamo_doc));
         logger.info({ tmdbId: tmdb_id }, 'Streaming options saved');
     } catch (error) {
-        logger.error({ err: error, tmdbId: tmdb_id }, 'Error fetching streaming details');
+        logger.error({
+            tmdbId: tmdb_id,
+            errorName: error?.name,
+            errorMessage: error?.message,
+            statusCode: error?.response?.status ?? error?.$metadata?.httpStatusCode
+        }, 'Error fetching streaming details');
     }    
 }
 

@@ -93,7 +93,7 @@ async function createMovieStreamsTable(table_name) {
 
 
 if (require.main === module) {
-  logger.debug({ awsConfig: config.getAWSConfig() }, 'Initializing DynamoDB tables');
+  logger.debug({ region: config.getAWSConfig().region }, 'Initializing DynamoDB tables');
   (async () => {
     await createPodcastMoviesTable(process.env.DYNAMO_PODCAST_MOVIES_TABLE);
     await createMovieStreamsTable(process.env.DYNAMO_MOVIE_STREAMS_TABLE);

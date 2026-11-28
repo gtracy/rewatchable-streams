@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PodcastPlayerModal from './PodcastPlayerModal';
 import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingClick, trackSearch } from '../utils/analytics';
+import { sanitizeHttpUrl, sanitizeHexColor, sanitizeImdbId } from '../utils/sanitize';
 import './DataTable.css';
 
 const URL_FILTER_MAP = [
@@ -200,7 +201,8 @@ const DataTable = ({ data, isLoading, error }) => {
         Cell: ({ cell, row }) => {
           const title = row.original.pod_title || 'Untitled Episode';
           const date = new Date(cell.getValue());
-          const imageUrl = row.original.movie?.imageSet;
+          const imageUrl = sanitizeHttpUrl(row.original.movie?.imageSet);
+          const validImdbId = sanitizeImdbId(row.original.movie?.imdb_id);
           
           return (
             <Box sx={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
@@ -220,6 +222,7 @@ const DataTable = ({ data, isLoading, error }) => {
                     <img
                       src={imageUrl}
                       alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
+                      referrerPolicy="no-referrer"
                       width="109"
                       height="156"
                       loading="lazy"
@@ -258,9 +261,9 @@ const DataTable = ({ data, isLoading, error }) => {
                 
                 {/* Movie Title with IMDB Link */}
                 <Box sx={{ marginTop: '6px', maxWidth: '109px' }}> {/* Match new width */}
-                  {row.original.movie?.imdb_id ? (
+                  {validImdbId ? (
                     <a 
-                      href={`https://www.imdb.com/title/${row.original.movie.imdb_id}/`}
+                      href={`https://www.imdb.com/title/${validImdbId}/`}
                       target="_blank" 
                       rel="noopener noreferrer"
                       style={{
@@ -396,8 +399,9 @@ const DataTable = ({ data, isLoading, error }) => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
               {streamingOptions.map((option, index) => {
                 const serviceName = option.serviceName || 'Unknown';
-                const iconUrl = option.serviceImageSet?.darkThemeImage;
-                const themeColor = option.serviceThemeColorCode || '#444';
+                const iconUrl = sanitizeHttpUrl(option.serviceImageSet?.darkThemeImage);
+                const themeColor = sanitizeHexColor(option.serviceThemeColorCode, '#444');
+                const safeWatchUrl = sanitizeHttpUrl(option.link) || '#';
                 const type = option.type;
                 const price = option.price;
                 
@@ -452,6 +456,7 @@ const DataTable = ({ data, isLoading, error }) => {
                           <img
                             src={iconUrl}
                             alt={serviceName}
+                            referrerPolicy="no-referrer"
                             width="24"
                             height="24"
                             loading="lazy"
@@ -496,7 +501,7 @@ const DataTable = ({ data, isLoading, error }) => {
                     
                     {/* Watch Button */}
                     <a
-                      href={option.link || '#'}
+                      href={safeWatchUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Watch ${row.original.movie?.movie_title || 'movie'} on ${serviceName}`}
