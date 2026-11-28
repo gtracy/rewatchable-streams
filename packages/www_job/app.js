@@ -27,7 +27,9 @@ const CLOUDFRONT_INVALIDATION_PATHS = [
     '/sitemap.xml',
     '/llms.txt',
     '/llms-full.txt',
-    '/ai-catalog.json'
+    '/ai-catalog.json',
+    '/.well-known/ai-catalog.json',
+    '/.well-known/ard.json'
 ];
 
 /**
@@ -342,6 +344,7 @@ function buildWebappKey(filename) {
  * Upload static SEO and AI SEO artifacts (llms.txt, llms-full.txt, sitemap.xml) to S3
  */
 async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
+    const aiCatalogBody = generateAiCatalogJson(enrichedPodcasts, generatedAt);
     const artifacts = [
         {
             key: buildWebappKey('llms.txt'),
@@ -363,7 +366,19 @@ async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
         },
         {
             key: buildWebappKey('ai-catalog.json'),
-            body: generateAiCatalogJson(enrichedPodcasts, generatedAt),
+            body: aiCatalogBody,
+            contentType: 'application/json; charset=utf-8',
+            cacheControl: 'max-age=3600'
+        },
+        {
+            key: buildWebappKey('.well-known/ai-catalog.json'),
+            body: aiCatalogBody,
+            contentType: 'application/json; charset=utf-8',
+            cacheControl: 'max-age=3600'
+        },
+        {
+            key: buildWebappKey('.well-known/ard.json'),
+            body: aiCatalogBody,
             contentType: 'application/json; charset=utf-8',
             cacheControl: 'max-age=3600'
         }

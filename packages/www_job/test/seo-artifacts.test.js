@@ -369,21 +369,21 @@ describe('injectSeoIntoIndexHtml', () => {
 });
 
 describe('generateAiCatalogJson', () => {
-    it('outputs a valid ARD manifest with name, description, url, updatedAt, and resources', () => {
+    it('outputs a valid ARD v1.0 manifest with specVersion, host, and urn:air entries', () => {
         const raw = generateAiCatalogJson([makePodcast()], '2026-11-27T00:00:00.000Z', 'https://watchthatpod.com/');
         const parsed = JSON.parse(raw);
 
-        expect(parsed.name).toBe('Watch That Pod');
-        expect(parsed.description).toContain('1 episodes indexed');
-        expect(parsed.description).toContain('2026-11-27');
-        expect(parsed.url).toBe('https://watchthatpod.com/');
-        expect(parsed.updatedAt).toBe('2026-11-27');
-        expect(Array.isArray(parsed.resources)).toBe(true);
-        expect(parsed.resources.map((r) => r.url)).toEqual([
+        expect(parsed.specVersion).toBe('1.0');
+        expect(parsed.host).toEqual({ displayName: 'Watch That Pod' });
+        expect(Array.isArray(parsed.entries)).toBe(true);
+        expect(parsed.entries).toHaveLength(2);
+        expect(parsed.entries[0].identifier).toBe('urn:air:watchthatpod.com:catalog:llms-overview');
+        expect(parsed.entries[0].description).toContain('1 episodes indexed');
+        expect(parsed.entries[0].description).toContain('2026-11-27');
+        expect(parsed.entries[0].representativeQueries.length).toBeGreaterThanOrEqual(2);
+        expect(parsed.entries.map((e) => e.url)).toEqual([
             'https://watchthatpod.com/llms.txt',
-            'https://watchthatpod.com/llms-full.txt',
-            'https://watchthatpod.com/',
-            'https://watchthatpod.com/sitemap.xml'
+            'https://watchthatpod.com/llms-full.txt'
         ]);
     });
 });
@@ -397,6 +397,6 @@ describe('generateSeoArtifacts', () => {
         expect(artifacts.llmsTxt).toContain('# Watch That Pod');
         expect(artifacts.llmsFullTxt).toContain('## The Godfather (1972)');
         expect(artifacts.sitemapXml).toContain('<lastmod>2026-11-27</lastmod>');
-        expect(JSON.parse(artifacts.aiCatalogJson).name).toBe('Watch That Pod');
+        expect(JSON.parse(artifacts.aiCatalogJson).specVersion).toBe('1.0');
     });
 });

@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://watchthatpod.com/sitemap.xml
+Agentmap: https://watchthatpod.com/.well-known/ard.json

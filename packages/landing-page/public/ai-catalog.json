@@ -1,31 +1,32 @@
 {
-  "name": "Watch That Pod",
-  "description": "Searchable streaming guide for The Rewatchables podcast, mapping episodes to featured movies, cast, directors, and current US streaming, rental, and free viewing options.",
-  "url": "https://watchthatpod.com/",
-  "resources": [
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Watch That Pod"
+  },
+  "entries": [
     {
-      "name": "LLMs Overview",
-      "description": "Concise Markdown overview of Watch That Pod, update cadence, and navigation links for AI agents.",
+      "identifier": "urn:air:watchthatpod.com:catalog:llms-overview",
+      "displayName": "Watch That Pod LLMs Overview",
+      "type": "text/markdown",
       "url": "https://watchthatpod.com/llms.txt",
-      "type": "text/plain"
+      "description": "Concise Markdown overview of Watch That Pod, update cadence, search URL patterns, and navigation links for The Rewatchables movie streaming guide.",
+      "representativeQueries": [
+        "What is Watch That Pod and how does it track The Rewatchables movies?",
+        "How can I search The Rewatchables episodes by streaming service or director?",
+        "Where can I find a machine-readable catalog of The Rewatchables podcast episodes?"
+      ]
     },
     {
-      "name": "Full Episode & Streaming Catalog",
-      "description": "Complete Markdown directory of all indexed The Rewatchables episodes, featured movies, directors, cast, streaming options, prices, IMDb links, and podcast audio URLs.",
+      "identifier": "urn:air:watchthatpod.com:catalog:episodes-full",
+      "displayName": "The Rewatchables Full Episode & Streaming Catalog",
+      "type": "text/markdown",
       "url": "https://watchthatpod.com/llms-full.txt",
-      "type": "text/plain"
-    },
-    {
-      "name": "Interactive Search Catalog",
-      "description": "Web catalog supporting query parameters: ?search=, ?service=, ?director=, and ?actor=.",
-      "url": "https://watchthatpod.com/",
-      "type": "text/html"
-    },
-    {
-      "name": "XML Sitemap",
-      "description": "Canonical sitemap with daily last-modified timestamp.",
-      "url": "https://watchthatpod.com/sitemap.xml",
-      "type": "application/xml"
+      "description": "Complete Markdown directory of all indexed The Rewatchables podcast episodes mapped to featured movies, release years, directors, top cast, current US streaming and rental options, IMDb links, and podcast audio URLs.",
+      "representativeQueries": [
+        "Where can I stream movies covered on The Rewatchables podcast?",
+        "Which The Rewatchables movies are streaming for free right now?",
+        "Find streaming options and podcast episode info for The Godfather on The Rewatchables"
+      ]
     }
   ]
 }

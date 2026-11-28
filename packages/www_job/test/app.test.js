@@ -430,7 +430,7 @@ describe('generateRewatchableStreamsData', () => {
         expect(new Date(summary.generated_at).toISOString()).toBe(summary.generated_at);
 
         const s3Calls = s3Mock.commandCalls(PutObjectCommand);
-        expect(s3Calls).toHaveLength(5);
+        expect(s3Calls).toHaveLength(7);
 
         const byKey = Object.fromEntries(s3Calls.map((call) => [call.args[0].input.Key, call.args[0].input]));
 
@@ -467,9 +467,21 @@ describe('generateRewatchableStreamsData', () => {
             CacheControl: 'max-age=3600'
         });
         const aiCatalog = JSON.parse(byKey['webapp/ai-catalog.json'].Body);
-        expect(aiCatalog.name).toBe('Watch That Pod');
-        expect(Array.isArray(aiCatalog.resources)).toBe(true);
-        expect(aiCatalog.resources.length).toBeGreaterThan(0);
+        expect(aiCatalog.specVersion).toBe('1.0');
+        expect(aiCatalog.host).toEqual({ displayName: 'Watch That Pod' });
+        expect(Array.isArray(aiCatalog.entries)).toBe(true);
+        expect(aiCatalog.entries.length).toBeGreaterThan(0);
+
+        expect(byKey['webapp/.well-known/ai-catalog.json']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/json; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/.well-known/ard.json']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/json; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
 
         // CloudFront invalidation skipped when CLOUDFRONT_DISTRIBUTION_ID is unset
         expect(cfMock.commandCalls(CreateInvalidationCommand)).toHaveLength(0);
@@ -508,7 +520,7 @@ describe('generateRewatchableStreamsData', () => {
         expect(summary.success).toBe(true);
 
         const s3Calls = s3Mock.commandCalls(PutObjectCommand);
-        expect(s3Calls).toHaveLength(6);
+        expect(s3Calls).toHaveLength(8);
         const indexPut = s3Calls.find((c) => c.args[0].input.Key === 'webapp/index.html');
         expect(indexPut).toBeTruthy();
         expect(indexPut.args[0].input).toMatchObject({
@@ -525,8 +537,16 @@ describe('generateRewatchableStreamsData', () => {
         expect(cfCalls).toHaveLength(1);
         expect(cfCalls[0].args[0].input.DistributionId).toBe('E3UTGKV2VWOXDQ');
         expect(cfCalls[0].args[0].input.InvalidationBatch.Paths).toEqual({
-            Quantity: 5,
-            Items: ['/index.html', '/sitemap.xml', '/llms.txt', '/llms-full.txt', '/ai-catalog.json']
+            Quantity: 7,
+            Items: [
+                '/index.html',
+                '/sitemap.xml',
+                '/llms.txt',
+                '/llms-full.txt',
+                '/ai-catalog.json',
+                '/.well-known/ai-catalog.json',
+                '/.well-known/ard.json'
+            ]
         });
     });
 
@@ -575,7 +595,9 @@ describe('generateRewatchableStreamsData', () => {
             { Bucket: 'custom-bucket', Key: 'site/llms.txt' },
             { Bucket: 'custom-bucket', Key: 'site/llms-full.txt' },
             { Bucket: 'custom-bucket', Key: 'site/sitemap.xml' },
-            { Bucket: 'custom-bucket', Key: 'site/ai-catalog.json' }
+            { Bucket: 'custom-bucket', Key: 'site/ai-catalog.json' },
+            { Bucket: 'custom-bucket', Key: 'site/.well-known/ai-catalog.json' },
+            { Bucket: 'custom-bucket', Key: 'site/.well-known/ard.json' }
         ]);
     });
 

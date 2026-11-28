@@ -594,7 +594,8 @@ function injectSeoIntoIndexHtml(html, podcasts, generatedAt, baseUrl = DEFAULT_B
 }
 
 /**
- * Generate the Agentic Resource Discovery manifest (/ai-catalog.json).
+ * Generate the Agentic Resource Discovery (ARD v1.0) manifest
+ * served at /.well-known/ard.json, /.well-known/ai-catalog.json, and /ai-catalog.json.
  * @param {Array} podcasts
  * @param {string|Date} generatedAt
  * @param {string} [baseUrl='https://watchthatpod.com']
@@ -606,35 +607,42 @@ function generateAiCatalogJson(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL
     const lastUpdated = formatIsoDate(generatedAt, new Date().toISOString().slice(0, 10));
     const total = list.length;
 
+    let publisher = 'watchthatpod.com';
+    try {
+        publisher = new URL(base).hostname || publisher;
+    } catch {
+        // Keep default publisher hostname
+    }
+
     const manifest = {
-        name: 'Watch That Pod',
-        description: `Searchable streaming guide for The Rewatchables podcast (${total} episodes indexed, updated ${lastUpdated}), mapping episodes to featured movies, cast, directors, and current US streaming, rental, and free viewing options.`,
-        url: `${base}/`,
-        updatedAt: lastUpdated,
-        resources: [
+        specVersion: '1.0',
+        host: {
+            displayName: 'Watch That Pod'
+        },
+        entries: [
             {
-                name: 'LLMs Overview',
-                description: 'Concise Markdown overview of Watch That Pod, dataset stats, and navigation links for AI agents.',
+                identifier: `urn:air:${publisher}:catalog:llms-overview`,
+                displayName: 'Watch That Pod LLMs Overview',
+                type: 'text/markdown',
                 url: `${base}/llms.txt`,
-                type: 'text/plain'
+                description: `Concise Markdown overview of Watch That Pod (${total} episodes indexed, updated ${lastUpdated}), update cadence, search URL patterns, and navigation links.`,
+                representativeQueries: [
+                    'What is Watch That Pod and how does it track The Rewatchables movies?',
+                    'How can I search The Rewatchables episodes by streaming service or director?',
+                    'Where can I find a machine-readable catalog of The Rewatchables podcast episodes?'
+                ]
             },
             {
-                name: 'Full Episode & Streaming Catalog',
-                description: `Complete Markdown directory of all ${total} indexed The Rewatchables episodes, movies, directors, cast, streaming options, IMDb links, and podcast audio URLs.`,
+                identifier: `urn:air:${publisher}:catalog:episodes-full`,
+                displayName: 'The Rewatchables Full Episode & Streaming Catalog',
+                type: 'text/markdown',
                 url: `${base}/llms-full.txt`,
-                type: 'text/plain'
-            },
-            {
-                name: 'Interactive Search Catalog',
-                description: 'Web catalog supporting query parameters: ?search=, ?service=, ?director=, and ?actor=.',
-                url: `${base}/`,
-                type: 'text/html'
-            },
-            {
-                name: 'XML Sitemap',
-                description: 'Canonical sitemap with daily last-modified timestamp.',
-                url: `${base}/sitemap.xml`,
-                type: 'application/xml'
+                description: `Complete Markdown directory of all ${total} indexed The Rewatchables podcast episodes (updated ${lastUpdated}) mapped to featured movies, release years, directors, top cast, current US streaming and rental options, IMDb links, and podcast audio URLs.`,
+                representativeQueries: [
+                    'Where can I stream movies covered on The Rewatchables podcast?',
+                    'Which The Rewatchables movies are streaming for free right now?',
+                    'Find streaming options and podcast episode info for The Godfather on The Rewatchables'
+                ]
             }
         ]
     };
