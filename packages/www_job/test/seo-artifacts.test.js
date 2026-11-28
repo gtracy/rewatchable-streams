@@ -150,7 +150,20 @@ describe('generateLlmsTxt', () => {
         expect(output).toContain('https://watchthatpod.com/?search={query}');
         expect(output).toContain('https://watchthatpod.com/llms-full.txt');
         expect(output).toContain('https://watchthatpod.com/sitemap.xml');
+        expect(output).toContain('/movie/<slug>/');
         expect(output).toContain('## How to Query & FAQ');
+    });
+
+    it('lists top streaming hub links when hubs are provided', () => {
+        const hubs = [
+            { slug: 'free', name: 'Free Streaming', path: '/streaming/free/', count: 42 },
+            { slug: 'paramount-plus', name: 'Paramount+', path: '/streaming/paramount-plus/', count: 25 }
+        ];
+        const output = generateLlmsTxt([makePodcast()], '2026-11-27T12:00:00.000Z', 'https://watchthatpod.com', hubs);
+
+        expect(output).toContain('## Streaming Hubs');
+        expect(output).toContain('- [Free Streaming](https://watchthatpod.com/streaming/free/): 42 movies');
+        expect(output).toContain('- [Paramount+](https://watchthatpod.com/streaming/paramount-plus/): 25 movies');
     });
 
     it('respects custom baseUrl and handles empty/null inputs', () => {
@@ -207,7 +220,9 @@ describe('generateLlmsFullTxt', () => {
         expect(output).toContain('Hulu (Premium (Paramount+ with Showtime)) — https://www.hulu.com/movie/godfather');
         expect(output).toContain('Prime Video (Rent $3.99) — https://www.amazon.com/gp/video/detail/godfather');
 
-        // IMDb & Podcast Audio URLs
+        // Canonical Movie Page, IMDb & Podcast Audio URLs
+        expect(output).toContain('- **Movie Page:** https://watchthatpod.com/movie/the-godfather-1972/');
+        expect(output).toContain('- **Movie Page:** https://watchthatpod.com/movie/heat-1995/');
         expect(output).toContain('- **IMDb:** https://www.imdb.com/title/tt0068646/');
         expect(output).toContain('- **Podcast Audio:** https://www.theringer.com/the-rewatchables/godfather');
         expect(output).toContain('- **Air Date:** 2019-01-08');
@@ -230,6 +245,28 @@ describe('generateSitemapXml', () => {
         const xml = generateSitemapXml('2026-03-04T00:00:00.000Z', 'https://example.com/app/');
         expect(xml).toContain('<loc>https://example.com/app/</loc>');
         expect(xml).toContain('<lastmod>2026-03-04</lastmod>');
+    });
+
+    it('emits deduplicated and cleanly sorted /streaming/ and /movie/ URLs', () => {
+        const xml = generateSitemapXml('2026-11-27T18:30:00.000Z', 'https://watchthatpod.com', [
+            '/movie/the-godfather-1972/',
+            '/streaming/paramount-plus/',
+            '/streaming/free/',
+            '/movie/heat-1995/',
+            '/movie/heat-1995/',
+            '/',
+            '/streaming/netflix/'
+        ]);
+
+        const locs = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => m[1]);
+        expect(locs).toEqual([
+            'https://watchthatpod.com/',
+            'https://watchthatpod.com/streaming/free/',
+            'https://watchthatpod.com/streaming/netflix/',
+            'https://watchthatpod.com/streaming/paramount-plus/',
+            'https://watchthatpod.com/movie/heat-1995/',
+            'https://watchthatpod.com/movie/the-godfather-1972/'
+        ]);
     });
 });
 
