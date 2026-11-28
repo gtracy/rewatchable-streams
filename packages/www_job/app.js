@@ -5,7 +5,9 @@ const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb")
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { CloudFrontClient, CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
 
-const config = require('../../config');
+const config = fs.existsSync(path.join(__dirname, 'config.js'))
+    ? require('./config')
+    : require('../../config');
 const logger = require('pino')(config.getLogConfig());
 const {
     generateLlmsTxt,
