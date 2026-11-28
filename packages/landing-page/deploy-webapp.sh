@@ -22,7 +22,7 @@ fi
 
 # Step 2: Upload to S3
 echo "☁️  Uploading to S3 bucket: s3://$BUCKET_NAME/$WEBAPP_FOLDER/"
-AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete
+AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete --exclude "llms.txt" --exclude "llms-full.txt"
 
 if [ $? -ne 0 ]; then
     echo "❌ S3 upload failed. Exiting."

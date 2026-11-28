@@ -10,16 +10,16 @@
     <link rel="manifest" href="/site.webmanifest" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#1e1e1e" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://watchthatpod.com/" />
     <link rel="alternate" hreflang="en" href="https://watchthatpod.com/" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <meta
       name="description"
       content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options, listen to podcast episodes, and explore fan discussions about your favorite films."
     />
-    <meta name="keywords" content="movie podcasts, the rewatchables, bill simmons, movie discussions, film podcasts, streaming movies, fan sites, watch that pod" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -29,38 +29,60 @@
     <meta property="og:image" content="https://watchthatpod.com/og-image.jpg" />
     
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://watchthatpod.com/" />
-    <meta property="twitter:title" content="Watch That Pod - Movie Podcasts & The Rewatchables" />
-    <meta property="twitter:description" content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options and listen to fan discussions about your favorite films." />
-    <meta property="twitter:image" content="https://watchthatpod.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://watchthatpod.com/" />
+    <meta name="twitter:title" content="Watch That Pod - Movie Podcasts & The Rewatchables" />
+    <meta name="twitter:description" content="Discover movie podcasts and The Rewatchables episodes. Browse streaming options and listen to fan discussions about your favorite films." />
+    <meta name="twitter:image" content="https://watchthatpod.com/og-image.jpg" />
     
     <!-- Structured Data -->
+    <!-- SEO_JSONLD_START -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Watch That Pod",
-      "alternateName": "Watch That Pod - Movie Podcasts & The Rewatchables",
-      "description": "Movie podcast discovery and The Rewatchables fan site",
-      "url": "https://watchthatpod.com",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Watch That Pod",
-        "url": "https://watchthatpod.com"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://watchthatpod.com?search={search_term_string}",
-        "query-input": "required name=search_term_string"
-      },
-      "mainEntity": {
-        "@type": "ItemList",
-        "name": "Movie Podcasts and Episodes",
-        "description": "Collection of The Rewatchables podcast episodes and movie discussions"
-      }
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://watchthatpod.com/#website",
+          "name": "Watch That Pod",
+          "alternateName": "Watch That Pod - The Rewatchables Streaming Guide",
+          "description": "Discover movie podcasts and The Rewatchables episodes with streaming availability for every featured film.",
+          "url": "https://watchthatpod.com/",
+          "publisher": {
+            "@id": "https://watchthatpod.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://watchthatpod.com/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://watchthatpod.com/#organization",
+          "name": "Watch That Pod",
+          "url": "https://watchthatpod.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://watchthatpod.com/android-chrome-512x512.png"
+          }
+        },
+        {
+          "@type": "PodcastSeries",
+          "@id": "https://watchthatpod.com/#podcast",
+          "name": "The Rewatchables",
+          "description": "A film podcast from The Ringer featuring Bill Simmons and guests revisiting the most rewatchable movies.",
+          "url": "https://www.theringer.com/the-rewatchables",
+          "publisher": {
+            "@type": "Organization",
+            "name": "The Ringer",
+            "url": "https://www.theringer.com/"
+          }
+        }
+      ]
     }
     </script>
+    <!-- SEO_JSONLD_END -->
     
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-7Z6TRE44CZ"></script>
@@ -74,7 +96,22 @@
     <title>Watch That Pod - Movie Podcasts & The Rewatchables Fan Site</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- SEO_NOSCRIPT_START -->
+    <noscript>
+      <main style="max-width: 720px; margin: 40px auto; padding: 24px; font-family: sans-serif; color: #ffffff; background: #121212;">
+        <h1>Watch That Pod &mdash; The Rewatchables Streaming Guide</h1>
+        <p>
+          Watch That Pod indexes episodes of <em>The Rewatchables</em> movie podcast alongside up-to-date
+          streaming, rental, and free-to-watch options, directors, and cast members for each featured film.
+        </p>
+        <p>
+          Enable JavaScript to browse and filter the interactive catalog, or read the plain-text index at
+          <a href="/llms.txt" style="color: #90caf9;">/llms.txt</a> and the full episode catalog at
+          <a href="/llms-full.txt" style="color: #90caf9;">/llms-full.txt</a>.
+        </p>
+      </main>
+    </noscript>
+    <!-- SEO_NOSCRIPT_END -->
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
   </body>
