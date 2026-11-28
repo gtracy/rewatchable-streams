@@ -82,16 +82,29 @@ External dependencies:
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 22+ and npm
+- Docker (for DynamoDB Local)
 - AWS CLI (for deployment)
-- DynamoDB Local on `http://localhost:8000` — used automatically by
-  `config.js` whenever `NODE_ENV` is not `prod`
+
+Install dependencies across all 8 subpackages from the repo root:
+
+```bash
+npm run install:all   # alias: npm run setup
+```
 
 ### Configuration
 
-Copy the environment keys into a root `.env.json` (loaded via `dotenv-json`;
-the file is gitignored — never commit real keys). Two naming families exist in
-the codebase:
+Create a root `.env.json` (loaded via `dotenv-json`; gitignored — never commit
+real keys):
+
+```json
+{
+  "TMDB_API_KEY": "<your-tmdb-key>",
+  "MOVIE_OF_THE_NIGHT_API_KEY": "<your-motn-key>",
+  "DYNAMO_PODCAST_MOVIES_TABLE": "podcast_movies",
+  "DYNAMO_MOVIE_STREAMS_TABLE": "movie_streams"
+}
+```
 
 | Variable | Used by |
 | --- | --- |
@@ -99,49 +112,92 @@ the codebase:
 | `MOVIE_OF_THE_NIGHT_API_KEY` | `utils/streams.js` (streaming availability) |
 | `DYNAMO_PODCAST_MOVIES_TABLE` | `rss_polling`, `streams_fetch`, `streams_refresh`, `bin/` |
 | `DYNAMO_MOVIE_STREAMS_TABLE` | `streams_fetch`, `streams_refresh`, `bin/` |
-| `AWS_REGION`, `AWS_ACCESS_ID`, `AWS_ACCESS_SECRET` | `config.js` (only in `prod`; local dev uses DynamoDB Local) |
-| `LOG_LEVEL`, `NODE_ENV` | `config.js` (`NODE_ENV=prod` uses real AWS) |
+| `PODCAST_MOVIES_TABLE`, `MOVIE_STREAMS_TABLE` | `www_job` (defaults `podcast_movies` / `movie_streams`) |
+| `S3_BUCKET`, `S3_KEY` | `www_job`, `fetch_url` (defaults `rewatchables` / `data_files/podcast_movie_data.json`) |
+| `URL_EXPIRY_SECONDS` | `fetch_url` (default `3600`) |
+| `LOCAL_OUTPUT_PATH` | `www_job` — writes merged catalog JSON to disk and skips S3 upload |
+| `VITE_DATA_URL` | `landing-page` — fetches catalog JSON directly from a local URL (e.g. `/local-data.json`) instead of prod API Gateway + S3 |
+| `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | AWS SDK v3 (required even for DynamoDB Local; any dummy values work locally) |
+| `LOG_LEVEL`, `NODE_ENV` | `config.js` (`NODE_ENV=prod` uses real AWS; otherwise uses `http://localhost:8000`) |
 
-`www_job` is the exception: it reads `PODCAST_MOVIES_TABLE` /
-`MOVIE_STREAMS_TABLE` (defaults `podcast_movies` / `movie_streams`) and
-`S3_BUCKET` / `S3_KEY` (defaults `rewatchables` /
-`data_files/podcast_movie_data.json`). `fetch_url` also reads `S3_BUCKET`,
-`S3_KEY`, and `URL_EXPIRY_SECONDS` (default `3600`).
+### Bootstrapping a Local Environment
 
-### Bootstrapping
+1. **Start DynamoDB Local** (use `-sharedDb` so all scripts and `dynamodb-admin` share one database):
 
-```bash
-# Create the local DynamoDB tables
-node bin/initDynamo.js
+   ```bash
+   docker run -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -inMemory -sharedDb
+   ```
 
-# Run a Lambda locally (each package has an app-local.js)
-cd packages/rss_polling && npm install && node app-local.js
+2. **Export local AWS env vars** in your terminal session:
 
-# Run the frontend
-cd packages/landing-page && npm install && npm start   # http://localhost:5173
-```
+   ```bash
+   export AWS_REGION=us-east-2
+   export AWS_ACCESS_KEY_ID=local
+   export AWS_SECRET_ACCESS_KEY=local
+   ```
+
+3. **Create the local tables and open `dynamodb-admin`** (`http://localhost:8001`):
+
+   ```bash
+   node bin/initDynamo.js
+
+   DYNAMO_ENDPOINT=http://localhost:8000 \
+   AWS_REGION=us-east-2 \
+   AWS_ACCESS_KEY_ID=local \
+   AWS_SECRET_ACCESS_KEY=local \
+   npx dynamodb-admin
+   ```
+
+   > If DynamoDB Local was started without `-sharedDb`, `dynamodb-admin` must use
+   > the exact same `AWS_REGION` and `AWS_ACCESS_KEY_ID` as `initDynamo.js` or it
+   > will show 0 tables.
+
+4. **Populate data and build the local catalog JSON** (completely offline from AWS prod):
+
+   ```bash
+   # Poll the RSS feed -> populates podcast_movies
+   node packages/rss_polling/app-local.js
+
+   # Populate movie_streams (backfill all, or test a single sample event)
+   node bin/backfill-streams.js
+   # or: node packages/streams_fetch/app-local.js
+
+   # Join tables into local JSON for the web client (skips S3 upload)
+   LOCAL_OUTPUT_PATH=packages/landing-page/public/local-data.json \
+   node packages/www_job/app-local.js
+   ```
+
+5. **Run the web client** (`http://localhost:5173`):
+
+   ```bash
+   # Against local DynamoDB data:
+   cd packages/landing-page && VITE_DATA_URL=/local-data.json npm start
+
+   # Or omit VITE_DATA_URL to load live production data from API Gateway + S3:
+   cd packages/landing-page && npm start
+   ```
+
+   *(All Node.js packages log structured JSON via `pino`. Pipe any command through `| npx pino-pretty` for human-readable terminal output.)*
 
 ## Testing
 
-Run the whole suite from the repo root — it runs Vitest in every package that
-defines a test script:
+Run the entire test suite from the repo root (shared fixtures, all 7 backend
+packages, and the React frontend):
 
 ```bash
 npm test
 ```
 
-Per-package notes:
+Targeted scripts:
 
-- `packages/rss_polling`: `npm test` — has a real test suite
-  (`test/extractMovieTitle.test.js`).
-- `packages/fetch_url`, `packages/streams_fetch`, `packages/streams_refresh`,
-  `packages/www_job`, `bin/`, `utils/`: `npm test` (Vitest, currently passing
-  with no tests in most packages).
-- `packages/streams_refresh`: unit tests arrive with the stream refresh
-  framework (PR #73).
-- `packages/www_job`: also ships `node test-simple.js`, a local run against
-  mocked DynamoDB data.
-- `packages/landing-page`: has no test script — verify with `npm run build`.
+- `npm run test:fixtures` — validates `test/fixtures.js` and `samples/` JSON schemas (`node --test`).
+- `npm run test:backend` — runs Vitest across `packages/fetch_url`, `packages/rss_polling`, `packages/streams_fetch`, `packages/streams_refresh`, `packages/www_job`, `bin/`, and `utils/`.
+- `npm run test:frontend` — runs Vitest + React Testing Library in `packages/landing-page`.
+- `npm run build:frontend` — runs the Vite production build check in `packages/landing-page`.
+
+GitHub Actions ([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs
+`test:fixtures`, `test:backend`, `test:frontend`, and `build:frontend` on every
+push to `main` and pull request.
 
 ## Deployment
 
