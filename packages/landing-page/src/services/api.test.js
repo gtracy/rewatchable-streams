@@ -93,6 +93,40 @@ describe('api service', () => {
       expect(global.fetch).toHaveBeenNthCalledWith(2, validSignedUrl);
       expect(result).toEqual({
         data: samplePodcasts,
+        generatedAt: null,
+        totalPodcasts: 1,
+        success: true,
+      });
+    });
+
+    it('returns generatedAt and totalPodcasts when provided in the payload', async () => {
+      const samplePodcasts = [
+        { pod_title: 'Heat', pod_date: '2023-05-01', movie: { movie_title: 'Heat' } },
+      ];
+
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            success: true,
+            url: 'https://s3.example.com/podcasts.json?sig=abc',
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            podcasts: samplePodcasts,
+            generated_at: '2026-11-23T12:00:00Z',
+            total_podcasts: 427,
+          }),
+        });
+
+      const result = await fetchData();
+
+      expect(result).toEqual({
+        data: samplePodcasts,
+        generatedAt: '2026-11-23T12:00:00Z',
+        totalPodcasts: 427,
         success: true,
       });
     });
@@ -132,7 +166,7 @@ describe('api service', () => {
         });
 
       const result = await fetchData();
-      expect(result).toEqual({ data: [], success: true });
+      expect(result).toEqual({ data: [], generatedAt: null, totalPodcasts: 0, success: true });
     });
 
     it('throws wrapped error and refuses to fetch when signedUrlData.url has an untrusted host', async () => {
@@ -221,6 +255,8 @@ describe('api service', () => {
       expect(global.fetch).toHaveBeenCalledWith('/local-data.json');
       expect(result).toEqual({
         data: localPodcasts,
+        generatedAt: null,
+        totalPodcasts: 1,
         success: true,
       });
     });

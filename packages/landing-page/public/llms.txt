@@ -1,0 +1,15 @@
+# Watch That Pod
+
+> Searchable streaming guide for The Rewatchables podcast — mapping every episode to the featured movie, cast, directors, and current US streaming, rental, and free viewing options.
+
+## Key Resources
+- [Watch That Pod Catalog](https://watchthatpod.com/): Interactive searchable table of The Rewatchables episodes and current streaming availability.
+- [Full Episode & Streaming Catalog](https://watchthatpod.com/llms-full.txt): Complete Markdown directory of all indexed episodes, movies, directors, top cast, streaming services, and podcast audio links (updated daily).
+- [Agentic Resource Discovery Manifest](https://watchthatpod.com/ai-catalog.json): Machine-readable JSON manifest of resources available for AI agents.
+- [XML Sitemap](https://watchthatpod.com/sitemap.xml): Canonical URL index with last-modified timestamp.
+
+## Search & Filter URLs
+- [Search by title, director, actor, or service](https://watchthatpod.com/?search={query})
+- [Filter by streaming service](https://watchthatpod.com/?service={service})
+- [Filter by director](https://watchthatpod.com/?director={director})
+- [Filter by actor](https://watchthatpod.com/?actor={actor})

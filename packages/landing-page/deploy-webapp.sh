@@ -18,7 +18,12 @@ PUBLIC_URL= npm run build
 
 # Step 2: Upload to S3
 echo "☁️  Uploading to S3 bucket: s3://$BUCKET_NAME/$WEBAPP_FOLDER/"
-AWS_PROFILE="$PROFILE" aws s3 sync build/ "s3://$BUCKET_NAME/$WEBAPP_FOLDER/" --delete
+AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete --exclude "llms-full.txt"
+
+if [ $? -ne 0 ]; then
+    echo "❌ S3 upload failed. Exiting."
+    exit 1
+fi
 
 # Step 3: Invalidate CloudFront cache
 echo "🔄 Invalidating CloudFront cache for /webapp/*..."

@@ -10,11 +10,35 @@ import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingCl
 import { sanitizeHttpUrl, sanitizeHexColor, sanitizeImdbId } from '../utils/sanitize';
 import './DataTable.css';
 
+const URL_FILTER_MAP = [
+  { param: 'director', columnId: 'movie.directors' },
+  { param: 'actor', columnId: 'movie.cast' },
+  { param: 'service', columnId: 'movie.streamingOptions' },
+];
+
+const getInitialGlobalFilter = () => {
+  if (typeof window === 'undefined') return '';
+  return new URLSearchParams(window.location.search).get('search') || '';
+};
+
+const getInitialColumnFilters = () => {
+  if (typeof window === 'undefined') return [];
+  const params = new URLSearchParams(window.location.search);
+  return URL_FILTER_MAP.reduce((acc, { param, columnId }) => {
+    const value = params.get(param);
+    if (value) {
+      acc.push({ id: columnId, value });
+    }
+    return acc;
+  }, []);
+};
+
 const DataTable = ({ data, isLoading, error }) => {
   // Modal state for podcast player
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPodcast, setSelectedPodcast] = useState(null);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState(getInitialGlobalFilter);
+  const [columnFilters, setColumnFilters] = useState(getInitialColumnFilters);
 
   useEffect(() => {
     const trimmed = typeof globalFilter === 'string' ? globalFilter.trim() : '';
@@ -22,6 +46,35 @@ const DataTable = ({ data, isLoading, error }) => {
       trackSearch(trimmed);
     }
   }, [globalFilter]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const searchValue = typeof globalFilter === 'string' ? globalFilter.trim() : '';
+
+    if (searchValue) {
+      params.set('search', searchValue);
+    } else {
+      params.delete('search');
+    }
+
+    URL_FILTER_MAP.forEach(({ param, columnId }) => {
+      const match = columnFilters.find((filter) => filter.id === columnId);
+      const value = typeof match?.value === 'string' ? match.value.trim() : '';
+      if (value) {
+        params.set(param, value);
+      } else {
+        params.delete(param);
+      }
+    });
+
+    const queryString = params.toString();
+    const nextUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ''}${window.location.hash}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState(null, '', nextUrl);
+    }
+  }, [globalFilter, columnFilters]);
 
   const handlePodcastClick = (podcast) => {
     setSelectedPodcast(podcast);
@@ -156,21 +209,36 @@ const DataTable = ({ data, isLoading, error }) => {
               {/* Movie Poster and Title */}
               <Box sx={{ flexShrink: 0, textAlign: 'center' }}>
                 {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
-                    referrerPolicy="no-referrer"
-                    style={{
-                      height: '156px', // 25% bigger than 125px
-                      width: '109px', // 25% bigger than 87.5px
-                      objectFit: 'cover',
+                  <Box
+                    sx={{
+                      height: '156px',
+                      width: '109px',
+                      aspectRatio: '109 / 156',
+                      backgroundColor: '#2d2d2d',
                       borderRadius: '6px',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                      overflow: 'hidden',
                     }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
+                      width="109"
+                      height="156"
+                      loading="lazy"
+                      style={{
+                        display: 'block',
+                        height: '156px', // 25% bigger than 125px
+                        width: '109px', // 25% bigger than 87.5px
+                        aspectRatio: '109 / 156',
+                        objectFit: 'cover',
+                        borderRadius: '6px',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                      }}
+                      onError={(e) => {
+                        e.target.style.visibility = 'hidden';
+                      }}
+                    />
+                  </Box>
                 ) : (
                   <Box
                     sx={{
@@ -231,8 +299,15 @@ const DataTable = ({ data, isLoading, error }) => {
               {/* Podcast Title and Date */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                    <Box
+                     component="button"
+                     type="button"
                      onClick={() => handlePodcastClick(row.original)}
                      sx={{
+                       background: 'none',
+                       border: 'none',
+                       padding: 0,
+                       font: 'inherit',
+                       textAlign: 'left',
                        color: '#ffffff',
                        cursor: 'pointer',
                        fontWeight: 500,
@@ -381,6 +456,9 @@ const DataTable = ({ data, isLoading, error }) => {
                             src={iconUrl}
                             alt={serviceName}
                             referrerPolicy="no-referrer"
+                            width="24"
+                            height="24"
+                            loading="lazy"
                             style={{
                               height: '24px',
                               width: '24px',
@@ -425,6 +503,7 @@ const DataTable = ({ data, isLoading, error }) => {
                       href={safeWatchUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`Watch ${row.original.movie?.movie_title || 'movie'} on ${serviceName}`}
                       style={{ textDecoration: 'none' }}
                       onClick={() => trackStreamingClick(serviceName, row.original.movie?.movie_title)}
                     >
@@ -479,20 +558,28 @@ const DataTable = ({ data, isLoading, error }) => {
           return (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {directors.map((director, index) => (
-                <Box
-                  key={index}
-                  onClick={() => handleDirectorClick(director, table)}
-                  sx={{
-                    color: '#90caf9',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      color: '#ffffff',
-                    },
-                  }}
-                >
-                  {director}
-                  {index < directors.length - 1 && ', '}
-                </Box>
+                <React.Fragment key={index}>
+                  <Box
+                    component="button"
+                    type="button"
+                    onClick={() => handleDirectorClick(director, table)}
+                    sx={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      font: 'inherit',
+                      textAlign: 'left',
+                      color: '#90caf9',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: '#ffffff',
+                      },
+                    }}
+                  >
+                    {director}
+                  </Box>
+                  {index < directors.length - 1 && <span style={{ color: '#90caf9' }}>, </span>}
+                </React.Fragment>
               ))}
             </Box>
           );
@@ -513,20 +600,28 @@ const DataTable = ({ data, isLoading, error }) => {
           return (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {cast.map((actor, index) => (
-                <Box
-                  key={index}
-                  onClick={() => handleActorClick(actor, table)}
-                  sx={{
-                    color: '#90caf9',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      color: '#ffffff',
-                    },
-                  }}
-                >
-                  {actor}
-                  {index < cast.length - 1 && ', '}
-                </Box>
+                <React.Fragment key={index}>
+                  <Box
+                    component="button"
+                    type="button"
+                    onClick={() => handleActorClick(actor, table)}
+                    sx={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      font: 'inherit',
+                      textAlign: 'left',
+                      color: '#90caf9',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: '#ffffff',
+                      },
+                    }}
+                  >
+                    {actor}
+                  </Box>
+                  {index < cast.length - 1 && <span style={{ color: '#90caf9' }}>, </span>}
+                </React.Fragment>
               ))}
             </Box>
           );
@@ -548,8 +643,10 @@ const DataTable = ({ data, isLoading, error }) => {
     state: {
       isLoading,
       globalFilter,
+      columnFilters,
     },
     onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     enableRowSelection: false,
     enableColumnOrdering: false,
     enableGlobalFilter: true,
@@ -579,6 +676,7 @@ const DataTable = ({ data, isLoading, error }) => {
     },
     muiTableContainerProps: {
       sx: {
+        minHeight: '600px',
         maxHeight: '600px',
         border: 'none',
         borderRadius: '4px',

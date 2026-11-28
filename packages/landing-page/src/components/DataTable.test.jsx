@@ -63,6 +63,7 @@ const sampleData = [
 
 describe('DataTable', () => {
   beforeEach(() => {
+    window.history.replaceState(null, '', '/');
     vi.spyOn(analytics, 'trackPodcastPlay').mockImplementation(() => {});
     vi.spyOn(analytics, 'trackDirectorClick').mockImplementation(() => {});
     vi.spyOn(analytics, 'trackActorClick').mockImplementation(() => {});
@@ -72,6 +73,7 @@ describe('DataTable', () => {
   });
 
   afterEach(() => {
+    window.history.replaceState(null, '', '/');
     vi.restoreAllMocks();
   });
 
@@ -357,6 +359,82 @@ describe('DataTable', () => {
       const evilIconBox = screen.getByText('EvilStream').parentElement;
       expect(getComputedStyle(evilIconBox).borderColor).not.toContain('red');
       expect(getComputedStyle(evilIconBox).backgroundImage).not.toContain('evil.com');
+  it('uses semantic buttons for podcast titles, directors, and actors, descriptive Watch aria-labels, and explicit image dimensions', () => {
+    render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+    // Semantic buttons
+    expect(
+      screen.getByRole('button', { name: /'Heat' With Bill Simmons/i })
+    ).toHaveAttribute('type', 'button');
+    expect(screen.getByRole('button', { name: 'Michael Mann' })).toHaveAttribute('type', 'button');
+    expect(screen.getByRole('button', { name: 'Al Pacino' })).toHaveAttribute('type', 'button');
+
+    // Descriptive aria-labels on Watch links
+    expect(screen.getByRole('link', { name: 'Watch Heat on Netflix' })).toHaveAttribute(
+      'href',
+      'https://netflix.com/watch/heat'
+    );
+    expect(screen.getByRole('link', { name: 'Watch Goodfellas on Tubi' })).toHaveAttribute(
+      'href',
+      'https://tubi.tv/goodfellas'
+    );
+
+    // Explicit image dimensions & lazy loading
+    const posterImg = screen.getByAltText(/Heat poster/i);
+    expect(posterImg).toHaveAttribute('width', '109');
+    expect(posterImg).toHaveAttribute('height', '156');
+    expect(posterImg).toHaveAttribute('loading', 'lazy');
+
+    const serviceIconImg = screen.getByAltText('Netflix');
+    expect(serviceIconImg).toHaveAttribute('width', '24');
+    expect(serviceIconImg).toHaveAttribute('height', '24');
+    expect(serviceIconImg).toHaveAttribute('loading', 'lazy');
+  });
+
+  it('initializes global search and column filters from URL query parameters', () => {
+    window.history.replaceState(
+      null,
+      '',
+      '/?search=Heat&director=Michael+Mann&actor=Al+Pacino&service=Netflix'
+    );
+
+    render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+    expect(screen.getByPlaceholderText('Search')).toHaveValue('Heat');
+    expect(screen.getByPlaceholderText(/Filter by Director/i)).toHaveValue('Michael Mann');
+    expect(screen.getByPlaceholderText(/Filter by Actors/i)).toHaveValue('Al Pacino');
+    expect(screen.getByPlaceholderText(/Filter by Streams/i)).toHaveValue('Netflix');
+
+    expect(screen.getByRole('link', { name: 'Heat' })).toBeInTheDocument();
+    expect(screen.queryByText('Goodfellas')).not.toBeInTheDocument();
+  });
+
+  it('syncs search and column filter updates back to window.location.search and removes cleared params', async () => {
+    const user = userEvent.setup();
+    render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+    await user.click(screen.getByRole('button', { name: 'Michael Mann' }));
+    await waitFor(() => {
+      expect(new URLSearchParams(window.location.search).get('director')).toBe('Michael Mann');
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Al Pacino' }));
+    await waitFor(() => {
+      const params = new URLSearchParams(window.location.search);
+      expect(params.get('director')).toBe('Michael Mann');
+      expect(params.get('actor')).toBe('Al Pacino');
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search');
+    await user.type(searchInput, 'Heat');
+    await waitFor(() => {
+      expect(new URLSearchParams(window.location.search).get('search')).toBe('Heat');
+    });
+
+    // Clear search and verify param is cleanly removed
+    await user.clear(searchInput);
+    await waitFor(() => {
+      expect(new URLSearchParams(window.location.search).has('search')).toBe(false);
     });
   });
 });

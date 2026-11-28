@@ -9,22 +9,27 @@ import { mockClient } from 'aws-sdk-client-mock';
 const require = createRequire(import.meta.url);
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { CloudFrontClient, CreateInvalidationCommand } = require('@aws-sdk/client-cloudfront');
 const fixtures = require('../../../test/fixtures');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_PATH = path.resolve(__dirname, '../app.js');
 const APP_LOCAL_PATH = path.resolve(__dirname, '../app-local.js');
+const SEO_ARTIFACTS_PATH = path.resolve(__dirname, '../seo-artifacts.js');
 const LAMBDA_PATH = path.resolve(__dirname, '../app-lambda.js');
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
 const s3Mock = mockClient(S3Client);
+const cfMock = mockClient(CloudFrontClient);
 
 const ENV_KEYS = [
     'PODCAST_MOVIES_TABLE',
     'MOVIE_STREAMS_TABLE',
     'S3_BUCKET',
     'S3_KEY',
+    'WEBAPP_PREFIX',
+    'CLOUDFRONT_DISTRIBUTION_ID',
     'AWS_REGION',
     'LOG_LEVEL',
     'LOCAL_OUTPUT_PATH',
@@ -86,6 +91,7 @@ beforeEach(() => {
 
     ddbMock.reset();
     s3Mock.reset();
+    cfMock.reset();
 });
 
 afterEach(() => {
@@ -348,7 +354,7 @@ describe('uploadToS3', () => {
 });
 
 describe('generateRewatchableStreamsData', () => {
-    it('fetches podcasts, enriches with movies, uploads JSON to S3, and returns summary', async () => {
+    it('fetches podcasts, enriches with movies, uploads JSON and SEO artifacts to S3, and returns summary', async () => {
         const { generateRewatchableStreamsData } = loadAppFresh();
         const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
 
@@ -358,6 +364,7 @@ describe('generateRewatchableStreamsData', () => {
             .on(ScanCommand, { TableName: 'movie_streams' })
             .resolves({ Items: [movieItem] });
         s3Mock.on(PutObjectCommand).resolves({});
+        s3Mock.on(GetObjectCommand).rejects(new Error('NoSuchKey'));
 
         const summary = await generateRewatchableStreamsData();
 
@@ -366,19 +373,146 @@ describe('generateRewatchableStreamsData', () => {
         expect(new Date(summary.generated_at).toISOString()).toBe(summary.generated_at);
 
         const s3Calls = s3Mock.commandCalls(PutObjectCommand);
-        expect(s3Calls).toHaveLength(1);
-        const uploaded = JSON.parse(s3Calls[0].args[0].input.Body);
+        expect(s3Calls).toHaveLength(7);
+
+        const byKey = Object.fromEntries(s3Calls.map((call) => [call.args[0].input.Key, call.args[0].input]));
+
+        const uploaded = JSON.parse(byKey['data_files/podcast_movie_data.json'].Body);
         expect(uploaded.total_podcasts).toBe(1);
         expect(uploaded.generated_at).toBe(summary.generated_at);
         expect(uploaded.podcasts).toHaveLength(1);
         expect(uploaded.podcasts[0].movie.title).toBe('The Godfather');
+
+        expect(byKey['webapp/llms.txt']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'text/plain; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/llms.txt'].Body).toContain('# Watch That Pod');
+
+        expect(byKey['webapp/llms-full.txt']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'text/plain; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/llms-full.txt'].Body).toContain('## The Godfather (1972)');
+
+        expect(byKey['webapp/sitemap.xml']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/xml; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/sitemap.xml'].Body).toContain('<loc>https://watchthatpod.com/</loc>');
+
+        expect(byKey['webapp/ai-catalog.json']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/json; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        const aiCatalog = JSON.parse(byKey['webapp/ai-catalog.json'].Body);
+        expect(aiCatalog.specVersion).toBe('1.0');
+        expect(aiCatalog.host).toEqual({ displayName: 'Watch That Pod' });
+        expect(Array.isArray(aiCatalog.entries)).toBe(true);
+        expect(aiCatalog.entries.length).toBeGreaterThan(0);
+
+        expect(byKey['webapp/.well-known/ai-catalog.json']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/json; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+        expect(byKey['webapp/.well-known/ard.json']).toMatchObject({
+            Bucket: 'rewatchables',
+            ContentType: 'application/json; charset=utf-8',
+            CacheControl: 'max-age=3600'
+        });
+
+        // CloudFront invalidation skipped when CLOUDFRONT_DISTRIBUTION_ID is unset
+        expect(cfMock.commandCalls(CreateInvalidationCommand)).toHaveLength(0);
     });
 
-    it('respects custom environment variables for tables and S3 destination', async () => {
+    it('enriches webapp/index.html when present in S3 and invalidates CloudFront when configured', async () => {
+        process.env.CLOUDFRONT_DISTRIBUTION_ID = 'E3UTGKV2VWOXDQ';
+
+        const { generateRewatchableStreamsData } = loadAppFresh();
+        const { podcastItem, movieItem } = buildSamplePodcastAndMovie();
+
+        ddbMock
+            .on(ScanCommand, { TableName: 'podcast_movies' })
+            .resolves({ Items: [podcastItem] })
+            .on(ScanCommand, { TableName: 'movie_streams' })
+            .resolves({ Items: [movieItem] });
+        s3Mock.on(PutObjectCommand).resolves({});
+        s3Mock.on(GetObjectCommand, { Bucket: 'rewatchables', Key: 'webapp/index.html' }).resolves({
+            Body: {
+                transformToString: async () => [
+                    '<html><head>',
+                    '<!-- SEO_JSONLD_START -->',
+                    '<script type="application/ld+json">{}</script>',
+                    '<!-- SEO_JSONLD_END -->',
+                    '</head><body>',
+                    '<!-- SEO_NOSCRIPT_START -->',
+                    '<noscript>Enable JS</noscript>',
+                    '<!-- SEO_NOSCRIPT_END -->',
+                    '</body></html>'
+                ].join('\n')
+            }
+        });
+        cfMock.on(CreateInvalidationCommand).resolves({ Invalidation: { Id: 'INV-123' } });
+
+        const summary = await generateRewatchableStreamsData();
+        expect(summary.success).toBe(true);
+
+        const s3Calls = s3Mock.commandCalls(PutObjectCommand);
+        expect(s3Calls).toHaveLength(8);
+        const indexPut = s3Calls.find((c) => c.args[0].input.Key === 'webapp/index.html');
+        expect(indexPut).toBeTruthy();
+        expect(indexPut.args[0].input).toMatchObject({
+            Bucket: 'rewatchables',
+            Key: 'webapp/index.html',
+            ContentType: 'text/html; charset=utf-8',
+            CacheControl: 'max-age=300'
+        });
+        expect(indexPut.args[0].input.Body).toContain('The Godfather');
+        expect(indexPut.args[0].input.Body).toContain('PodcastSeries');
+        expect(indexPut.args[0].input.Body).toContain('/llms.txt');
+
+        const cfCalls = cfMock.commandCalls(CreateInvalidationCommand);
+        expect(cfCalls).toHaveLength(1);
+        expect(cfCalls[0].args[0].input.DistributionId).toBe('E3UTGKV2VWOXDQ');
+        expect(cfCalls[0].args[0].input.InvalidationBatch.Paths).toEqual({
+            Quantity: 7,
+            Items: [
+                '/index.html',
+                '/sitemap.xml',
+                '/llms.txt',
+                '/llms-full.txt',
+                '/ai-catalog.json',
+                '/.well-known/ai-catalog.json',
+                '/.well-known/ard.json'
+            ]
+        });
+    });
+
+    it('does not fail the job when CloudFront invalidation errors', async () => {
+        process.env.CLOUDFRONT_DISTRIBUTION_ID = 'E3UTGKV2VWOXDQ';
+
+        const { generateRewatchableStreamsData } = loadAppFresh();
+        ddbMock.on(ScanCommand).resolves({ Items: [] });
+        s3Mock.on(PutObjectCommand).resolves({});
+        s3Mock.on(GetObjectCommand).rejects(new Error('NoSuchKey'));
+        cfMock.on(CreateInvalidationCommand).rejects(new Error('AccessDenied'));
+
+        const summary = await generateRewatchableStreamsData();
+        expect(summary.success).toBe(true);
+        expect(cfMock.commandCalls(CreateInvalidationCommand)).toHaveLength(1);
+    });
+
+    it('respects custom environment variables for tables, S3 destination, and WEBAPP_PREFIX', async () => {
         process.env.PODCAST_MOVIES_TABLE = 'custom_podcasts';
         process.env.MOVIE_STREAMS_TABLE = 'custom_movies';
         process.env.S3_BUCKET = 'custom-bucket';
         process.env.S3_KEY = 'custom/data.json';
+        process.env.WEBAPP_PREFIX = 'site/';
         process.env.AWS_REGION = 'us-west-2';
 
         const { generateRewatchableStreamsData } = loadAppFresh();
@@ -390,13 +524,24 @@ describe('generateRewatchableStreamsData', () => {
             .on(ScanCommand, { TableName: 'custom_movies' })
             .resolves({ Items: [movieItem] });
         s3Mock.on(PutObjectCommand).resolves({});
+        s3Mock.on(GetObjectCommand).rejects(new Error('NoSuchKey'));
 
         const summary = await generateRewatchableStreamsData();
 
         expect(summary.total_podcasts).toBe(1);
-        const s3Input = s3Mock.commandCalls(PutObjectCommand)[0].args[0].input;
-        expect(s3Input.Bucket).toBe('custom-bucket');
-        expect(s3Input.Key).toBe('custom/data.json');
+        const putKeys = s3Mock.commandCalls(PutObjectCommand).map((c) => ({
+            Bucket: c.args[0].input.Bucket,
+            Key: c.args[0].input.Key
+        }));
+        expect(putKeys).toEqual([
+            { Bucket: 'custom-bucket', Key: 'custom/data.json' },
+            { Bucket: 'custom-bucket', Key: 'site/llms.txt' },
+            { Bucket: 'custom-bucket', Key: 'site/llms-full.txt' },
+            { Bucket: 'custom-bucket', Key: 'site/sitemap.xml' },
+            { Bucket: 'custom-bucket', Key: 'site/ai-catalog.json' },
+            { Bucket: 'custom-bucket', Key: 'site/.well-known/ai-catalog.json' },
+            { Bucket: 'custom-bucket', Key: 'site/.well-known/ard.json' }
+        ]);
     });
 
     it('handles an empty podcast_movies table and uploads empty podcasts array', async () => {
@@ -515,8 +660,8 @@ describe('handler and app-lambda', () => {
 });
 
 describe('logging hygiene', () => {
-    it('contains zero console.* calls in app.js and app-local.js', () => {
-        for (const filePath of [APP_PATH, APP_LOCAL_PATH]) {
+    it('contains zero console.* calls in app.js, app-local.js, and seo-artifacts.js', () => {
+        for (const filePath of [APP_PATH, APP_LOCAL_PATH, SEO_ARTIFACTS_PATH]) {
             const content = fs.readFileSync(filePath, 'utf8');
             expect(content).not.toMatch(/\bconsole\./);
         }
