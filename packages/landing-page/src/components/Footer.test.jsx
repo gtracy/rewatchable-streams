@@ -1,10 +1,33 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Footer from './Footer';
 
 describe('Footer', () => {
+  it('renders streaming service hub navigation links with canonical paths', () => {
+    render(<Footer />);
+
+    const nav = screen.getByRole('navigation', { name: 'Browse by streaming service' });
+    const expectedHubs = [
+      ['Free', '/streaming/free/'],
+      ['Netflix', '/streaming/netflix/'],
+      ['Max', '/streaming/max/'],
+      ['Paramount+', '/streaming/paramount-plus/'],
+      ['Prime Video', '/streaming/prime-video/'],
+      ['Hulu', '/streaming/hulu/'],
+      ['Apple TV+', '/streaming/apple-tv-plus/'],
+      ['Peacock', '/streaming/peacock/'],
+      ['Pluto TV', '/streaming/pluto-tv/'],
+      ['Tubi', '/streaming/tubi/'],
+    ];
+
+    expectedHubs.forEach(([label, href]) => {
+      const link = within(nav).getByRole('link', { name: label });
+      expect(link).toHaveAttribute('href', href);
+    });
+  });
+
   it('renders attribution, coffee, feedback, and privacy links', () => {
     render(<Footer />);
 

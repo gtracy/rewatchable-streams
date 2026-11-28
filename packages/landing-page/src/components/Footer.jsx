@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import PrivacyModal from './PrivacyModal';
+import { getServicePath } from '../utils/slugs';
 import './Footer.css';
+
+const STREAMING_HUBS = [
+  'Free',
+  'Netflix',
+  'Max',
+  'Paramount+',
+  'Prime Video',
+  'Hulu',
+  'Apple TV+',
+  'Peacock',
+  'Pluto TV',
+  'Tubi',
+];
 
 const Footer = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
@@ -18,6 +32,57 @@ const Footer = () => {
     <>
       <footer className="footer">
         <Box className="footer-content">
+          <Box
+            component="nav"
+            aria-label="Browse by streaming service"
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: '6px 8px',
+              paddingBottom: '1rem',
+              marginBottom: '1rem',
+              borderBottom: '1px solid #2d2d2d',
+            }}
+          >
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{
+                color: '#b0b0b0',
+                fontFamily: '"Geist", "Sora", "Roboto", "Helvetica", "Arial", sans-serif',
+                fontSize: '0.75rem',
+                marginRight: '4px',
+              }}
+            >
+              Browse by streaming service:
+            </Typography>
+            {STREAMING_HUBS.map((service) => (
+              <Link
+                key={service}
+                href={getServicePath(service)}
+                sx={{
+                  color: '#b0b0b0',
+                  backgroundColor: '#252525',
+                  border: '1px solid #333',
+                  borderRadius: '999px',
+                  padding: '2px 10px',
+                  textDecoration: 'none',
+                  fontFamily: '"Geist", "Sora", "Roboto", "Helvetica", "Arial", sans-serif',
+                  fontSize: '0.75rem',
+                  lineHeight: 1.5,
+                  transition: 'color 0.2s ease, border-color 0.2s ease',
+                  '&:hover': {
+                    color: '#90caf9',
+                    borderColor: '#90caf9',
+                  },
+                }}
+              >
+                {service}
+              </Link>
+            ))}
+          </Box>
+
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
               {/* Current message */}
