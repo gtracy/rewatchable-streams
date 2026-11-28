@@ -281,4 +281,82 @@ describe('DataTable', () => {
     expect(screen.getByText('Error loading data: Network timeout')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
+
+  describe('security sanitization', () => {
+    it('adds referrerPolicy="no-referrer" to external poster and service icon images', () => {
+      render(<DataTable data={sampleData} isLoading={false} error={null} />);
+
+      const posterImg = screen.getByAltText(/Heat poster/i);
+      expect(posterImg).toHaveAttribute('referrerpolicy', 'no-referrer');
+
+      const serviceIcon = screen.getByAltText('Netflix');
+      expect(serviceIcon).toHaveAttribute('referrerpolicy', 'no-referrer');
+    });
+
+    it('blocks javascript: and data: URLs in watch links, poster images, and service icons', () => {
+      const maliciousData = [
+        {
+          pod_title: 'Malicious Episode',
+          pod_date: '2024-05-01T12:00:00Z',
+          pod_link: 'https://cdn.example.com/ep.mp3',
+          movie: {
+            movie_title: 'Malicious Movie',
+            imdb_id: 'tt0113277/../../evil',
+            releaseYear: 2024,
+            imageSet: 'javascript:alert(1)',
+            directors: ['Test Director'],
+            cast: ['Test Actor'],
+            streamingOptions: [
+              {
+                serviceName: 'EvilStream',
+                type: 'subscription',
+                link: 'javascript:alert(document.cookie)',
+                serviceImageSet: {
+                  darkThemeImage: 'data:image/svg+xml,<svg onload=alert(1)>',
+                },
+                serviceThemeColorCode: 'red; background-image: url(https://evil.com/leak)',
+              },
+              {
+                serviceName: 'DataStream',
+                type: 'free',
+                link: 'data:text/html,<script>alert(1)</script>',
+                serviceImageSet: {
+                  darkThemeImage: 'javascript:alert(2)',
+                },
+                serviceThemeColorCode: '#fff; expression(alert(1))',
+              },
+            ],
+          },
+        },
+      ];
+
+      render(<DataTable data={maliciousData} isLoading={false} error={null} />);
+
+      // Malicious poster URL falls back to "No Image"
+      expect(screen.queryByAltText(/Malicious Movie poster/i)).not.toBeInTheDocument();
+      expect(screen.getByText('No Image')).toBeInTheDocument();
+
+      // Invalid/traversed imdb_id renders plain text, not an <a> link
+      expect(screen.getByText('Malicious Movie')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Malicious Movie' })).not.toBeInTheDocument();
+
+      // Malicious service icons are not rendered as <img>
+      expect(screen.queryByAltText('EvilStream')).not.toBeInTheDocument();
+      expect(screen.queryByAltText('DataStream')).not.toBeInTheDocument();
+      expect(screen.getByText('EvilStream')).toBeInTheDocument();
+      expect(screen.getByText('DataStream')).toBeInTheDocument();
+
+      // Malicious watch links fall back to '#'
+      const watchLinks = screen.getAllByRole('link', { name: /Watch/i });
+      expect(watchLinks).toHaveLength(2);
+      watchLinks.forEach((link) => {
+        expect(link).toHaveAttribute('href', '#');
+      });
+
+      // CSS injection payloads in serviceThemeColorCode fall back to '#444'
+      const evilIconBox = screen.getByText('EvilStream').parentElement;
+      expect(getComputedStyle(evilIconBox).borderColor).not.toContain('red');
+      expect(getComputedStyle(evilIconBox).backgroundImage).not.toContain('evil.com');
+    });
+  });
 });

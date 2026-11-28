@@ -67,6 +67,10 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      if (document.cookie.split(';').some(function(c) { return c.trim() === 'ga-disable-G-7Z6TRE44CZ=true'; })) {
+        window['ga-disable-G-7Z6TRE44CZ'] = true;
+        gtag('consent', 'default', { analytics_storage: 'denied' });
+      }
       gtag('js', new Date());
       gtag('config', 'G-7Z6TRE44CZ');
     </script>
