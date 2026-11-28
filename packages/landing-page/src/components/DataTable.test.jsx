@@ -77,14 +77,24 @@ describe('DataTable', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders rows from sample data including posters, IMDB links, streaming options, directors, and actors', () => {
+  it('renders rows from sample data including posters, canonical movie links, secondary IMDb links, streaming options, directors, and actors', () => {
     render(<DataTable data={sampleData} isLoading={false} error={null} />);
 
-    // Movie titles & IMDB link vs plain text fallback
+    // Movie titles link to canonical static movie pages
     const heatLink = screen.getByRole('link', { name: 'Heat' });
-    expect(heatLink).toHaveAttribute('href', 'https://www.imdb.com/title/tt0113277/');
-    expect(screen.getByText('Goodfellas')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Goodfellas' })).not.toBeInTheDocument();
+    expect(heatLink).toHaveAttribute('href', '/movie/heat-1995/');
+    expect(heatLink).not.toHaveAttribute('target');
+
+    const goodfellasLink = screen.getByRole('link', { name: 'Goodfellas' });
+    expect(goodfellasLink).toHaveAttribute('href', '/movie/goodfellas-1990/');
+
+    // Secondary IMDb link only rendered when imdb_id is present
+    const heatImdbLink = screen.getByRole('link', { name: 'View Heat on IMDb' });
+    expect(heatImdbLink).toHaveAttribute('href', 'https://www.imdb.com/title/tt0113277/');
+    expect(heatImdbLink).toHaveAttribute('target', '_blank');
+    expect(heatImdbLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(heatImdbLink).toHaveTextContent('IMDb ↗');
+    expect(screen.queryByRole('link', { name: 'View Goodfellas on IMDb' })).not.toBeInTheDocument();
 
     // Poster image and "No Image" fallback
     expect(screen.getByAltText(/Heat poster/i)).toHaveAttribute(
@@ -338,9 +348,10 @@ describe('DataTable', () => {
       expect(screen.queryByAltText(/Malicious Movie poster/i)).not.toBeInTheDocument();
       expect(screen.getByText('No Image')).toBeInTheDocument();
 
-      // Invalid/traversed imdb_id renders plain text, not an <a> link
-      expect(screen.getByText('Malicious Movie')).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'Malicious Movie' })).not.toBeInTheDocument();
+      // Movie title links to safe local canonical path, while invalid/traversed imdb_id omits IMDb link
+      const movieLink = screen.getByRole('link', { name: 'Malicious Movie' });
+      expect(movieLink).toHaveAttribute('href', '/movie/malicious-movie-2024/');
+      expect(screen.queryByRole('link', { name: /IMDb/i })).not.toBeInTheDocument();
 
       // Malicious service icons are not rendered as <img>
       expect(screen.queryByAltText('EvilStream')).not.toBeInTheDocument();

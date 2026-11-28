@@ -91,12 +91,16 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      if (document.cookie.split(';').some(function(c) { return c.trim() === 'ga-disable-G-7Z6TRE44CZ=true'; })) {
+        window['ga-disable-G-7Z6TRE44CZ'] = true;
+        gtag('consent', 'default', { analytics_storage: 'denied' });
+      }
       gtag('js', new Date());
       gtag('config', 'G-7Z6TRE44CZ');
     </script>
     
     <title>Watch That Pod - Movie Podcasts & The Rewatchables Fan Site</title>
-    <script type="module" crossorigin src="/assets/index-ClNYrVDq.js"></script>
+    <script type="module" crossorigin src="/assets/index-EaylvAyX.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D6LehlEq.css">
   </head>
   <body>

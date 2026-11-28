@@ -16,8 +16,12 @@ module.exports = {
     },
 
     getEnv : function getEnv() {
-        if( process.env.NODE_ENV === 'prod' ) {
-            return process.env.NODE_ENV;
+        if (
+            process.env.NODE_ENV === 'prod' ||
+            process.env.NODE_ENV === 'production' ||
+            Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME)
+        ) {
+            return 'prod';
         } else {
             return 'dev';
         }
@@ -48,9 +52,9 @@ module.exports = {
     },
 
     getAWSConfig : function getAWSConfig(cloud_sqs) {
-        if( process.env.NODE_ENV === 'prod' || cloud_sqs ) {
+        if (module.exports.getEnv() === 'prod' || cloud_sqs) {
             return {
-                region : process.env.AWS_REGION
+                region : process.env.AWS_REGION || 'us-east-2'
             }
         } else {
             return {

@@ -1,7 +1,7 @@
 {
-  "FunctionName": "rewatchable-streams-www-job",
+  "FunctionName": "rewatchables-build-JSON",
   "Runtime": "nodejs22.x",
-  "Role": "arn:aws:iam::315817266687:role/lambda-execution-role",
+  "Role": "arn:aws:iam::315817266687:role/rewatchables-runner",
   "Handler": "app-lambda.handler",
   "Description": "Generates JSON data for rewatchable streams website by merging podcast and movie data from DynamoDB",
   "Timeout": 300,

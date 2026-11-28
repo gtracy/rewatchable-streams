@@ -5,8 +5,11 @@ set -euo pipefail
 # Uses rewatchables-runner profile for deployment
 
 FUNCTION_NAME="rewatchables-fetch_url"
-PROFILE="default"
-REGION="us-east-2"
+REGION="${AWS_REGION:-us-east-2}"
+AWS_ARGS=()
+if [ -n "${AWS_PROFILE:-}" ]; then
+    AWS_ARGS=(--profile "$AWS_PROFILE")
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAGE_DIR="$(mktemp -d)"
@@ -27,7 +30,7 @@ echo "Creating deployment package..."
 (cd "$STAGE_DIR" && zip -r "$ZIP_FILE" .)
 
 echo "Deploying Lambda function..."
-AWS_PROFILE="$PROFILE" aws lambda update-function-code \
+aws "${AWS_ARGS[@]}" lambda update-function-code \
     --function-name "$FUNCTION_NAME" \
     --zip-file "fileb://$ZIP_FILE" \
     --region "$REGION"

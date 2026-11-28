@@ -1,5 +1,7 @@
 'use strict';
 
+const { getMovieSlug } = require('./static-pages');
+
 const DEFAULT_BASE_URL = 'https://watchthatpod.com';
 const JSONLD_START_MARKER = '<!-- SEO_JSONLD_START -->';
 const JSONLD_END_MARKER = '<!-- SEO_JSONLD_END -->';
@@ -208,10 +210,12 @@ function countMoviesWithStreamType(podcasts, type) {
  * @param {Array} podcasts
  * @param {string|Date} generatedAt
  * @param {string} [baseUrl='https://watchthatpod.com']
+ * @param {Array<object>} [hubs=[]]
  * @returns {string}
  */
-function generateLlmsTxt(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL) {
+function generateLlmsTxt(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL, hubs = []) {
     const safePodcasts = Array.isArray(podcasts) ? podcasts : [];
+    const safeHubs = Array.isArray(hubs) ? hubs.filter((h) => h && h.path && h.name) : [];
     const base = normalizeBaseUrl(baseUrl);
     const lastUpdated = formatIsoDate(generatedAt, new Date().toISOString().slice(0, 10));
     const totalEpisodes = safePodcasts.length;
@@ -234,17 +238,33 @@ function generateLlmsTxt(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL) {
         '',
         `- [Watch That Pod](${base}/): Interactive searchable table of The Rewatchables episodes and where to watch each movie`,
         `- [Search Episodes & Movies](${base}/?search={query}): Direct search link for any movie title, director, actor, or streaming service`,
+        `- [Movie Pages](${base}/movie/{slug}/): Dedicated static movie streaming and Rewatchables episode pages (URL pattern: \`/movie/<slug>/\`, e.g. \`/movie/the-godfather-1972/\`)`,
         `- [Full Episode Catalog](${base}/llms-full.txt): Complete Markdown catalog of all episodes with cast, directors, streaming options, IMDb links, and podcast audio URLs`,
         `- [XML Sitemap](${base}/sitemap.xml): Machine-readable sitemap for crawlers`,
-        '',
+        ''
+    ];
+
+    if (safeHubs.length > 0) {
+        lines.push('## Streaming Hubs', '');
+        for (const hub of safeHubs.slice(0, 12)) {
+            const hubPath = hub.path.startsWith('/') ? hub.path : `/${hub.path}`;
+            const countSuffix = typeof hub.count === 'number'
+                ? `: ${hub.count} ${hub.count === 1 ? 'movie' : 'movies'}`
+                : '';
+            lines.push(`- [${hub.name}](${base}${hubPath})${countSuffix}`);
+        }
+        lines.push('');
+    }
+
+    lines.push(
         '## How to Query & FAQ',
         '',
-        '- **How do I look up where a Rewatchables movie is streaming?** Fetch `/llms-full.txt` for the complete episode-by-episode catalog, or direct users to `https://watchthatpod.com/?search={query}` (URL-encoded movie title, director, actor, or service name).',
+        '- **How do I look up where a Rewatchables movie is streaming?** Fetch `/llms-full.txt` for the complete episode-by-episode catalog, visit a movie page at `https://watchthatpod.com/movie/<slug>/`, or direct users to `https://watchthatpod.com/?search={query}` (URL-encoded movie title, director, actor, or service name).',
         '- **What query parameters are supported on the web app?** `?search=`, `?director=`, `?actor=`, and `?service=` pre-filter the table on load.',
         '- **What do the streaming labels mean?** `Free` = ad-supported free streaming (e.g. Pluto TV, Tubi); `Subscription` = included with a standard streaming plan; `Premium` = requires a channel add-on; `Rent $X.XX` = digital rental price in USD.',
         '- **How fresh is the streaming availability?** Streaming links and catalog data are refreshed daily for US streaming catalogs.',
         ''
-    ];
+    );
 
     return lines.join('\n');
 }
@@ -279,10 +299,12 @@ function generateLlmsFullTxt(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL) 
         const movie = podcast.movie || {};
         const movieTitle = getMovieTitle(podcast);
         const releaseYear = getReleaseYear(podcast);
+        const movieSlug = getMovieSlug(podcast);
         const heading = releaseYear ? `## ${movieTitle} (${releaseYear})` : `## ${movieTitle}`;
 
         lines.push(heading);
         lines.push('');
+        lines.push(`- **Movie Page:** ${base}/movie/${movieSlug}/`);
 
         if (podcast.pod_title) {
             lines.push(`- **Podcast Episode:** ${podcast.pod_title}`);
@@ -340,27 +362,74 @@ function generateLlmsFullTxt(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL) 
 }
 
 /**
- * Generate a valid XML sitemap with dynamic lastmod date.
+ * Generate a valid XML sitemap with dynamic lastmod date, root URL, and optional extra paths.
  * @param {string|Date} generatedAt
  * @param {string} [baseUrl='https://watchthatpod.com']
+ * @param {Array<string>} [extraPaths=[]]
  * @returns {string}
  */
-function generateSitemapXml(generatedAt, baseUrl = DEFAULT_BASE_URL) {
+function generateSitemapXml(generatedAt, baseUrl = DEFAULT_BASE_URL, extraPaths = []) {
     const base = normalizeBaseUrl(baseUrl);
     const lastmod = formatIsoDate(generatedAt, new Date().toISOString().slice(0, 10));
 
-    return [
+    const seen = new Set(['/']);
+    const streamingPaths = [];
+    const moviePaths = [];
+    const otherPaths = [];
+
+    if (Array.isArray(extraPaths)) {
+        for (const rawPath of extraPaths) {
+            if (typeof rawPath !== 'string' || !rawPath.trim()) {
+                continue;
+            }
+            const normalized = rawPath.trim().startsWith('/') ? rawPath.trim() : `/${rawPath.trim()}`;
+            if (seen.has(normalized)) {
+                continue;
+            }
+            seen.add(normalized);
+            if (normalized.startsWith('/streaming/')) {
+                streamingPaths.push(normalized);
+            } else if (normalized.startsWith('/movie/')) {
+                moviePaths.push(normalized);
+            } else {
+                otherPaths.push(normalized);
+            }
+        }
+    }
+
+    streamingPaths.sort((a, b) => {
+        if (a === '/streaming/free/') return -1;
+        if (b === '/streaming/free/') return 1;
+        return a.localeCompare(b);
+    });
+    moviePaths.sort((a, b) => a.localeCompare(b));
+    otherPaths.sort((a, b) => a.localeCompare(b));
+
+    const entries = [
+        { path: '/', priority: '1.0' },
+        ...streamingPaths.map((p) => ({ path: p, priority: '0.8' })),
+        ...moviePaths.map((p) => ({ path: p, priority: '0.7' })),
+        ...otherPaths.map((p) => ({ path: p, priority: '0.6' }))
+    ];
+
+    const lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-        '  <url>',
-        `    <loc>${escapeXml(base)}/</loc>`,
-        `    <lastmod>${escapeXml(lastmod)}</lastmod>`,
-        '    <changefreq>daily</changefreq>',
-        '    <priority>1.0</priority>',
-        '  </url>',
-        '</urlset>',
-        ''
-    ].join('\n');
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ];
+
+    for (const entry of entries) {
+        lines.push(
+            '  <url>',
+            `    <loc>${escapeXml(`${base}${entry.path}`)}</loc>`,
+            `    <lastmod>${escapeXml(lastmod)}</lastmod>`,
+            '    <changefreq>daily</changefreq>',
+            `    <priority>${entry.priority}</priority>`,
+            '  </url>'
+        );
+    }
+
+    lines.push('</urlset>', '');
+    return lines.join('\n');
 }
 
 /**
@@ -660,10 +729,12 @@ function generateAiCatalogJson(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL
  */
 function generateSeoArtifacts(enrichedPodcasts, generatedAt, options = {}) {
     const baseUrl = options?.baseUrl || DEFAULT_BASE_URL;
+    const hubs = options?.hubs || [];
+    const extraPaths = options?.extraPaths || [];
     return {
-        llmsTxt: generateLlmsTxt(enrichedPodcasts, generatedAt, baseUrl),
+        llmsTxt: generateLlmsTxt(enrichedPodcasts, generatedAt, baseUrl, hubs),
         llmsFullTxt: generateLlmsFullTxt(enrichedPodcasts, generatedAt, baseUrl),
-        sitemapXml: generateSitemapXml(generatedAt, baseUrl),
+        sitemapXml: generateSitemapXml(generatedAt, baseUrl, extraPaths),
         aiCatalogJson: generateAiCatalogJson(enrichedPodcasts, generatedAt, baseUrl)
     };
 }

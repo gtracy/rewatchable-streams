@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PodcastPlayerModal from './PodcastPlayerModal';
 import { trackPodcastPlay, trackDirectorClick, trackActorClick, trackStreamingClick, trackSearch } from '../utils/analytics';
+import { getMoviePath } from '../utils/slugs';
 import { sanitizeHttpUrl, sanitizeHexColor, sanitizeImdbId } from '../utils/sanitize';
 import './DataTable.css';
 
@@ -259,13 +260,11 @@ const DataTable = ({ data, isLoading, error }) => {
                   </Box>
                 )}
                 
-                {/* Movie Title with IMDB Link */}
+                {/* Movie Title (canonical movie page link) and secondary IMDb link */}
                 <Box sx={{ marginTop: '6px', maxWidth: '109px' }}> {/* Match new width */}
-                  {validImdbId ? (
-                    <a 
-                      href={`https://www.imdb.com/title/${validImdbId}/`}
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                  {row.original.movie ? (
+                    <a
+                      href={getMoviePath(row.original.movie)}
                       style={{
                         color: '#90caf9',
                         textDecoration: 'none',
@@ -285,14 +284,40 @@ const DataTable = ({ data, isLoading, error }) => {
                       {row.original.movie?.movie_title || 'Unknown Movie'}
                     </a>
                   ) : (
-                    <span style={{ 
-                      fontSize: '0.7rem', 
+                    <span style={{
+                      fontSize: '0.7rem',
                       color: '#b0b0b0',
                       textAlign: 'center',
-                      display: 'block'
+                      display: 'block',
                     }}>
-                      {row.original.movie?.movie_title || 'Unknown Movie'}
+                      Unknown Movie
                     </span>
+                  )}
+                  {validImdbId && (
+                    <a
+                      href={`https://www.imdb.com/title/${validImdbId}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`View ${row.original.movie?.movie_title || 'movie'} on IMDb`}
+                      style={{
+                        color: '#b0b0b0',
+                        textDecoration: 'none',
+                        fontSize: '0.65rem',
+                        display: 'inline-block',
+                        marginTop: '3px',
+                        lineHeight: 1.2,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = '#90caf9';
+                        e.target.style.textDecoration = 'underline';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = '#b0b0b0';
+                        e.target.style.textDecoration = 'none';
+                      }}
+                    >
+                      IMDb ↗
+                    </a>
                   )}
                 </Box>
               </Box>

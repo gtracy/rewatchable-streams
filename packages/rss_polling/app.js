@@ -10,7 +10,9 @@ const envPath = path.resolve(__dirname, '../../.env.json');
 if (fs.existsSync(envPath)) {
   require('dotenv-json')({ path: envPath });
 }
-const config = require('../../config');
+const config = fs.existsSync(path.join(__dirname, 'config.js'))
+  ? require('./config')
+  : require('../../config');
 const logger = require('pino')(config.getLogConfig());
 
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
