@@ -53,32 +53,37 @@ Serve the custom dark-themed `/404.html` page with an HTTP `404` status code ins
 
 ---
 
-## 3. `www_job` Lambda Environment Variables & IAM Permissions
+## 3. `rewatchables-build-JSON` (`packages/www_job`) Lambda Environment Variables & IAM Permissions
 
-Enable daily S3 publishing of `llms.txt`, `llms-full.txt`, `sitemap.xml`, `index.html` JSON-LD/`<noscript>` enrichment, and automatic CloudFront cache invalidation.
+Enable daily S3 publishing of `llms.txt`, `llms-full.txt`, `sitemap.xml`, `ai-catalog.json`, `.well-known/ard.json`, `.well-known/ai-catalog.json`, `/movie/*` and `/streaming/*` static pages, `index.html` JSON-LD/`<noscript>` enrichment, and automatic CloudFront cache invalidation.
 
 ### Environment Variables
 
-Set the following on the `rewatchables-build-JSON` Lambda function (**AWS Console → Lambda → `rewatchables-build-JSON` → Configuration → Environment variables**):
+Set the following on the **`rewatchables-build-JSON`** Lambda function (**AWS Console → Lambda → `rewatchables-build-JSON` → Configuration → Environment variables**):
 
-| Variable | Value | Notes |
-| --- | --- | --- |
-| `CLOUDFRONT_DISTRIBUTION_ID` | `E3UTGKV2VWOXDQ` | Enables post-publish invalidation of `/index.html`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt` |
-| `WEBAPP_PREFIX` | `webapp` | Optional (defaults to `webapp` if omitted) |
+| Variable | Value | Required? | Notes |
+| --- | --- | --- | --- |
+| `CLOUDFRONT_DISTRIBUTION_ID` | `E3UTGKV2VWOXDQ` | **Required** (for auto-invalidation) | Enables post-publish CloudFront invalidation of `/index.html`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt`, `/ai-catalog.json`, `/.well-known/ai-catalog.json`, `/.well-known/ard.json`, `/movie/*`, and `/streaming/*` |
+| `WEBAPP_PREFIX` | `webapp` | Optional | Defaults to `webapp` in `packages/www_job/app.js` |
+| `PODCAST_MOVIES_TABLE` | `podcast_movies` | Optional | Defaults to `podcast_movies` |
+| `MOVIE_STREAMS_TABLE` | `movie_streams` | Optional | Defaults to `movie_streams` |
+| `S3_BUCKET` | `rewatchables` | Optional | Defaults to `rewatchables` |
+| `S3_KEY` | `data_files/podcast_movie_data.json` | Optional | Defaults to `data_files/podcast_movie_data.json` |
 
-Or via AWS CLI:
+Since all other variables already default to your production values in `packages/www_job/app.js`, you only need to set `CLOUDFRONT_DISTRIBUTION_ID` via CLI:
 
 ```bash
-aws lambda update-function-configuration \
+AWS_PROFILE=<your-profile> aws lambda update-function-configuration \
   --function-name rewatchables-build-JSON \
-  --environment "Variables={PODCAST_MOVIES_TABLE=podcast_movies,MOVIE_STREAMS_TABLE=movie_streams,S3_BUCKET=rewatchables,S3_KEY=data_files/podcast_movie_data.json,WEBAPP_PREFIX=webapp,CLOUDFRONT_DISTRIBUTION_ID=E3UTGKV2VWOXDQ}"
+  --region us-east-2 \
+  --environment "Variables={CLOUDFRONT_DISTRIBUTION_ID=E3UTGKV2VWOXDQ}"
 ```
 
-> **Note:** Check the existing environment variables on the Lambda before running `update-function-configuration`, as the CLI replaces the entire `Variables` map.
+> **Note:** Check the existing environment variables on `rewatchables-build-JSON` before running `update-function-configuration`, as the CLI replaces the entire `Variables` map.
 
 ### IAM Execution Role Policy
 
-Ensure the Lambda execution role (e.g. `arn:aws:iam::315817266687:role/rewatchables-runner`) has:
+Ensure the Lambda execution role (`arn:aws:iam::315817266687:role/rewatchables-runner`) has:
 
 - `s3:GetObject` on `arn:aws:s3:::rewatchables/webapp/index.html` (to read the deployed SPA `index.html` before injecting fresh JSON-LD and `<noscript>` markup)
 - `s3:PutObject` on `arn:aws:s3:::rewatchables/webapp/*` and `arn:aws:s3:::rewatchables/data_files/*`
