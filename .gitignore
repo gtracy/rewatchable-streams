@@ -4,3 +4,4 @@ function.zip
 .DS_Store
 packages/landing-page/public/local-data.json
 bin/tmdb_ids.json
+response.json
