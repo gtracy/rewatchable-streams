@@ -15,6 +15,7 @@ import {
   FastForward,
   FastRewind,
 } from '@mui/icons-material';
+import { sanitizeHttpUrl } from '../utils/sanitize';
 
 export const formatTime = (seconds) => {
   if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) {
@@ -118,6 +119,8 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
 
   if (!podcast) return null;
 
+  const safeAudioSrc = sanitizeHttpUrl(podcast.pod_link);
+
   return (
     <Modal
       open={open}
@@ -171,7 +174,7 @@ const PodcastPlayerModal = ({ open, onClose, podcast }) => {
         <Box sx={{ mb: 3 }}>
           <audio
             ref={audioRef}
-            src={podcast.pod_link}
+            src={safeAudioSrc || undefined}
             onTimeUpdate={handleNativeProgress}
             onLoadedMetadata={handleNativeDuration}
             onPlay={() => setPlaying(true)}
