@@ -17,7 +17,6 @@ process.env.LOG_LEVEL = 'silent';
 
 const fixtures = require('../../../test/fixtures');
 const rootConfig = require('../../../config');
-const localConfig = require('../config');
 const app = require('../app');
 const appLambda = require('../app-lambda');
 
@@ -103,19 +102,81 @@ describe('packages/streams_fetch/app.js', () => {
     expect(mockFetchStream).toHaveBeenCalledTimes(2);
     expect(mockFetchStream.mock.calls).toEqual([[11], [680]]);
   });
-});
 
-describe('config getSQSConfig logging', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it('handles missing or non-array event.Records without throwing', async () => {
+    const warnSpy = vi.spyOn(app.logger, 'warn');
+
+    await expect(app.handler(null, {})).resolves.toBeUndefined();
+    await expect(app.handler({}, {})).resolves.toBeUndefined();
+    await expect(app.handler({ Records: 'not-an-array' }, {})).resolves.toBeUndefined();
+
+    expect(mockFetchStream).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(3);
   });
 
-  it('returns undefined without calling console.log in root and package config', () => {
+  it('skips poison-pill INSERT records with missing, non-numeric, or non-positive tmdb_id and processes valid ones', async () => {
+    const warnSpy = vi.spyOn(app.logger, 'warn');
+    const event = {
+      Records: [
+        null,
+        { eventName: 'INSERT' },
+        { eventName: 'INSERT', dynamodb: {} },
+        { eventName: 'INSERT', dynamodb: { NewImage: {} } },
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: 'not-a-number' } } } },
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '0' } } } },
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '-42' } } } },
+        { eventName: 'INSERT', dynamodb: { NewImage: { tmdb_id: { N: '115' } } } },
+      ],
+    };
+
+    await expect(app.handler(event, {})).resolves.toBeUndefined();
+    expect(mockFetchStream).toHaveBeenCalledTimes(1);
+    expect(mockFetchStream).toHaveBeenCalledWith(115);
+    expect(warnSpy).toHaveBeenCalledTimes(6);
+  });
+});
+
+describe('root config security settings', () => {
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    process.env = { ...originalEnv };
+  });
+
+  it('getSQSConfig returns undefined without calling console.log', () => {
     const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     expect(rootConfig.getSQSConfig('test-queue')).toBeUndefined();
-    expect(localConfig.getSQSConfig('test-queue')).toBeUndefined();
     expect(consoleLogSpy).not.toHaveBeenCalled();
+  });
+
+  it('getAWSConfig omits access_id and access_secret in prod mode', () => {
+    process.env.NODE_ENV = 'prod';
+    process.env.AWS_REGION = 'us-east-2';
+    process.env.AWS_ACCESS_ID = 'should-not-appear';
+    process.env.AWS_ACCESS_SECRET = 'should-not-appear';
+
+    const awsConfig = rootConfig.getAWSConfig();
+    expect(awsConfig).toEqual({ region: 'us-east-2' });
+    expect(awsConfig).not.toHaveProperty('access_id');
+    expect(awsConfig).not.toHaveProperty('access_secret');
+  });
+
+  it('getLogConfig configures pino redact paths for secrets and auth headers', () => {
+    const logConfig = rootConfig.getLogConfig();
+    expect(logConfig.redact).toEqual(
+      expect.arrayContaining([
+        '*.access_secret',
+        '*.access_id',
+        '*.api_key',
+        'err.config.url',
+        'err.config.headers.Authorization',
+        'err.config.headers.authorization',
+        'awsConfig.access_secret',
+        'awsConfig.access_id',
+      ])
+    );
   });
 });
 

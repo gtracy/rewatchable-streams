@@ -15,12 +15,16 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, QueryCommand } = require("@aws-sdk/lib-dynamodb");
 
 
+const MAX_STREAM_REFRESH_LIMIT = 50;
+
 exports.handler = async (event, context) => {
   let refresh_count = 0;
 
   try {
     const parsedLimit = parseInt(process.env.STREAM_REFRESH_LIMIT, 10);
-    const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 5 : parsedLimit;
+    const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0
+      ? 5
+      : Math.min(parsedLimit, MAX_STREAM_REFRESH_LIMIT);
     const oldestMovies = await getOldestMovieStreams(limit);
     for (const movie of oldestMovies) {
         await fetchStream(movie.tmdb_id);

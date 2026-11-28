@@ -33,16 +33,24 @@ module.exports = {
 
         return({
             level: level,
-            autoLogging: false
+            autoLogging: false,
+            redact: [
+                '*.access_secret',
+                '*.access_id',
+                '*.api_key',
+                'err.config.url',
+                'err.config.headers.Authorization',
+                'err.config.headers.authorization',
+                'awsConfig.access_secret',
+                'awsConfig.access_id'
+            ]
         });
     },
 
     getAWSConfig : function getAWSConfig(cloud_sqs) {
         if( process.env.NODE_ENV === 'prod' || cloud_sqs ) {
             return {
-                region : process.env.AWS_REGION,
-                access_id : process.env.AWS_ACCESS_ID,
-                access_secret : process.env.AWS_ACCESS_SECRET
+                region : process.env.AWS_REGION
             }
         } else {
             return {

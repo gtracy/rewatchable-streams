@@ -98,14 +98,22 @@ describe('packages/rss_polling/app.js', () => {
       Key: { pod_guid: 'guid-star-wars-1' },
     });
 
-    // Verify TMDB search and details URLs
+    // Verify TMDB search and details URLs and request options
     expect(axiosGetSpy).toHaveBeenCalledTimes(2);
     expect(axiosGetSpy.mock.calls[0][0]).toContain('https://api.themoviedb.org/3/search/movie');
     expect(axiosGetSpy.mock.calls[0][0]).toContain('api_key=test-tmdb-key');
     expect(axiosGetSpy.mock.calls[0][0]).toContain('query=Star%20Wars');
+    expect(axiosGetSpy.mock.calls[0][1]).toEqual({
+      timeout: 15000,
+      maxContentLength: 5 * 1024 * 1024,
+    });
     expect(axiosGetSpy.mock.calls[1][0]).toBe(
       'https://api.themoviedb.org/3/movie/11?api_key=test-tmdb-key'
     );
+    expect(axiosGetSpy.mock.calls[1][1]).toEqual({
+      timeout: 15000,
+      maxContentLength: 5 * 1024 * 1024,
+    });
 
     // Verify PutCommand payload
     const putCalls = ddbMock.commandCalls(PutCommand);
@@ -270,24 +278,79 @@ describe('packages/rss_polling/app.js', () => {
     expect(result).toBe(false);
   });
 
-  it('returns failure message when RSS feed fetch fails', async () => {
+  it('re-throws fatal error when RSS feed fetch fails', async () => {
     parseURLSpy.mockRejectedValue(new Error('Network timeout'));
 
-    const result = await app.handler({});
-
-    expect(result).toBe('Lambda function failed!');
+    await expect(app.handler({})).rejects.toThrow('Network timeout');
     expect(ddbMock.calls()).toHaveLength(0);
   });
 
-  it('returns failure message when TMDB request throws an error', async () => {
-    parseURLSpy.mockResolvedValue({ items: [makeEpisode()] });
+  it('sanitizes TMDB axios errors without leaking API key and continues processing remaining episodes', async () => {
+    const ep1 = makeEpisode({ guid: 'guid-fail' });
+    const ep2 = makeEpisode({ guid: 'guid-ok' });
+    parseURLSpy.mockResolvedValue({ items: [ep1, ep2] });
     ddbMock.on(GetCommand).resolves({});
-    axiosGetSpy.mockRejectedValue(new Error('TMDB 503 Service Unavailable'));
+    ddbMock.on(PutCommand).resolves({});
+
+    const axiosErr = new Error('Request failed for https://api.themoviedb.org/3/search/movie?api_key=test-tmdb-key&query=Star');
+    axiosErr.code = 'ECONNABORTED';
+    axiosErr.response = { status: 503 };
+    axiosErr.config = { url: 'https://api.themoviedb.org/3/search/movie?api_key=test-tmdb-key&query=Star%20Wars' };
+
+    axiosGetSpy
+      .mockRejectedValueOnce(axiosErr)
+      .mockResolvedValueOnce({
+        data: { results: [{ id: 11, original_language: 'en', original_title: 'Star Wars', popularity: 100 }] },
+      })
+      .mockResolvedValueOnce({ data: sampleMovieDetails });
 
     const result = await app.handler({});
 
-    expect(result).toBe('Lambda function failed!');
-    expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
+    expect(result).toBe('Lambda function execution successful!');
+    expect(ddbMock.commandCalls(PutCommand)).toHaveLength(1);
+
+    const serializedErrors = JSON.stringify(loggerErrorSpy.mock.calls);
+    expect(serializedErrors).not.toContain('test-tmdb-key');
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        err: expect.objectContaining({
+          status: 503,
+          code: 'ECONNABORTED',
+          url: 'https://api.themoviedb.org/3/search/movie',
+        }),
+        podGuid: 'guid-fail',
+      }),
+      'Error querying TMDB search API'
+    );
+  });
+
+  it('isolates malformed episode pubDate or missing guid and continues processing valid episodes', async () => {
+    const badDateEp = makeEpisode({ guid: 'guid-bad-date', pubDate: 'not-a-valid-date' });
+    const missingGuidEp = makeEpisode({ guid: undefined });
+    const goodEp = makeEpisode({ guid: 'guid-valid' });
+    parseURLSpy.mockResolvedValue({ items: [badDateEp, missingGuidEp, goodEp] });
+    ddbMock.on(GetCommand).resolves({});
+    ddbMock.on(PutCommand).resolves({});
+
+    axiosGetSpy
+      .mockResolvedValueOnce({
+        data: { results: [{ id: 11, original_language: 'en', original_title: 'Star Wars', popularity: 100 }] },
+      })
+      .mockResolvedValueOnce({ data: sampleMovieDetails })
+      .mockResolvedValueOnce({
+        data: { results: [{ id: 11, original_language: 'en', original_title: 'Star Wars', popularity: 100 }] },
+      })
+      .mockResolvedValueOnce({ data: sampleMovieDetails });
+
+    const result = await app.handler({});
+
+    expect(result).toBe('Lambda function execution successful!');
+    expect(ddbMock.commandCalls(PutCommand)).toHaveLength(1);
+    expect(ddbMock.commandCalls(PutCommand)[0].args[0].input.Item.pod_guid).toBe('guid-valid');
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      { podCount: 3, saveCount: 1, skipCount: 2 },
+      'Podcast processing complete'
+    );
   });
 });
 

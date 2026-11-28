@@ -213,4 +213,39 @@ describe('PodcastPlayerModal', () => {
     expect(audio.currentTime).toBe(0);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('rejects non-http(s) pod_link protocols such as javascript: and data:', () => {
+    const jsPodcast = {
+      ...samplePodcast,
+      pod_link: 'javascript:alert(1)',
+    };
+
+    const { rerender } = render(
+      <PodcastPlayerModal open={true} onClose={vi.fn()} podcast={jsPodcast} />
+    );
+
+    let audio = document.querySelector('audio');
+    expect(audio).toBeInTheDocument();
+    expect(audio).not.toHaveAttribute('src');
+
+    const dataPodcast = {
+      ...samplePodcast,
+      pod_link: 'data:audio/mp3;base64,AAAA',
+    };
+
+    rerender(<PodcastPlayerModal open={true} onClose={vi.fn()} podcast={dataPodcast} />);
+
+    audio = document.querySelector('audio');
+    expect(audio).not.toHaveAttribute('src');
+
+    const httpPodcast = {
+      ...samplePodcast,
+      pod_link: 'http://cdn.example.com/heat.mp3',
+    };
+
+    rerender(<PodcastPlayerModal open={true} onClose={vi.fn()} podcast={httpPodcast} />);
+
+    audio = document.querySelector('audio');
+    expect(audio).toHaveAttribute('src', 'http://cdn.example.com/heat.mp3');
+  });
 });
