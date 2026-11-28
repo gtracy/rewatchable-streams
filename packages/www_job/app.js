@@ -11,6 +11,7 @@ const {
     generateLlmsTxt,
     generateLlmsFullTxt,
     generateSitemapXml,
+    generateAiCatalogJson,
     injectSeoIntoIndexHtml
 } = require('./seo-artifacts');
 
@@ -25,7 +26,8 @@ const CLOUDFRONT_INVALIDATION_PATHS = [
     '/index.html',
     '/sitemap.xml',
     '/llms.txt',
-    '/llms-full.txt'
+    '/llms-full.txt',
+    '/ai-catalog.json'
 ];
 
 /**
@@ -357,6 +359,12 @@ async function uploadSeoArtifacts(s3Client, enrichedPodcasts, generatedAt) {
             key: buildWebappKey('sitemap.xml'),
             body: generateSitemapXml(generatedAt),
             contentType: 'application/xml; charset=utf-8',
+            cacheControl: 'max-age=3600'
+        },
+        {
+            key: buildWebappKey('ai-catalog.json'),
+            body: generateAiCatalogJson(enrichedPodcasts, generatedAt),
+            contentType: 'application/json; charset=utf-8',
             cacheControl: 'max-age=3600'
         }
     ];

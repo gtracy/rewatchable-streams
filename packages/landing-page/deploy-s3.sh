@@ -13,7 +13,7 @@ echo "Building React app..."
 npm run build
 
 echo "Uploading to S3..."
-AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete --exclude "llms.txt" --exclude "llms-full.txt"
+AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete --exclude "llms-full.txt"
 
 echo "Invalidating CloudFront cache..."
 AWS_PROFILE=$PROFILE aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/webapp/*"

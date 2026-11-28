@@ -594,19 +594,69 @@ function injectSeoIntoIndexHtml(html, podcasts, generatedAt, baseUrl = DEFAULT_B
 }
 
 /**
+ * Generate the Agentic Resource Discovery manifest (/ai-catalog.json).
+ * @param {Array} podcasts
+ * @param {string|Date} generatedAt
+ * @param {string} [baseUrl='https://watchthatpod.com']
+ * @returns {string}
+ */
+function generateAiCatalogJson(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL) {
+    const base = normalizeBaseUrl(baseUrl);
+    const list = Array.isArray(podcasts) ? podcasts : [];
+    const lastUpdated = formatIsoDate(generatedAt, new Date().toISOString().slice(0, 10));
+    const total = list.length;
+
+    const manifest = {
+        name: 'Watch That Pod',
+        description: `Searchable streaming guide for The Rewatchables podcast (${total} episodes indexed, updated ${lastUpdated}), mapping episodes to featured movies, cast, directors, and current US streaming, rental, and free viewing options.`,
+        url: `${base}/`,
+        updatedAt: lastUpdated,
+        resources: [
+            {
+                name: 'LLMs Overview',
+                description: 'Concise Markdown overview of Watch That Pod, dataset stats, and navigation links for AI agents.',
+                url: `${base}/llms.txt`,
+                type: 'text/plain'
+            },
+            {
+                name: 'Full Episode & Streaming Catalog',
+                description: `Complete Markdown directory of all ${total} indexed The Rewatchables episodes, movies, directors, cast, streaming options, IMDb links, and podcast audio URLs.`,
+                url: `${base}/llms-full.txt`,
+                type: 'text/plain'
+            },
+            {
+                name: 'Interactive Search Catalog',
+                description: 'Web catalog supporting query parameters: ?search=, ?service=, ?director=, and ?actor=.',
+                url: `${base}/`,
+                type: 'text/html'
+            },
+            {
+                name: 'XML Sitemap',
+                description: 'Canonical sitemap with daily last-modified timestamp.',
+                url: `${base}/sitemap.xml`,
+                type: 'application/xml'
+            }
+        ]
+    };
+
+    return `${JSON.stringify(manifest, null, 2)}\n`;
+}
+
+/**
  * Convenience helper to generate all static SEO/AI-SEO text artifacts at once.
  * @param {Array} enrichedPodcasts
  * @param {string|Date} generatedAt
  * @param {object} [options]
  * @param {string} [options.baseUrl='https://watchthatpod.com']
- * @returns {{ llmsTxt: string, llmsFullTxt: string, sitemapXml: string }}
+ * @returns {{ llmsTxt: string, llmsFullTxt: string, sitemapXml: string, aiCatalogJson: string }}
  */
 function generateSeoArtifacts(enrichedPodcasts, generatedAt, options = {}) {
     const baseUrl = options?.baseUrl || DEFAULT_BASE_URL;
     return {
         llmsTxt: generateLlmsTxt(enrichedPodcasts, generatedAt, baseUrl),
         llmsFullTxt: generateLlmsFullTxt(enrichedPodcasts, generatedAt, baseUrl),
-        sitemapXml: generateSitemapXml(generatedAt, baseUrl)
+        sitemapXml: generateSitemapXml(generatedAt, baseUrl),
+        aiCatalogJson: generateAiCatalogJson(enrichedPodcasts, generatedAt, baseUrl)
     };
 }
 
@@ -619,6 +669,7 @@ module.exports = {
     generateLlmsTxt,
     generateLlmsFullTxt,
     generateSitemapXml,
+    generateAiCatalogJson,
     injectSeoIntoIndexHtml,
     generateSeoArtifacts,
     // Exported for targeted unit testing

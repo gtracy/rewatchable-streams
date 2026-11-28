@@ -10,6 +10,7 @@ const {
     generateLlmsTxt,
     generateLlmsFullTxt,
     generateSitemapXml,
+    generateAiCatalogJson,
     injectSeoIntoIndexHtml,
     generateSeoArtifacts,
     formatStreamingOption
@@ -367,8 +368,28 @@ describe('injectSeoIntoIndexHtml', () => {
     });
 });
 
+describe('generateAiCatalogJson', () => {
+    it('outputs a valid ARD manifest with name, description, url, updatedAt, and resources', () => {
+        const raw = generateAiCatalogJson([makePodcast()], '2026-11-27T00:00:00.000Z', 'https://watchthatpod.com/');
+        const parsed = JSON.parse(raw);
+
+        expect(parsed.name).toBe('Watch That Pod');
+        expect(parsed.description).toContain('1 episodes indexed');
+        expect(parsed.description).toContain('2026-11-27');
+        expect(parsed.url).toBe('https://watchthatpod.com/');
+        expect(parsed.updatedAt).toBe('2026-11-27');
+        expect(Array.isArray(parsed.resources)).toBe(true);
+        expect(parsed.resources.map((r) => r.url)).toEqual([
+            'https://watchthatpod.com/llms.txt',
+            'https://watchthatpod.com/llms-full.txt',
+            'https://watchthatpod.com/',
+            'https://watchthatpod.com/sitemap.xml'
+        ]);
+    });
+});
+
 describe('generateSeoArtifacts', () => {
-    it('returns llmsTxt, llmsFullTxt, and sitemapXml together', () => {
+    it('returns llmsTxt, llmsFullTxt, sitemapXml, and aiCatalogJson together', () => {
         const artifacts = generateSeoArtifacts([makePodcast()], '2026-11-27T00:00:00.000Z', {
             baseUrl: 'https://watchthatpod.com'
         });
@@ -376,5 +397,6 @@ describe('generateSeoArtifacts', () => {
         expect(artifacts.llmsTxt).toContain('# Watch That Pod');
         expect(artifacts.llmsFullTxt).toContain('## The Godfather (1972)');
         expect(artifacts.sitemapXml).toContain('<lastmod>2026-11-27</lastmod>');
+        expect(JSON.parse(artifacts.aiCatalogJson).name).toBe('Watch That Pod');
     });
 });
