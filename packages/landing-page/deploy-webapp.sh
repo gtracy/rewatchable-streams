@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Complete deployment script for React webapp to rewatchables bucket
 # Deploys to s3://rewatchables/webapp/ and updates CloudFront
@@ -15,28 +16,16 @@ echo "🚀 Starting webapp deployment to rewatchables bucket..."
 echo "📦 Building React app for CloudFront..."
 PUBLIC_URL= npm run build
 
-if [ $? -ne 0 ]; then
-    echo "❌ Build failed. Exiting."
-    exit 1
-fi
-
 # Step 2: Upload to S3
 echo "☁️  Uploading to S3 bucket: s3://$BUCKET_NAME/$WEBAPP_FOLDER/"
-AWS_PROFILE=$PROFILE aws s3 sync build/ s3://$BUCKET_NAME/$WEBAPP_FOLDER/ --delete
-
-if [ $? -ne 0 ]; then
-    echo "❌ S3 upload failed. Exiting."
-    exit 1
-fi
+AWS_PROFILE="$PROFILE" aws s3 sync build/ "s3://$BUCKET_NAME/$WEBAPP_FOLDER/" --delete
 
 # Step 3: Invalidate CloudFront cache
 echo "🔄 Invalidating CloudFront cache for /webapp/*..."
-AWS_PROFILE=$PROFILE aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/webapp/*"
-
-if [ $? -ne 0 ]; then
-    echo "⚠️  CloudFront invalidation failed, but deployment may still be successful"
-else
+if AWS_PROFILE="$PROFILE" aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/webapp/*"; then
     echo "✅ CloudFront cache invalidated"
+else
+    echo "⚠️  CloudFront invalidation failed, but deployment may still be successful"
 fi
 
 echo ""

@@ -10,23 +10,41 @@ const S3_KEY = process.env.S3_KEY || 'data_files/podcast_movie_data.json';
 const parsedExpiry = parseInt(process.env.URL_EXPIRY_SECONDS, 10);
 const URL_EXPIRY_SECONDS = Number.isInteger(parsedExpiry) && parsedExpiry > 0 ? parsedExpiry : 3600; // 1 hour default
 
-const CORS_HEADERS = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS'
-};
+const DEFAULT_ALLOWED_ORIGINS = 'https://watchthatpod.com,https://www.watchthatpod.com';
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGINS)
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+// Module-scoped S3 client reused across warm Lambda invocations
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION || 'us-east-2'
+});
+
+/**
+ * Build CORS response headers using the configured origin allowlist
+ */
+function getCorsHeaders(event) {
+    const requestOrigin = event?.headers?.origin || event?.headers?.Origin;
+    const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Vary': 'Origin'
+    };
+
+    if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
+        headers['Access-Control-Allow-Origin'] = requestOrigin;
+    }
+
+    return headers;
+}
 
 /**
  * Generate a signed URL for the podcast data JSON file
  */
-async function generateSignedUrl() {
+async function generateSignedUrl(client = s3Client) {
     try {
-        // Initialize S3 client
-        const s3Client = new S3Client({
-            region: process.env.AWS_REGION || 'us-east-2'
-        });
-
         // Create the GetObject command
         const command = new GetObjectCommand({
             Bucket: S3_BUCKET,
@@ -34,7 +52,7 @@ async function generateSignedUrl() {
         });
 
         // Generate the signed URL
-        const signedUrl = await getSignedUrl(s3Client, command, {
+        const signedUrl = await getSignedUrl(client, command, {
             expiresIn: URL_EXPIRY_SECONDS
         });
 
@@ -65,12 +83,28 @@ async function generateSignedUrl() {
  * Lambda handler function
  */
 async function handler(event, context) {
-    const httpMethod = event?.httpMethod || event?.requestContext?.http?.method;
+    const headers = getCorsHeaders(event);
+    const httpMethod = (event?.httpMethod || event?.requestContext?.http?.method || '').toUpperCase();
+
     if (httpMethod === 'OPTIONS') {
         return {
             statusCode: 200,
-            headers: CORS_HEADERS,
+            headers,
             body: ''
+        };
+    }
+
+    if (httpMethod !== 'GET') {
+        return {
+            statusCode: 405,
+            headers: {
+                ...headers,
+                'Allow': 'GET, OPTIONS'
+            },
+            body: JSON.stringify({
+                success: false,
+                error: 'Method not allowed'
+            })
         };
     }
 
@@ -79,7 +113,7 @@ async function handler(event, context) {
 
         return {
             statusCode: 200,
-            headers: CORS_HEADERS,
+            headers,
             body: JSON.stringify(result)
         };
 
@@ -88,10 +122,10 @@ async function handler(event, context) {
 
         return {
             statusCode: 500,
-            headers: CORS_HEADERS,
+            headers,
             body: JSON.stringify({
                 success: false,
-                error: error.message,
+                error: 'Internal server error',
                 generated_at: new Date().toISOString()
             })
         };
@@ -100,5 +134,6 @@ async function handler(event, context) {
 
 module.exports = {
     handler,
-    generateSignedUrl
+    generateSignedUrl,
+    getCorsHeaders
 };

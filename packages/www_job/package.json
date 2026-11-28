@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "local": "node app-local.js",
-    "deploy": "zip -r function.zip . && aws lambda update-function-code --function-name rewatchable-streams-www-job --zip-file fileb://function.zip"
+    "deploy": "./deploy.sh"
   },
   "repository": {
     "type": "git",
