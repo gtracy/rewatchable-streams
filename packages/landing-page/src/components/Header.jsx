@@ -57,21 +57,20 @@ const Header = ({ generatedAt = null, totalPodcasts = 0 }) => {
           >
             Discover your favorite and forgotten The Rewatchables episodes with this streaming guide to all of the streaming options available for your best-loved movies.
           </Typography>
-          {freshnessText && (
-            <Typography
-              variant="caption"
-              component="p"
-              sx={{
-                color: '#8e8e8e',
-                fontWeight: 400,
-                fontSize: '0.8rem',
-                margin: '6px 0 0 0',
-                lineHeight: 1.3,
-              }}
-            >
-              {freshnessText}
-            </Typography>
-          )}
+          <Typography
+            variant="caption"
+            component="p"
+            sx={{
+              color: '#8e8e8e',
+              fontWeight: 400,
+              fontSize: '0.8rem',
+              margin: '6px 0 0 0',
+              lineHeight: 1.3,
+              minHeight: '1.05rem',
+            }}
+          >
+            {freshnessText || '\u00A0'}
+          </Typography>
         </div>
       </div>
     </header>

@@ -7,7 +7,7 @@
     {
       "identifier": "urn:air:watchthatpod.com:catalog:llms-overview",
       "displayName": "Watch That Pod LLMs Overview",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://watchthatpod.com/llms.txt",
       "description": "Concise Markdown overview of Watch That Pod, update cadence, search URL patterns, and navigation links for The Rewatchables movie streaming guide.",
       "representativeQueries": [
@@ -19,7 +19,7 @@
     {
       "identifier": "urn:air:watchthatpod.com:catalog:episodes-full",
       "displayName": "The Rewatchables Full Episode & Streaming Catalog",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://watchthatpod.com/llms-full.txt",
       "description": "Complete Markdown directory of all indexed The Rewatchables podcast episodes mapped to featured movies, release years, directors, top cast, current US streaming and rental options, IMDb links, and podcast audio URLs.",
       "representativeQueries": [

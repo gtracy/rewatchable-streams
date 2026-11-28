@@ -207,23 +207,36 @@ const DataTable = ({ data, isLoading, error }) => {
               {/* Movie Poster and Title */}
               <Box sx={{ flexShrink: 0, textAlign: 'center' }}>
                 {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
-                    width="109"
-                    height="156"
-                    loading="lazy"
-                    style={{
-                      height: '156px', // 25% bigger than 125px
-                      width: '109px', // 25% bigger than 87.5px
-                      objectFit: 'cover',
+                  <Box
+                    sx={{
+                      height: '156px',
+                      width: '109px',
+                      aspectRatio: '109 / 156',
+                      backgroundColor: '#2d2d2d',
                       borderRadius: '6px',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                      overflow: 'hidden',
                     }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`${row.original.movie?.movie_title || 'Movie'} poster - ${title} podcast episode`}
+                      width="109"
+                      height="156"
+                      loading="lazy"
+                      style={{
+                        display: 'block',
+                        height: '156px', // 25% bigger than 125px
+                        width: '109px', // 25% bigger than 87.5px
+                        aspectRatio: '109 / 156',
+                        objectFit: 'cover',
+                        borderRadius: '6px',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                      }}
+                      onError={(e) => {
+                        e.target.style.visibility = 'hidden';
+                      }}
+                    />
+                  </Box>
                 ) : (
                   <Box
                     sx={{
@@ -659,6 +672,7 @@ const DataTable = ({ data, isLoading, error }) => {
     },
     muiTableContainerProps: {
       sx: {
+        minHeight: '600px',
         maxHeight: '600px',
         border: 'none',
         borderRadius: '4px',

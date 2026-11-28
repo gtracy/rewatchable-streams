@@ -623,7 +623,7 @@ function generateAiCatalogJson(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL
             {
                 identifier: `urn:air:${publisher}:catalog:llms-overview`,
                 displayName: 'Watch That Pod LLMs Overview',
-                type: 'text/markdown',
+                type: 'text/markdown; profile="urn:air:agent-skills"',
                 url: `${base}/llms.txt`,
                 description: `Concise Markdown overview of Watch That Pod (${total} episodes indexed, updated ${lastUpdated}), update cadence, search URL patterns, and navigation links.`,
                 representativeQueries: [
@@ -635,7 +635,7 @@ function generateAiCatalogJson(podcasts, generatedAt, baseUrl = DEFAULT_BASE_URL
             {
                 identifier: `urn:air:${publisher}:catalog:episodes-full`,
                 displayName: 'The Rewatchables Full Episode & Streaming Catalog',
-                type: 'text/markdown',
+                type: 'text/markdown; profile="urn:air:agent-skills"',
                 url: `${base}/llms-full.txt`,
                 description: `Complete Markdown directory of all ${total} indexed The Rewatchables podcast episodes (updated ${lastUpdated}) mapped to featured movies, release years, directors, top cast, current US streaming and rental options, IMDb links, and podcast audio URLs.`,
                 representativeQueries: [
